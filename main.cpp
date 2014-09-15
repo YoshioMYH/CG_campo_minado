@@ -1,15 +1,9 @@
-
 #include <gl/glut.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-int GrausBraco1 = 0;
-/* Funções  tratamento de eventos  */
-struct tabuleiro{
-    int linha;
-    int coluna;
-    int valor;
-};
+// VARIAVEIS GLOBAIS
+
 
 
 static void Quadrado()
@@ -22,26 +16,15 @@ static void Quadrado()
     glEnd();
 }
 
-void Atualiza_tamanho(int largura, int altura)
+static void Tabuleiro(int linhas, int colunas)
 {
-    glViewport(0, 0, largura, altura);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-    //gluOrtho2D (-10.0f, 10.0f, -10.0f, 10.0f);
-    gluOrtho2D (0.0f, 10.0f, -2.0f, 10.0f);
-}
-
-static void Atualiza_desenho(void)
-{
-    int linha=0, coluna=0; //Inicia variaveis para linha e coluna correspondentes ao tabuleiro
-    int campo[100]; //Era para ser um vetor utilizado como cada quadrado da tabela
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    for(linha=0; linha < 10 ; linha++ )//for para desenhar as linhas
+    int linha = 0;
+    int coluna = 0;
+    for(linha = 0; linha < linhas; linha++)
     {
-        for(coluna=0; coluna < 10 ; coluna++ )//for para desenhar as colunas
+        for(coluna = 0; coluna < colunas; coluna++)
         {
-            printf("x = %d, y = %d\n",linha ,coluna);//Printa no console as posições desenhadas
+            //printf("x = %d, y = %d\n",linha ,coluna); //Printa no console as posições desenhadas
             glPushMatrix();
             glTranslatef(linha, coluna, 0);
             glColor3f(0.0f, 0.0f, 1.0f);
@@ -49,6 +32,32 @@ static void Atualiza_desenho(void)
             glPopMatrix();
         }
     }
+    int valor = 0;
+
+};
+
+void Atualiza_tamanho(int largura, int altura)
+{
+    glViewport(0, 0, largura, altura);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+    //gluOrtho2D (-10.0f, 10.0f, -10.0f, 10.0f);
+    gluOrtho2D (0.0f, 10.0f, -2.0f, 10.0f);
+
+    printf("\n[DEBUG] : Evento Atualiza tamanho\n");
+}
+
+static void Atualiza_desenho(void)
+{
+    int linha = 5;
+    int coluna = 5; //Inicia variaveis para linha e coluna correspondentes ao tabuleiro
+    int campo[100]; //Era para ser um vetor utilizado como cada quadrado da tabela
+    glClear(GL_COLOR_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    Tabuleiro(linha, coluna);
+
     glPushMatrix();//Quadrado para tempo
         glTranslatef(1.0, -1.1, 0);
         glScalef(2.0, 1.0, 0);
@@ -64,6 +73,8 @@ static void Atualiza_desenho(void)
     glPopMatrix();
 
     glFlush();
+
+    printf("\n[DEBUG] : Evento Atualiza desenho\n");
 }
 
 
