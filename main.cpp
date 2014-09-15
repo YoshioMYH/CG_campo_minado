@@ -36,14 +36,24 @@ void renderText(const char *text, int length, int x, int y){ // Função para rend
     glMatrixMode(GL_MODELVIEW);
 }
 
-void mostraTempo(){ //Função para mostrar o tempo decorrido
+void mostraTempo(int value){ //Função para mostrar o tempo decorrido
     std::string text;
     timer = glutGet(GLUT_ELAPSED_TIME);
     text = to_string(timer/1000); //Converte o timer para uma string
     glColor3f(0.0, 0.0, 0.0); //Seta a cor do texto como preto
     renderText(text.data(), text.size(), 135, 65);
-}
+    glutPostRedisplay();
+    glutTimerFunc(1000,mostraTempo, 1);
 
+}
+void acrescentaMarcacao(const char *opcao, int x, int y){
+    std::string text;
+    text = opcao; //Converte o timer para uma string
+    printf("\n[DEBUG] : Evento seta opção: %s\n", text.data());
+    glColor3f(0.0, 0.0, 0.0); //Seta a cor do texto como preto
+    renderText(text.data(), text.size(), x, y);
+
+}
 static void MenuPrincipal(int operador)
 {
     switch( operador )
@@ -114,8 +124,8 @@ void Atualiza_tamanho(int largura, int altura)
 
 static void Atualiza_desenho(void)
 {
-    int linha = 10;
-    int coluna = 10; //Inicia variaveis para linha e coluna correspondentes ao tabuleiro
+    int linha = 11;
+    int coluna = 11; //Inicia variaveis para linha e coluna correspondentes ao tabuleiro
     int campo[100]; //Era para ser um vetor utilizado como cada quadrado da tabela
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
@@ -137,11 +147,11 @@ static void Atualiza_desenho(void)
         Quadrado();
     glPopMatrix();
 
-    mostraTempo();
+    mostraTempo(1000);
 
     glFlush();
 
-    printf("\n[DEBUG] : Evento Atualiza desenho\n");
+    //printf("\n[DEBUG] : Evento Atualiza desenho\n");
 }
 
 
@@ -166,8 +176,9 @@ void mouse(int botao, int estado, int x, int y)
 {
     switch ( botao ) {
         case GLUT_LEFT_BUTTON:
-
+            acrescentaMarcacao("teste", x, y);
             printf("\n X: %d,  Y:  %d\n", x, y);
+            glutPostRedisplay();
             break;
         case GLUT_RIGHT_BUTTON:
 
@@ -191,6 +202,7 @@ int main()
     glutMouseFunc(mouse);
 
     timer = glutGet(GLUT_ELAPSED_TIME);
+    glutTimerFunc(1000, mostraTempo, 1);
     CriaMenus();
 
     glutMainLoop();
