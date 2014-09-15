@@ -2,9 +2,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
+#include <iostream>
+#include <sstream>
 
 // VARIAVEIS GLOBAIS
 int timer = 0;
+
+template <typename T>
+std::string to_string(T value)//função to_string criada na mão
+{
+	std::ostringstream os ;
+	os << value ;
+	return os.str() ;
+}
 
 void renderText(const char *text, int length, int x, int y){ // Função para renderizar o texto
     glMatrixMode(GL_PROJECTION);
@@ -29,8 +39,8 @@ void renderText(const char *text, int length, int x, int y){ // Função para rend
 void mostraTempo(){ //Função para mostrar o tempo decorrido
     std::string text;
     timer = glutGet(GLUT_ELAPSED_TIME);
-    //printf("%d\n\n", timer/1000);
-    text = "Timer"; // Precisa converter pra string o int do timer(Na pesquisa deram a sugestão (std::to_string) mas não funciona
+    text = to_string(timer/1000); //Converte o timer para uma string
+    glColor3f(0.0, 0.0, 0.0); //Seta a cor do texto como preto
     renderText(text.data(), text.size(), 135, 65);
 }
 
@@ -142,6 +152,9 @@ static void teclado(unsigned char tecla, int x, int y)
         case 27 :
         case 'q':
             exit(0);
+            break;
+        case 't': //atualizar tempo
+            glutPostRedisplay();
             break;
         default:
             printf("\nNenhum evento atribuido a tecla\n");

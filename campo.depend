@@ -234,9 +234,11 @@
 	<stdlib.h>
 	<stdio.h>
 
-1410787834 source:c:\users\alexoshiro\documents\github\cg_campo_minado\main.cpp
+1410789389 source:c:\users\alexoshiro\documents\github\cg_campo_minado\main.cpp
 	<gl/glut.h>
 	<stdlib.h>
 	<stdio.h>
 	<string>
+	<iostream>
+	<sstream>
 
