@@ -1,13 +1,50 @@
 #include <gl/glut.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string>
 
 // VARIAVEIS GLOBAIS
+int timer = 0;
 
+void renderText(const char *text, int length, int x, int y){ // Função para renderizar o texto
+    glMatrixMode(GL_PROJECTION);
+    double *matrix = new double[16];
+    glGetDoublev(GL_PROJECTION_MATRIX, matrix);
+    glLoadIdentity();
+    glOrtho(0, 800, 0, 600, -5, 5);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glPushMatrix();
+    glLoadIdentity();
+    glRasterPos2i(x, y);
+    for(int i=0; i<length; i++){
+        glutBitmapCharacter(GLUT_BITMAP_9_BY_15, (int)text[i]);
+    }
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixd(matrix);
+    glMatrixMode(GL_MODELVIEW);
+}
+
+void mostraTempo(){ //Função para mostrar o tempo decorrido
+    std::string text;
+    timer = glutGet(GLUT_ELAPSED_TIME);
+    //printf("%d\n\n", timer/1000);
+    text = " "+(timer/1000); // Precisa converter pra string o int do timer(Na pesquisa deram a sugestão (std::to_string) mas não funciona
+    renderText(text.data(), text.size(), 128, 65);
+}
 
 static void MenuPrincipal(int operador)
 {
-
+    switch( operador )
+    {
+        case 1:
+            //função bandeira;
+            break;
+        case 2:
+            //funcação interrogação;
+            break;
+    }
 
     glutPostRedisplay();
 }
@@ -17,8 +54,8 @@ static void CriaMenus()
     int menu;
 
     menu = glutCreateMenu(MenuPrincipal);
-    glutAddMenuEntry("Bandeira", 0);
-    glutAddMenuEntry("Interrogação", 1);
+    glutAddMenuEntry("Bandeira", 1);
+    glutAddMenuEntry("Interrogação", 2);
 
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
@@ -67,8 +104,8 @@ void Atualiza_tamanho(int largura, int altura)
 
 static void Atualiza_desenho(void)
 {
-    int linha = 5;
-    int coluna = 5; //Inicia variaveis para linha e coluna correspondentes ao tabuleiro
+    int linha = 10;
+    int coluna = 10; //Inicia variaveis para linha e coluna correspondentes ao tabuleiro
     int campo[100]; //Era para ser um vetor utilizado como cada quadrado da tabela
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
@@ -89,6 +126,8 @@ static void Atualiza_desenho(void)
         glColor3f(0.0f, 1.0f, 0.0f);
         Quadrado();
     glPopMatrix();
+
+    mostraTempo();
 
     glFlush();
 
@@ -138,7 +177,7 @@ int main()
     glClearColor(1,1,1,1);
     glutMouseFunc(mouse);
 
-    glutGet(GLUT_ELAPSED_TIME);
+    timer = glutGet(GLUT_ELAPSED_TIME);
     CriaMenus();
 
     glutMainLoop();
