@@ -2,11 +2,24 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
+#include <iostream>
+#include <sstream>
 
 // VARIAVEIS GLOBAIS
+int G_linhas = 0;
+int G_colunas = 0;
 int timer = 0;
 
-void renderText(const char *text, int length, int x, int y){ // Função para renderizar o texto
+
+template <typename T>
+std::string to_string(T value)//função to_string criada na mão
+{
+	std::ostringstream os ;
+	os << value ;
+	return os.str() ;
+}
+
+void renderText(const char *text, int length, int x, int y){                // Função para renderizar o texto
     glMatrixMode(GL_PROJECTION);
     double *matrix = new double[16];
     glGetDoublev(GL_PROJECTION_MATRIX, matrix);
@@ -26,12 +39,12 @@ void renderText(const char *text, int length, int x, int y){ // Função para rend
     glMatrixMode(GL_MODELVIEW);
 }
 
-void mostraTempo(){ //Função para mostrar o tempo decorrido
+void mostraTempo(){                                                         //Função para mostrar o tempo decorrido
     std::string text;
     timer = glutGet(GLUT_ELAPSED_TIME);
-    //printf("%d\n\n", timer/1000);
-    text = " "+(timer/1000); // Precisa converter pra string o int do timer(Na pesquisa deram a sugestão (std::to_string) mas não funciona
-    renderText(text.data(), text.size(), 128, 65);
+    text = to_string(timer/1000);                                           //Converte o timer para uma string
+    glColor3f(0.0, 0.0, 0.0);                                               //Seta a cor do texto como preto
+    renderText(text.data(), text.size(), 135, 65);
 }
 
 static void MenuPrincipal(int operador)
@@ -61,17 +74,27 @@ static void CriaMenus()
 }
 
 
-static void Quadrado()
+static void Quadrado()                                                      // Com o atual ViewPort, gerará um quadrado com 70 x 70 pixels
 {
     glBegin(GL_LINE_LOOP);
-        glVertex3f(0, 0, 0);
-        glVertex3f(0, 1, 0);
-        glVertex3f(1, 1, 0);
-        glVertex3f(1, 0, 0);
+        glVertex2i(0, 0);
+        glVertex2i(0, 1);
+        glVertex2i(1, 1);
+        glVertex2i(1, 0);
     glEnd();
 }
 
-static void Tabuleiro(int linhas, int colunas)
+static void Revelado()                                                      // Com o atual ViewPort, gerará um quadrado com 70 x 70 pixels
+{
+    glBegin(GL_QUADS);
+        glVertex2i(0, 0);
+        glVertex2i(0, 1);
+        glVertex2i(1, 1);
+        glVertex2i(1, 0);
+    glEnd();
+}
+
+static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y)
 {
     int linha = 0;
     int coluna = 0;
@@ -80,11 +103,28 @@ static void Tabuleiro(int linhas, int colunas)
         for(coluna = 0; coluna < colunas; coluna++)
         {
             //printf("x = %d, y = %d\n",linha ,coluna); //Printa no console as posições desenhadas
-            glPushMatrix();
-            glTranslatef(linha, coluna, 0);
-            glColor3f(0.0f, 0.0f, 1.0f);
-            Quadrado();
-            glPopMatrix();
+            printf("\nPos_x: %d Pos_y: %d\n", pos_x, pos_y);
+            if(pos_x > 0 && pos_y > 0)
+            {
+                if((pos_x >= linha * 70) &&
+                   (pos_x <  linha * 70 + 70))
+                {
+                    if(pos_y >= coluna * 70 &&
+                       pos_y <  coluna * 70 + 70)
+                    {
+                        printf("\nRevelar Quadrado X: %d, Y: %d\n", coluna, linha);
+                    }
+                }
+            }
+
+            else
+            {
+                glPushMatrix();
+                glTranslated(linha, coluna, 0);
+                glColor3f(0.0f, 0.0f, 1.0f);
+                Quadrado();
+                glPopMatrix();
+            }
         }
     }
     int valor = 0;
@@ -111,7 +151,9 @@ static void Atualiza_desenho(void)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    Tabuleiro(linha, coluna);
+    glPushMatrix();
+        Tabuleiro(linha, coluna, 0, 0);
+    glPopMatrix();
 
     glPushMatrix();//Quadrado para tempo
         glTranslatef(1.0, -1.1, 0);
@@ -143,6 +185,9 @@ static void teclado(unsigned char tecla, int x, int y)
         case 'q':
             exit(0);
             break;
+        case 't': //atualizar tempo
+            glutPostRedisplay();
+            break;
         default:
             printf("\nNenhum evento atribuido a tecla\n");
             break;
@@ -154,7 +199,9 @@ void mouse(int botao, int estado, int x, int y)
     switch ( botao ) {
         case GLUT_LEFT_BUTTON:
 
-            printf("\n X: %d,  Y:  %d\n", x, y);
+            //printf("\n X: %d,  Y:  %d\n", x, y);
+            Tabuleiro(G_linhas, G_colunas, x, y);
+            //glutPostRedisplay();
             break;
         case GLUT_RIGHT_BUTTON:
 
