@@ -5,6 +5,24 @@
 // VARIAVEIS GLOBAIS
 
 
+static void MenuPrincipal(int operador)
+{
+
+
+    glutPostRedisplay();
+}
+
+static void CriaMenus()
+{
+    int menu;
+
+    menu = glutCreateMenu(MenuPrincipal);
+    glutAddMenuEntry("Bandeira", 0);
+    glutAddMenuEntry("Interrogação", 1);
+
+    glutAttachMenu(GLUT_RIGHT_BUTTON);
+}
+
 
 static void Quadrado()
 {
@@ -119,7 +137,10 @@ int main()
     glutKeyboardFunc(teclado);
     glClearColor(1,1,1,1);
     glutMouseFunc(mouse);
+
     glutGet(GLUT_ELAPSED_TIME);
+    CriaMenus();
+
     glutMainLoop();
 
     return 0;
