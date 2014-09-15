@@ -96,11 +96,13 @@ void mouse(int botao, int estado, int x, int y)
 {
     switch ( botao ) {
         case GLUT_LEFT_BUTTON:
-          printf("\n X: %d,  Y:  %d\n", x, y);
-          break;
+
+            printf("\n X: %d,  Y:  %d\n", x, y);
+            break;
         case GLUT_RIGHT_BUTTON:
-          printf("\n Botao para colocar bandeira\n");
-          break;
+
+            printf("\n Botao para colocar bandeira\n");
+            break;
     }
 }
 
