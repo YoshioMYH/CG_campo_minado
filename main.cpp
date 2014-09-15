@@ -8,6 +8,10 @@
 // VARIAVEIS GLOBAIS
 int G_linhas = 0;
 int G_colunas = 0;
+
+int G_pos_x = 0;
+int G_pos_y = 0;
+
 int timer = 0;
 
 
@@ -98,25 +102,50 @@ static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y)
 {
     int linha = 0;
     int coluna = 0;
+
     for(linha = 0; linha < linhas; linha++)
     {
         for(coluna = 0; coluna < colunas; coluna++)
         {
             //printf("x = %d, y = %d\n",linha ,coluna); //Printa no console as posições desenhadas
-            printf("\nPos_x: %d Pos_y: %d\n", pos_x, pos_y);
+            //printf("\nPos_x: %d Pos_y: %d\n", pos_x, pos_y);
             if(pos_x > 0 && pos_y > 0)
             {
                 if((pos_x >= linha * 70) &&
                    (pos_x <  linha * 70 + 70))
                 {
                     if(pos_y >= coluna * 70 &&
-                       pos_y <  coluna * 70 + 70)
+                        pos_y <  coluna * 70 + 70)
                     {
-                        printf("\nRevelar Quadrado X: %d, Y: %d\n", coluna, linha);
+                        printf("\nRevelar Quadrado X: %d, Y: %d\n", linha, coluna);
+                        glPushMatrix();
+                            glTranslated(linha, coluna, 0);
+                            glColor3f(0.0f, 0.0f, 1.0f);
+                            Revelado();
+                        glPopMatrix();
+                        G_pos_x = 0;
+                        G_pos_y = 0;
+                    }
+
+                    else
+                    {
+                        glPushMatrix();
+                        glTranslated(linha, coluna, 0);
+                        glColor3f(0.0f, 0.0f, 1.0f);
+                        Quadrado();
+                        glPopMatrix();
                     }
                 }
-            }
 
+                else
+                {
+                    glPushMatrix();
+                    glTranslated(linha, coluna, 0);
+                    glColor3f(0.0f, 0.0f, 1.0f);
+                    Quadrado();
+                    glPopMatrix();
+                }
+            }
             else
             {
                 glPushMatrix();
@@ -127,6 +156,8 @@ static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y)
             }
         }
     }
+
+
     int valor = 0;
 
 };
@@ -152,7 +183,7 @@ static void Atualiza_desenho(void)
     glLoadIdentity();
 
     glPushMatrix();
-        Tabuleiro(linha, coluna, 0, 0);
+        Tabuleiro(linha, coluna, G_pos_x, G_pos_y);
     glPopMatrix();
 
     glPushMatrix();//Quadrado para tempo
@@ -199,9 +230,10 @@ void mouse(int botao, int estado, int x, int y)
     switch ( botao ) {
         case GLUT_LEFT_BUTTON:
 
-            //printf("\n X: %d,  Y:  %d\n", x, y);
-            Tabuleiro(G_linhas, G_colunas, x, y);
-            //glutPostRedisplay();
+            printf("\n X: %d,  Y:  %d\n", x, y);
+            G_pos_x = x;
+            G_pos_y = y;
+            glutPostRedisplay();
             break;
         case GLUT_RIGHT_BUTTON:
 
