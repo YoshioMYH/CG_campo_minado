@@ -30,8 +30,8 @@ void mostraTempo(){ //Função para mostrar o tempo decorrido
     std::string text;
     timer = glutGet(GLUT_ELAPSED_TIME);
     //printf("%d\n\n", timer/1000);
-    text = " "+(timer/1000); // Precisa converter pra string o int do timer(Na pesquisa deram a sugestão (std::to_string) mas não funciona
-    renderText(text.data(), text.size(), 128, 65);
+    text = "Timer"; // Precisa converter pra string o int do timer(Na pesquisa deram a sugestão (std::to_string) mas não funciona
+    renderText(text.data(), text.size(), 135, 65);
 }
 
 static void MenuPrincipal(int operador)
