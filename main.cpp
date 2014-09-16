@@ -7,7 +7,7 @@
 #include <iostream>
 #include <sstream>
 
-#include <vector>
+#include <vector>               // Vector, estrutura semelhante a um ArrayList
 
 // ESTRUTURAS, TIPOS CUSTOMIZADOS
 struct Campo
@@ -20,6 +20,8 @@ struct Campo
 };
 
 // VARIAVEIS GLOBAIS
+GLint winSize_x = 700;
+GLint winSize_y = 700;
 int G_linhas = 0;
 int G_colunas = 0;
 
@@ -28,9 +30,9 @@ int G_pos_y = 0;
 
 int timer = 0;
 
-std::vector<Campo> campo_minado;                                            // Especia de ArrayList para representar o Campo Minado
+std::vector<Campo> campo_minado;                                            // Similar a um ArrayList [Java] para representar o Campo Minado
 
-
+// FUNÇÕES
 template <typename T>
 std::string to_string(T value)//função to_string criada na mão
 {
@@ -39,7 +41,7 @@ std::string to_string(T value)//função to_string criada na mão
 	return os.str() ;
 }
 
-void renderText(const char *text, int length, int x, int y){                // Função para renderizar o texto
+void renderText(const char *text, int length, int x, int y){ // Função para renderizar o texto
     glMatrixMode(GL_PROJECTION);
     double *matrix = new double[16];
     glGetDoublev(GL_PROJECTION_MATRIX, matrix);
@@ -59,12 +61,24 @@ void renderText(const char *text, int length, int x, int y){                // F
     glMatrixMode(GL_MODELVIEW);
 }
 
-void mostraTempo(){                                                         //Função para mostrar o tempo decorrido
+void mostraTempo(int value){ //Função para mostrar o tempo decorrido
     std::string text;
     timer = glutGet(GLUT_ELAPSED_TIME);
-    text = to_string(timer/1000);                                           //Converte o timer para uma string
-    glColor3f(0.0, 0.0, 0.0);                                               //Seta a cor do texto como preto
+    text = to_string(timer/1000); //Converte o timer para uma string
+    glColor3f(0.0, 0.0, 0.0); //Seta a cor do texto como preto
     renderText(text.data(), text.size(), 135, 65);
+    glutPostRedisplay();
+    glutTimerFunc(1000,mostraTempo, 1);
+
+}
+
+void acrescentaMarcacao(const char *opcao, int x, int y){
+    std::string text;
+    text = opcao; //Converte o timer para uma string
+    printf("\n[DEBUG] : Evento seta opção: %s\n", text.data());
+    glColor3f(0.0, 0.0, 0.0); //Seta a cor do texto como preto
+    renderText(text.data(), text.size(), x, y);
+
 }
 
 // VERIFICAR SE IRÁ SER MANTIDO
@@ -95,7 +109,6 @@ static void CriaMenus()
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
-
 static void Quadrado()                                                      // Com o atual ViewPort, gerará um quadrado com 70 x 70 pixels
 {
     glBegin(GL_LINE_LOOP);
@@ -116,6 +129,24 @@ static void Revelado()                                                      // C
     glEnd();
 }
 
+static void Inicializa_Tabuleiro(int linhas, int colunas, int pos_x, int pos_y)
+{
+    int linha = 0;
+    int coluna = 0;
+
+    for(linha = 0; linha < linhas; linha++)
+    {
+        for(coluna = colunas - 1; coluna >= 0; coluna--)
+        {
+            glPushMatrix();
+                glTranslated(linha, coluna, 0);
+                glColor3f(0.0f, 0.0f, 1.0f);
+                Quadrado();
+            glPopMatrix();
+        }
+    }
+}
+
 static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y)
 {
     int linha = 0;
@@ -123,10 +154,9 @@ static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y)
 
     for(linha = 0; linha < linhas; linha++)
     {
-        for(coluna = 0; coluna < colunas; coluna++)
+        for(coluna = colunas - 1; coluna >= 0; coluna--)
         {
-            //printf("x = %d, y = %d\n",linha ,coluna); //Printa no console as posições desenhadas
-            //printf("\nPos_x: %d Pos_y: %d\n", pos_x, pos_y);
+
             if(pos_x > 0 && pos_y > 0)
             {
                 if((pos_x >= linha * 70) &&
@@ -148,9 +178,9 @@ static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y)
                     else
                     {
                         glPushMatrix();
-                        glTranslated(linha, coluna, 0);
-                        glColor3f(0.0f, 0.0f, 1.0f);
-                        Quadrado();
+                            glTranslated(linha, coluna, 0);
+                            glColor3f(0.0f, 0.0f, 1.0f);
+                            Quadrado();
                         glPopMatrix();
                     }
                 }
@@ -158,9 +188,9 @@ static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y)
                 else
                 {
                     glPushMatrix();
-                    glTranslated(linha, coluna, 0);
-                    glColor3f(0.0f, 0.0f, 1.0f);
-                    Quadrado();
+                        glTranslated(linha, coluna, 0);
+                        glColor3f(0.0f, 0.0f, 1.0f);
+                        Quadrado();
                     glPopMatrix();
                 }
             }
@@ -174,11 +204,7 @@ static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y)
             }
         }
     }
-
-
-    int valor = 0;
-
-};
+}
 
 void Atualiza_tamanho(int largura, int altura)
 {
@@ -193,9 +219,9 @@ void Atualiza_tamanho(int largura, int altura)
 
 static void Atualiza_desenho(void)
 {
-    int linha = 10;
-    int coluna = 10; //Inicia variaveis para linha e coluna correspondentes ao tabuleiro
-    int campo[100]; //Era para ser um vetor utilizado como cada quadrado da tabela
+    int linha = 11;     // Inicia variaveis para linhas correspondentes ao tabuleiro
+    int coluna = 11;    // Inicia variaveis para colunas correspondentes ao tabuleiro
+    int campo[100];     // Era para ser um vetor utilizado como cada quadrado da tabela
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -218,11 +244,11 @@ static void Atualiza_desenho(void)
         Quadrado();
     glPopMatrix();
 
-    mostraTempo();
+    //mostraTempo(1000);
 
     glFlush();
 
-    printf("\n[DEBUG] : Evento Atualiza desenho\n");
+    //printf("\n[DEBUG] : Evento Atualiza desenho\n");
 }
 
 
@@ -243,14 +269,16 @@ static void teclado(unsigned char tecla, int x, int y)
     }
 }
 
-void mouse(int botao, int estado, int x, int y)
+static void mouse(int botao, int estado, int x, int y)
 {
+    glMatrixMode(GL_MODELVIEW);                                                         //Teste para consertar a posição do Mouse
+
     switch ( botao ) {
         case GLUT_LEFT_BUTTON:
-
-            printf("\n X: %d,  Y:  %d\n", x, y);
+            acrescentaMarcacao("teste", x, y);
             G_pos_x = x;
-            G_pos_y = y;
+            G_pos_y = (y * -1) + winSize_y;
+            printf("\n[DEBUG] : Mouse X: %d,  Y:  %d\n", G_pos_x, G_pos_y) ;            //Teste para consertar a posição do Mouse
             glutPostRedisplay();
             break;
         case GLUT_RIGHT_BUTTON:
@@ -258,12 +286,13 @@ void mouse(int botao, int estado, int x, int y)
             printf("\n Botao para colocar bandeira\n");
             break;
     }
+    glMatrixMode(GL_PROJECTION);
 }
 
 int main()
 {
-    glutInitWindowSize(700,700);
-    glutInitWindowPosition(300,100);
+    glutInitWindowSize(winSize_x, winSize_y);
+    glutInitWindowPosition(300, 100);
     glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE );
 
     glutCreateWindow("Campo Minado");
@@ -274,8 +303,9 @@ int main()
     glClearColor(1,1,1,1);
     glutMouseFunc(mouse);
 
-    timer = glutGet(GLUT_ELAPSED_TIME);
-    CriaMenus();
+    //timer = glutGet(GLUT_ELAPSED_TIME);
+    //glutTimerFunc(1000, mostraTempo, 1);
+    //CriaMenus();
 
     glutMainLoop();
 
