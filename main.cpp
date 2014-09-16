@@ -1,9 +1,23 @@
 #include <gl/glut.h>
+
 #include <stdlib.h>
 #include <stdio.h>
+
 #include <string>
 #include <iostream>
 #include <sstream>
+
+#include <vector>
+
+// ESTRUTURAS, TIPOS CUSTOMIZADOS
+struct Campo
+{
+    bool campo_mina;            // Campo contém uma mina ?
+    bool revelado;              // Campo revalado ?
+    int minas_adja;             // Quantidade de Minas Adjacentes
+    int pos_x;                  // Posição X do Campo
+    int pos_y;                  // Posição Y do Campo
+};
 
 // VARIAVEIS GLOBAIS
 int G_linhas = 0;
@@ -13,6 +27,8 @@ int G_pos_x = 0;
 int G_pos_y = 0;
 
 int timer = 0;
+
+std::vector<Campo> campo_minado;                                            // Especia de ArrayList para representar o Campo Minado
 
 
 template <typename T>
@@ -51,6 +67,7 @@ void mostraTempo(){                                                         //Fu
     renderText(text.data(), text.size(), 135, 65);
 }
 
+// VERIFICAR SE IRÁ SER MANTIDO
 static void MenuPrincipal(int operador)
 {
     switch( operador )
@@ -66,6 +83,7 @@ static void MenuPrincipal(int operador)
     glutPostRedisplay();
 }
 
+// VERIFICAR SE IRÁ SER MANTIDO
 static void CriaMenus()
 {
     int menu;
