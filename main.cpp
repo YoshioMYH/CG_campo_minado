@@ -212,7 +212,7 @@ void Atualiza_tamanho(int largura, int altura)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
     //gluOrtho2D (-10.0f, 10.0f, -10.0f, 10.0f);
-    gluOrtho2D (0.0f, 10.0f, -2.0f, 10.0f);
+    gluOrtho2D (0.0f, 10.0f, 14.0f, 0.0f);
 
     printf("\n[DEBUG] : Evento Atualiza tamanho\n");
 }
@@ -277,7 +277,7 @@ static void mouse(int botao, int estado, int x, int y)
         case GLUT_LEFT_BUTTON:
             acrescentaMarcacao("teste", x, y);
             G_pos_x = x;
-            G_pos_y = (y * -1) + winSize_y;
+            G_pos_y = y;
             printf("\n[DEBUG] : Mouse X: %d,  Y:  %d\n", G_pos_x, G_pos_y) ;            //Teste para consertar a posição do Mouse
             glutPostRedisplay();
             break;
