@@ -1,17 +1,14 @@
 #include <gl/glut.h>
-
 #include <stdlib.h>
 #include <stdio.h>
-
 #include <string>
 #include <iostream>
 #include <sstream>
-
-#include <vector>               // Vector, estrutura semelhante a um ArrayList
+#include <vector>
+#include <conio.h>
 
 // ESTRUTURAS, TIPOS CUSTOMIZADOS
-struct Campo
-{
+struct Campo{
     bool campo_mina;            // Campo contém uma mina ?
     bool revelado;              // Campo revalado ?
     int minas_adja;             // Quantidade de Minas Adjacentes
@@ -19,34 +16,66 @@ struct Campo
     int pos_y;                  // Posição Y do Campo
 };
 
-// VARIAVEIS GLOBAIS
-GLint winSize_x = 700;
-GLint winSize_y = 700;
+// VARIAVEIS GLOBAIS, colocar um 'G_'
+GLint windowsSize_x = 600;
+GLint windowsSize_y = 600;
 int G_linhas = 0;
 int G_colunas = 0;
-
+int G_linha = 0;
+int G_coluna = 0;
 int G_pos_x = 0;
 int G_pos_y = 0;
 
-int timer = 0;
-
+int G_timer = 0;
+int G_dificuldade = 0;
 std::vector<Campo> campo_minado;                                            // Similar a um ArrayList [Java] para representar o Campo Minado
 
 // FUNÇÕES
 template <typename T>
-std::string to_string(T value)//função to_string criada na mão
-{
+std::string to_string(T value){     //função to_string criada na mão
 	std::ostringstream os ;
 	os << value ;
 	return os.str() ;
 }
+
+void renderText(const char *text, int length, int x, int y);// Funcionando
+void mostraTempo(int value);                                // Funcionando
+void mostraBombas();                                        // Funcionando
+void acrescentaMarcacao(const char *opcao, int x, int y);   // não funcionando, estou procurando arrumar - By Alex
+
+
+void MenuTemporario(){
+    printf("Iniciando Menu Temporario \nEscolha a dificuldade(0-Noob, 1-Menos Noob, 2-SabeUmPouco): \n");
+    scanf("%d", &G_dificuldade);
+    if(G_dificuldade == 0)
+    {
+        G_linha = 5;
+        G_coluna = 5;
+    }
+    else if(G_dificuldade == 1)
+    {
+        G_linha = 10;
+        G_coluna = 10;
+    }
+    else if(G_dificuldade == 2)
+    {
+        G_linha = 16;
+        G_coluna = 16;
+    }
+    else
+    {
+        G_linha = 5;
+        G_coluna = 5;
+    }
+}
+
 
 void renderText(const char *text, int length, int x, int y){ // Função para renderizar o texto
     glMatrixMode(GL_PROJECTION);
     double *matrix = new double[16];
     glGetDoublev(GL_PROJECTION_MATRIX, matrix);
     glLoadIdentity();
-    glOrtho(0, 800, 0, 600, -5, 5);
+    glOrtho(0, 100, 0, 100, -5, 5);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glPushMatrix();
@@ -63,13 +92,26 @@ void renderText(const char *text, int length, int x, int y){ // Função para rend
 
 void mostraTempo(int value){ //Função para mostrar o tempo decorrido
     std::string text;
-    timer = glutGet(GLUT_ELAPSED_TIME);
-    text = to_string(timer/1000); //Converte o timer para uma string
+    G_timer = glutGet(GLUT_ELAPSED_TIME);
+    text = to_string(G_timer/1000); //Converte o G_timer para uma string
     glColor3f(0.0, 0.0, 0.0); //Seta a cor do texto como preto
-    renderText(text.data(), text.size(), 135, 65);
-    glutPostRedisplay();
-    glutTimerFunc(1000,mostraTempo, 1);
+    renderText("Tempo Decorrido", 15, 25, 6);
+    renderText(text.data(), text.size(), 32, 2);
+    //glutPostRedisplay();
+    //glutTimerFunc(1000,mostraTempo, 1);
+}
 
+void mostraBombas(){
+    renderText("Minas", 5, 60, 6);
+    if(G_dificuldade == 0){
+        renderText("5", 1, 63, 2);
+    }else if(G_dificuldade == 1){
+        renderText("15", 2, 62, 2);
+    }else if(G_dificuldade == 2){
+        renderText("30", 2, 62, 2);
+    }else {
+        renderText("None Selected", 13, 57, 2);
+    }
 }
 
 void acrescentaMarcacao(const char *opcao, int x, int y){
@@ -81,120 +123,88 @@ void acrescentaMarcacao(const char *opcao, int x, int y){
 
 }
 
-// VERIFICAR SE IRÁ SER MANTIDO
-static void MenuPrincipal(int operador)
-{
-    switch( operador )
+static void Quadrado(){     // Campo em branco, o tamanho atual do campo é de X = 5% do windowsSize_x | Y = 5% do windowsSize_y
+    glBegin(GL_LINE_LOOP);
+        glVertex2f(0, 0);
+        glVertex2f(0, 1);
+        glVertex2f(1, 1);
+        glVertex2f(1, 0);
+    glEnd();
+}
+
+static void Revelado(){     // Campo revelado, o tamanho atual do campo é de X = 5% do windowsSize_x | Y = 5% do windowsSize_y
+    glBegin(GL_QUADS);
+        glVertex2f(0, 0);
+        glVertex2f(0, 1);
+        glVertex2f(1, 1);
+        glVertex2f(1, 0);
+    glEnd();
+}
+
+static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y){
+    int linha;          // iterar nas linhas
+    int coluna;         // iterar nas colunas
+    int marcadorLinha;  // posicao x de onde comecar a desenhar
+    int marcadorColuna; // posicao y de onde comecar a desenhar
+
+    switch(G_dificuldade) // verifica a G_dificuldade e atribui os marcadores de linha e coluna
     {
+        case 0:
+            marcadorLinha = (linhas - 2) * -1;
+            marcadorColuna = (colunas -2) * -1;
+            break;
         case 1:
-            //função bandeira;
+            marcadorLinha = (linhas - 5) * -1;
+            marcadorColuna = (colunas -5) * -1;
             break;
         case 2:
-            //funcação interrogação;
+            marcadorLinha = (linhas - 10) * -1;
+            marcadorColuna = (colunas -10) * -1;
+            break;
+        default:
+            marcadorLinha = (linhas - 2) * -1;
+            marcadorColuna = (colunas -2) * -1;
             break;
     }
 
-    glutPostRedisplay();
-}
-
-// VERIFICAR SE IRÁ SER MANTIDO
-static void CriaMenus()
-{
-    int menu;
-
-    menu = glutCreateMenu(MenuPrincipal);
-    glutAddMenuEntry("Bandeira", 1);
-    glutAddMenuEntry("Interrogação", 2);
-
-    glutAttachMenu(GLUT_RIGHT_BUTTON);
-}
-
-static void Quadrado()                                                      // Com o atual ViewPort, gerará um quadrado com 70 x 70 pixels
-{
-    glBegin(GL_LINE_LOOP);
-        glVertex2i(0, 0);
-        glVertex2i(0, 1);
-        glVertex2i(1, 1);
-        glVertex2i(1, 0);
-    glEnd();
-}
-
-static void Revelado()                                                      // Com o atual ViewPort, gerará um quadrado com 70 x 70 pixels
-{
-    glBegin(GL_QUADS);
-        glVertex2i(0, 0);
-        glVertex2i(0, 1);
-        glVertex2i(1, 1);
-        glVertex2i(1, 0);
-    glEnd();
-}
-
-static void Inicializa_Tabuleiro(int linhas, int colunas, int pos_x, int pos_y)
-{
-    int linha = 0;
-    int coluna = 0;
-
-    for(linha = 0; linha < linhas; linha++)
+    for(linha = marcadorLinha; linha < linhas + marcadorLinha; linha++)                     // itera nas linhas
     {
-        for(coluna = colunas - 1; coluna >= 0; coluna--)
+        for(coluna = marcadorColuna; coluna < colunas + marcadorColuna; coluna++)           // itera nas colunas da linha
         {
-            glPushMatrix();
-                glTranslated(linha, coluna, 0);
-                glColor3f(0.0f, 0.0f, 1.0f);
-                Quadrado();
-            glPopMatrix();
-        }
-    }
-}
-
-static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y)
-{
-    int linha = 0;
-    int coluna = 0;
-
-    for(linha = 0; linha < linhas; linha++)
-    {
-        for(coluna = colunas - 1; coluna >= 0; coluna--)
-        {
-
-            if(pos_x > 0 && pos_y > 0)
+            if(G_timer != 0)                                                                // if temporario para que nao revele logo no inicio algum campo
             {
-                if((pos_x >= linha * 70) &&
-                   (pos_x <  linha * 70 + 70))
+                if((pos_x > linha * (windowsSize_x * 0.05)) &&                              // Verificao do clique no eixo X
+                   (pos_x < linha * (windowsSize_x * 0.05) + (windowsSize_x * 0.05)))       // 0.05: relembrar que o quadrado tera 5% do tamanho da tela
                 {
-                    if(pos_y >= coluna * 70 &&
-                        pos_y <  coluna * 70 + 70)
+                    if((pos_y > coluna * (windowsSize_y * 0.05)) &&                         // Verificao do clique no eixo Y
+                       (pos_y < coluna * (windowsSize_y * 0.05) + (windowsSize_y * 0.05)))  // 0.05: relembrar que o quadrado tera 5% do tamanho da tela
                     {
                         printf("\nRevelar Quadrado X: %d, Y: %d\n", linha, coluna);
                         glPushMatrix();
-                            glTranslated(linha, coluna, 0);
+                           glTranslated(linha, coluna, 0);
                             glColor3f(0.0f, 0.0f, 1.0f);
                             Revelado();
                         glPopMatrix();
-                        G_pos_x = 0;
-                        G_pos_y = 0;
                     }
-
                     else
                     {
                         glPushMatrix();
-                            glTranslated(linha, coluna, 0);
-                            glColor3f(0.0f, 0.0f, 1.0f);
-                            Quadrado();
-                        glPopMatrix();
-                    }
-                }
-
-                else
-                {
-                    glPushMatrix();
                         glTranslated(linha, coluna, 0);
                         glColor3f(0.0f, 0.0f, 1.0f);
                         Quadrado();
+                        glPopMatrix();
+                    }
+                }
+                else
+                {
+                    glPushMatrix();
+                    glTranslated(linha, coluna, 0);
+                    glColor3f(0.0f, 0.0f, 1.0f);
+                    Quadrado();
                     glPopMatrix();
                 }
             }
-            else
+            else                                                                            // else temporario
             {
                 glPushMatrix();
                 glTranslated(linha, coluna, 0);
@@ -204,56 +214,55 @@ static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y)
             }
         }
     }
-}
 
-void Atualiza_tamanho(int largura, int altura)
-{
+    int valor = 0;
+};
+
+void Atualiza_tamanho(int largura, int altura){
     glViewport(0, 0, largura, altura);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-    //gluOrtho2D (-10.0f, 10.0f, -10.0f, 10.0f);
-    gluOrtho2D (0.0f, 10.0f, 14.0f, 0.0f);
+    gluOrtho2D (-10.0f, 10.0f, -10.0f, 10.0f);
+    //gluOrtho2D (0.0f, 10.0f, 12.0f, 0.0f);
+
 
     printf("\n[DEBUG] : Evento Atualiza tamanho\n");
 }
 
-static void Atualiza_desenho(void)
-{
-    int linha = 11;     // Inicia variaveis para linhas correspondentes ao tabuleiro
-    int coluna = 11;    // Inicia variaveis para colunas correspondentes ao tabuleiro
-    int campo[100];     // Era para ser um vetor utilizado como cada quadrado da tabela
+static void Atualiza_desenho(void){
+    //int linha = 20;     // Inicia variaveis para linhas correspondentes ao tabuleiro
+    //int coluna = 20;    // Inicia variaveis para colunas correspondentes ao tabuleiro
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
     glPushMatrix();
-        Tabuleiro(linha, coluna, G_pos_x, G_pos_y);
+        Tabuleiro(G_linha, G_coluna, G_pos_x, G_pos_y);
     glPopMatrix();
 
-    glPushMatrix();//Quadrado para tempo
-        glTranslatef(1.0, -1.1, 0);
-        glScalef(2.0, 1.0, 0);
+    glPushMatrix();     //Quadrado para tempo
+        glTranslatef(-6.0, -10.0, 0);
+        glScalef(5.0, 1.8, 0);
         glColor3f(1.0f, 0.0f, 0.0f);
         Quadrado();
     glPopMatrix();
 
-    glPushMatrix();//Quadrado para bombas
-        glTranslatef(7.0, -1.1, 0);
-        glScalef(2.0, 1.0, 0);
+    glPushMatrix();     //Quadrado para bombas
+        glTranslatef(0.0, -10.0, 0);
+        glScalef(5.0, 1.8, 0);
         glColor3f(0.0f, 1.0f, 0.0f);
         Quadrado();
     glPopMatrix();
 
-    //mostraTempo(1000);
-
+    mostraTempo(1000);
+    mostraBombas();
     glFlush();
 
     //printf("\n[DEBUG] : Evento Atualiza desenho\n");
 }
 
 
-static void teclado(unsigned char tecla, int x, int y)
-{
+static void teclado(unsigned char tecla, int x, int y){
     switch (tecla)
     {
         case 27 :
@@ -269,30 +278,38 @@ static void teclado(unsigned char tecla, int x, int y)
     }
 }
 
-static void mouse(int botao, int estado, int x, int y)
-{
-    glMatrixMode(GL_MODELVIEW);                                                         //Teste para consertar a posição do Mouse
-
-    switch ( botao ) {
-        case GLUT_LEFT_BUTTON:
+void mouse(int botao, int estado, int x, int y){
+    if(botao == GLUT_LEFT_BUTTON){
+        if(estado == GLUT_DOWN){
+            printf("\n[DEBUG]: Apertou botao esquerdo mouse");
             acrescentaMarcacao("teste", x, y);
-            G_pos_x = x;
-            G_pos_y = y;
-            printf("\n[DEBUG] : Mouse X: %d,  Y:  %d\n", G_pos_x, G_pos_y) ;            //Teste para consertar a posição do Mouse
-            glutPostRedisplay();
-            break;
-        case GLUT_RIGHT_BUTTON:
 
-            printf("\n Botao para colocar bandeira\n");
-            break;
+            G_pos_x = x - windowsSize_x / 2;                    // ajusta a posição do mouse para combinar com o viewport, posicao x real - janela X / 2
+            G_pos_y = windowsSize_y / 2 - y ;                   // ajusta a posição do mouse para combinar com o viewport, anela Y / 2 - posicao y real
+            printf("\n X: %d,  Y:  %d\n", G_pos_x, G_pos_y);
+
+            glutPostRedisplay();
+        }
+        if(estado == GLUT_UP){
+            printf("[DEBUG]: Soltou botao esquerdo mouse");
+        }
+    }else if(botao == GLUT_RIGHT_BUTTON){
+        if(estado == GLUT_DOWN){
+            printf("\n[DEBUG]: Apertou Botao direito mouse");
+            printf("\n[DEBUG]: Botao para colocar bandeira\n");
+        }
+        if(estado == GLUT_UP){
+            printf("\n[DEBUG]: Soltou botao direito mouse");
+        }
+    }else{
+        printf("Nao entendo o que vc quer clicar");
     }
-    glMatrixMode(GL_PROJECTION);
 }
 
-int main()
-{
-    glutInitWindowSize(winSize_x, winSize_y);
-    glutInitWindowPosition(300, 100);
+int main(){
+    MenuTemporario();
+    glutInitWindowSize(windowsSize_x, windowsSize_y);
+    glutInitWindowPosition(300, 0);
     glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE );
 
     glutCreateWindow("Campo Minado");
@@ -301,12 +318,11 @@ int main()
     glutReshapeFunc(Atualiza_tamanho);
     glutKeyboardFunc(teclado);
     glClearColor(1,1,1,1);
+
     glutMouseFunc(mouse);
 
-    //timer = glutGet(GLUT_ELAPSED_TIME);
-    //glutTimerFunc(1000, mostraTempo, 1);
-    //CriaMenus();
-
+    G_timer = glutGet(GLUT_ELAPSED_TIME);
+    glutTimerFunc(1000, mostraTempo, 1);
     glutMainLoop();
 
     return 0;
