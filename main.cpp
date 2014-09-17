@@ -107,7 +107,7 @@ static void CriaMenus()
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
-static void Quadrado()                                                      // Com o atual ViewPort, gerará um quadrado com 70 x 70 pixels
+static void Quadrado()         // Com o atual ViewPort, gerará um quadrado com 70 x 70 pixels
 {
     glBegin(GL_LINE_LOOP);
         glVertex2i(0, 0);
@@ -117,7 +117,7 @@ static void Quadrado()                                                      // C
     glEnd();
 }
 
-static void Revelado()                                                      // Com o atual ViewPort, gerará um quadrado com 70 x 70 pixels
+static void Revelado()           // Com o atual ViewPort, gerará um quadrado com 70 x 70 pixels
 {
     glBegin(GL_QUADS);
         glVertex2i(0, 0);
