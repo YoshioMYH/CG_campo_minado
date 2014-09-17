@@ -1,12 +1,9 @@
 #include <gl/glut.h>
-
 #include <stdlib.h>
 #include <stdio.h>
-
 #include <string>
 #include <iostream>
 #include <sstream>
-
 #include <vector>
 
 // ESTRUTURAS, TIPOS CUSTOMIZADOS
@@ -32,8 +29,7 @@ std::vector<Campo> campo_minado;                                            // S
 
 // FUNÇÕES
 template <typename T>
-std::string to_string(T value)//função to_string criada na mão
-{
+std::string to_string(T value){//função to_string criada na mão
 	std::ostringstream os ;
 	os << value ;
 	return os.str() ;
@@ -64,12 +60,25 @@ void mostraTempo(int value){ //Função para mostrar o tempo decorrido
     timer = glutGet(GLUT_ELAPSED_TIME);
     text = to_string(timer/1000); //Converte o timer para uma string
     glColor3f(0.0, 0.0, 0.0); //Seta a cor do texto como preto
-    renderText(text.data(), text.size(), 135, 65);
-    glutPostRedisplay();
-    glutTimerFunc(1000,mostraTempo, 1);
-
+    renderText("Tempo Decorrido", 15, 15, 30);
+    renderText(text.data(), text.size(), 70, 15);
+    //glutPostRedisplay();
+    //glutTimerFunc(1000,mostraTempo, 1);
 }
 
+void mostraBombas(int dificuldade){
+    int i;
+    renderText("Minas", 5, 700, 30);
+    if(dificuldade == 0){
+        renderText("5", 1, 720, 15);
+    }else if(dificuldade == 1){
+        renderText("15", 2, 710, 15);
+    }else if(dificuldade == 2){
+        renderText("30", 2, 710, 15);
+    }else {
+        renderText("None Selected", 13, 670, 15);
+    }
+}
 void acrescentaMarcacao(const char *opcao, int x, int y){
     std::string text;
     text = opcao; //Converte o timer para uma string
@@ -127,14 +136,12 @@ static void Revelado()           // Com o atual ViewPort, gerará um quadrado com
     glEnd();
 }
 
-static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y)
-{
-    int linha = 0;
-    int coluna = 0;
-
-    for(linha = 0; linha < linhas; linha++)
+static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y){
+    int linha, coluna, marcadorLinha;
+    marcadorLinha = (linhas - 2) * -1;
+    for(linha = marcadorLinha; linha < linhas+marcadorLinha; linha++)
     {
-        for(coluna = 0; coluna < colunas; coluna++)
+        for(coluna = -3; coluna < colunas-3; coluna++)
         {
             //printf("x = %d, y = %d\n",linha ,coluna); //Printa no console as posições desenhadas
             //printf("\nPos_x: %d Pos_y: %d\n", pos_x, pos_y);
@@ -191,22 +198,20 @@ static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y)
 
 void Atualiza_tamanho(int largura, int altura)
 {
-    glClearColor(0.0,0.0,0.0,0);
-    glLoadIdentity();
-    glMatrixMode(GL_PROJECTION);
-    glOrtho(0.0,100.0,0.0,100.0,-100.0,100.0);
-    glMatrixMode(GL_MODELVIEW);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glViewport(0, 0, 820, 820);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+    gluOrtho2D (-5.0f, 5.0f, -6.0f, 6.0f);
+    //gluOrtho2D (0.0f, 10.0f, 12.0f, 0.0f);
 
-glFlush();
 
     printf("\n[DEBUG] : Evento Atualiza tamanho\n");
 }
 
 static void Atualiza_desenho(void)
 {
-    int linha = 11;     // Inicia variaveis para linhas correspondentes ao tabuleiro
-    int coluna = 11;    // Inicia variaveis para colunas correspondentes ao tabuleiro
+    int linha = 5;     // Inicia variaveis para linhas correspondentes ao tabuleiro
+    int coluna = 5;    // Inicia variaveis para colunas correspondentes ao tabuleiro
     int campo[100];     // Era para ser um vetor utilizado como cada quadrado da tabela
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
@@ -217,21 +222,21 @@ static void Atualiza_desenho(void)
     glPopMatrix();
 
     glPushMatrix();//Quadrado para tempo
-        glTranslatef(1.0, -1.1, 0);
+        glTranslatef(0.0, 11.0, 0);
         glScalef(2.0, 1.0, 0);
         glColor3f(1.0f, 0.0f, 0.0f);
         Quadrado();
     glPopMatrix();
 
     glPushMatrix();//Quadrado para bombas
-        glTranslatef(7.0, -1.1, 0);
+        glTranslatef(8.0, 11.0, 0);
         glScalef(2.0, 1.0, 0);
-        glColor3f(0.0f, 1.0f, 0.0f);
+        glColor3f(0.0f, 0.0f, 1.0f);
         Quadrado();
     glPopMatrix();
 
     mostraTempo(1000);
-
+    mostraBombas(1);
     glFlush();
 
     //printf("\n[DEBUG] : Evento Atualiza desenho\n");
@@ -274,8 +279,8 @@ void mouse(int botao, int estado, int x, int y)
 
 int main()
 {
-    glutInitWindowSize(700,700);
-    glutInitWindowPosition(300,100);
+    glutInitWindowSize(820,820);
+    glutInitWindowPosition(300,0);
     glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE );
 
     glutCreateWindow("Campo Minado");
@@ -289,7 +294,6 @@ int main()
     timer = glutGet(GLUT_ELAPSED_TIME);
     glutTimerFunc(1000, mostraTempo, 1);
     CriaMenus();
-
     glutMainLoop();
 
     return 0;
