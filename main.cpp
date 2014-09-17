@@ -191,11 +191,14 @@ static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y)
 
 void Atualiza_tamanho(int largura, int altura)
 {
-    glViewport(0, 0, largura, altura);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-    //gluOrtho2D (-10.0f, 10.0f, -10.0f, 10.0f);
-    gluOrtho2D (0.0f, 10.0f, -2.0f, 10.0f);
+    glClearColor(0.0,0.0,0.0,0);
+    glLoadIdentity();
+    glMatrixMode(GL_PROJECTION);
+    glOrtho(0.0,100.0,0.0,100.0,-100.0,100.0);
+    glMatrixMode(GL_MODELVIEW);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+glFlush();
 
     printf("\n[DEBUG] : Evento Atualiza tamanho\n");
 }
