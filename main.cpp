@@ -5,10 +5,9 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
-
+#include <conio.h>
 // ESTRUTURAS, TIPOS CUSTOMIZADOS
-struct Campo
-{
+struct Campo{
     bool campo_mina;            // Campo contém uma mina ?
     bool revelado;              // Campo revalado ?
     int minas_adja;             // Quantidade de Minas Adjacentes
@@ -19,12 +18,12 @@ struct Campo
 // VARIAVEIS GLOBAIS
 int G_linhas = 0;
 int G_colunas = 0;
-
+int linha, coluna;
 int G_pos_x = 0;
 int G_pos_y = 0;
 
 int timer = 0;
-
+int dificuldade = 0;
 std::vector<Campo> campo_minado;                                            // Similar a um ArrayList [Java] para representar o Campo Minado
 
 // FUNÇÕES
@@ -34,6 +33,31 @@ std::string to_string(T value){//função to_string criada na mão
 	os << value ;
 	return os.str() ;
 }
+
+void renderText(const char *text, int length, int x, int y); // Funcionando
+void mostraTempo(int value);        // Funcionando
+void mostraBombas(); // Funcionando
+void acrescentaMarcacao(const char *opcao, int x, int y); // não funcionando, estou procurando arrumar - By Alex
+
+
+void MenuTemporario(){
+    printf("Iniciando Menu Temporario \nEscolha a dificuldade(0-Noob, 1-Menos Noob, 2-SabeUmPouco): \n");
+    scanf("%d", &dificuldade);
+    if(dificuldade == 0){
+        linha = 5;
+        coluna = 5;
+    }else if(dificuldade == 1){
+        linha = 10;
+        coluna = 10;
+    }else if(dificuldade == 2){
+        linha = 20;
+        coluna = 20;
+    }else {
+        linha = 20;
+        coluna = 20;
+    }
+}
+
 
 void renderText(const char *text, int length, int x, int y){ // Função para renderizar o texto
     glMatrixMode(GL_PROJECTION);
@@ -66,8 +90,7 @@ void mostraTempo(int value){ //Função para mostrar o tempo decorrido
     //glutTimerFunc(1000,mostraTempo, 1);
 }
 
-void mostraBombas(int dificuldade){
-    int i;
+void mostraBombas(){
     renderText("Minas", 5, 60, 6);
     if(dificuldade == 0){
         renderText("5", 1, 63, 2);
@@ -89,8 +112,7 @@ void acrescentaMarcacao(const char *opcao, int x, int y){
 }
 
 // VERIFICAR SE IRÁ SER MANTIDO
-static void MenuPrincipal(int operador)
-{
+static void MenuPrincipal(int operador){
     switch( operador )
     {
         case 1:
@@ -105,8 +127,7 @@ static void MenuPrincipal(int operador)
 }
 
 // VERIFICAR SE IRÁ SER MANTIDO
-static void CriaMenus()
-{
+static void CriaMenus(){
     int menu;
 
     menu = glutCreateMenu(MenuPrincipal);
@@ -116,8 +137,7 @@ static void CriaMenus()
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
-static void Quadrado()         // Com o atual ViewPort, gerará um quadrado com 70 x 70 pixels
-{
+static void Quadrado(){         // Com o atual ViewPort, gerará um quadrado com 70 x 70 pixels
     glBegin(GL_LINE_LOOP);
         glVertex2i(0, 0);
         glVertex2i(0, 1);
@@ -126,8 +146,7 @@ static void Quadrado()         // Com o atual ViewPort, gerará um quadrado com 7
     glEnd();
 }
 
-static void Revelado()           // Com o atual ViewPort, gerará um quadrado com 70 x 70 pixels
-{
+static void Revelado(){           // Com o atual ViewPort, gerará um quadrado com 70 x 70 pixels
     glBegin(GL_QUADS);
         glVertex2i(0, 0);
         glVertex2i(0, 1);
@@ -207,8 +226,7 @@ static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y){
     int valor = 0;
 };
 
-void Atualiza_tamanho(int largura, int altura)
-{
+void Atualiza_tamanho(int largura, int altura){
     glViewport(0, 0, 820, 820);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -219,11 +237,9 @@ void Atualiza_tamanho(int largura, int altura)
     printf("\n[DEBUG] : Evento Atualiza tamanho\n");
 }
 
-static void Atualiza_desenho(void)
-{
-    int linha = 20;     // Inicia variaveis para linhas correspondentes ao tabuleiro
-    int coluna = 20;    // Inicia variaveis para colunas correspondentes ao tabuleiro
-    int campo[100];     // Era para ser um vetor utilizado como cada quadrado da tabela
+static void Atualiza_desenho(void){
+    //int linha = 20;     // Inicia variaveis para linhas correspondentes ao tabuleiro
+    //int coluna = 20;    // Inicia variaveis para colunas correspondentes ao tabuleiro
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -247,15 +263,14 @@ static void Atualiza_desenho(void)
     glPopMatrix();
 
     mostraTempo(1000);
-    mostraBombas(1);
+    mostraBombas();
     glFlush();
 
     //printf("\n[DEBUG] : Evento Atualiza desenho\n");
 }
 
 
-static void teclado(unsigned char tecla, int x, int y)
-{
+static void teclado(unsigned char tecla, int x, int y){
     switch (tecla)
     {
         case 27 :
@@ -271,8 +286,7 @@ static void teclado(unsigned char tecla, int x, int y)
     }
 }
 
-void mouse(int botao, int estado, int x, int y)
-{
+void mouse(int botao, int estado, int x, int y){
     switch ( botao ) {
         case GLUT_LEFT_BUTTON:
             acrescentaMarcacao("teste", x, y);
@@ -288,8 +302,8 @@ void mouse(int botao, int estado, int x, int y)
     }
 }
 
-int main()
-{
+int main(){
+    MenuTemporario();
     glutInitWindowSize(820,820);
     glutInitWindowPosition(300,0);
     glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE );
