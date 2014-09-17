@@ -6,10 +6,12 @@
 #include <sstream>
 #include <vector>
 #include <conio.h>
+#include<time.h>
 // ESTRUTURAS, TIPOS CUSTOMIZADOS
 struct Campo{
     bool campo_mina;            // Campo contém uma mina ?
     bool revelado;              // Campo revalado ?
+    bool campo_protegido;       // Campo com Bandeira
     int minas_adja;             // Quantidade de Minas Adjacentes
     int pos_x;                  // Posição X do Campo
     int pos_y;                  // Posição Y do Campo
@@ -18,7 +20,7 @@ struct Campo{
 // VARIAVEIS GLOBAIS
 int G_linhas = 0;
 int G_colunas = 0;
-int linha, coluna;
+int linha, coluna, minas; //minas -> controlador para mostrar quantas minas restam no tabuleiro após acrescentar ou retirar bandeira.
 int G_pos_x = 0;
 int G_pos_y = 0;
 
@@ -39,22 +41,63 @@ void mostraTempo(int value);        // Funcionando
 void mostraBombas(); // Funcionando
 void acrescentaMarcacao(const char *opcao, int x, int y); // não funcionando, estou procurando arrumar - By Alex
 
+void static iniciaCampos(){
+    int i, j, cont = 0;
+    for(i=0; i<linha; i++){ //Inicia todos os campos com nada
+        for(j=0; j<coluna; j++){
+            campo_minado.push_back(Campo());
+            campo_minado[cont].campo_mina = false;
+            campo_minado[cont].revelado = false;
+            campo_minado[cont].campo_protegido = false;
+            campo_minado[cont].minas_adja = 0;
+            campo_minado[cont].pos_x = i; //Arrumar para marcar corretamente
+            campo_minado[cont].pos_y = j; //Arrumar para marcar corretamente
+            //printf("\nCampo: %d  Valor: %d  Posx: %d  Posy: %d", cont, campo_minado[cont].minas_adja, campo_minado[cont].pos_x, campo_minado[cont].pos_y);
+            cont++;
+        }
+    }
 
+}
+
+void static AcrescentaMina(){
+    srand(time(NULL));
+    int i=0, minimo, maximo, cont=0;
+    maximo = (linha*linha)-1;
+    while(cont!=minas){
+        printf("\n\n[DEBUG]: Cont: %d  Minas: %d", cont, minas);
+        i=rand()%(maximo-0+1)+0;
+        campo_minado.push_back(Campo());
+        if(campo_minado[i].campo_mina == false){
+            campo_minado[i].campo_mina = true;
+            cont++;
+        }
+        //printf("\n[DEBUG]:i: %d  Campo: %d  Mina? : %d", i, i, campo_minado[i].campo_mina);
+    }
+
+}
+
+void static CampoMinasAdjacentes(){
+
+}
 void MenuTemporario(){
     printf("Iniciando Menu Temporario \nEscolha a dificuldade(0-Noob, 1-Menos Noob, 2-SabeUmPouco): \n");
     scanf("%d", &dificuldade);
     if(dificuldade == 0){
         linha = 5;
         coluna = 5;
+        minas = 5;
     }else if(dificuldade == 1){
         linha = 10;
         coluna = 10;
+        minas = 15;
     }else if(dificuldade == 2){
         linha = 20;
         coluna = 20;
+        minas = 30;
     }else {
         linha = 20;
         coluna = 20;
+        minas = 30;
     }
 }
 
@@ -102,12 +145,15 @@ void mostraBombas(){
         renderText("None Selected", 13, 57, 2);
     }
 }
+
+
 void acrescentaMarcacao(const char *opcao, int x, int y){
     std::string text;
-    text = opcao; //Converte o timer para uma string
-    printf("\n[DEBUG] : Evento seta opção: %s\n", text.data());
-    glColor3f(0.0, 0.0, 0.0); //Seta a cor do texto como preto
-    renderText(text.data(), text.size(), x, y);
+    text = "teste"; //Converte o timer para uma string
+    printf("\n[DEBUG] : Evento seta opcao: %s\n", text.data());
+    printf("Nas Pos x: %d e y: %d", x, y);
+    glColor3f(1.0, 0.0, 0.0); //Seta a cor do texto como preto
+    renderText("Teste", 5, 400, 50);
 
 }
 
@@ -116,7 +162,7 @@ static void MenuPrincipal(int operador){
     switch( operador )
     {
         case 1:
-            //função bandeira;
+            printf("[DEBUG]: Entrou no Case 1 da funcao MenuPrincipal");
             break;
         case 2:
             //funcação interrogação;
@@ -157,6 +203,7 @@ static void Revelado(){           // Com o atual ViewPort, gerará um quadrado co
 
 static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y){
     int linha, coluna, marcadorLinha, marcadorColuna;
+
     if(linhas == 5){
         marcadorLinha = (linhas - 2) * -1;
         marcadorColuna = (colunas -2) * -1;
@@ -173,8 +220,10 @@ static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y){
     {
         for(coluna = marcadorColuna; coluna < colunas+ marcadorColuna; coluna++)
         {
+
             //printf("x = %d, y = %d\n",linha ,coluna); //Printa no console as posições desenhadas
             //printf("\nPos_x: %d Pos_y: %d\n", pos_x, pos_y);
+
             if(pos_x > 0 && pos_y > 0)
             {
                 if((pos_x >= linha * 70) &&
@@ -186,7 +235,7 @@ static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y){
                         printf("\nRevelar Quadrado X: %d, Y: %d\n", linha, coluna);
                         glPushMatrix();
                             glTranslated(linha, coluna, 0);
-                            glColor3f(0.0f, 0.0f, 1.0f);
+                            glColor3f(1.0f, 0.0f, 0.0f);
                             Revelado();
                         glPopMatrix();
                         G_pos_x = 0;
@@ -264,6 +313,7 @@ static void Atualiza_desenho(void){
 
     mostraTempo(1000);
     mostraBombas();
+    //acrescentaMarcacao();
     glFlush();
 
     //printf("\n[DEBUG] : Evento Atualiza desenho\n");
@@ -290,7 +340,6 @@ void mouse(int botao, int estado, int x, int y){
     if(botao == GLUT_LEFT_BUTTON){
         if(estado == GLUT_DOWN){
             printf("\n[DEBUG]: Apertou botao esquerdo mouse");
-            acrescentaMarcacao("teste", x, y);
             printf("\n X: %d,  Y:  %d\n", x, y);
             G_pos_x = x;
             G_pos_y = y;
@@ -302,7 +351,7 @@ void mouse(int botao, int estado, int x, int y){
     }else if(botao == GLUT_RIGHT_BUTTON){
         if(estado == GLUT_DOWN){
             printf("\n[DEBUG]: Apertou Botao direito mouse");
-            printf("\n[DEBUG]: Botao para colocar bandeira\n");
+            glutPostRedisplay();
         }
         if(estado == GLUT_UP){
             printf("\n[DEBUG]: Soltou botao direito mouse");
@@ -319,7 +368,8 @@ int main(){
     glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE );
 
     glutCreateWindow("Campo Minado");
-
+    iniciaCampos();
+    AcrescentaMina();
     glutDisplayFunc(Atualiza_desenho);
     glutReshapeFunc(Atualiza_tamanho);
     glutKeyboardFunc(teclado);
@@ -328,6 +378,7 @@ int main(){
 
     timer = glutGet(GLUT_ELAPSED_TIME);
     glutTimerFunc(1000, mostraTempo, 1);
+
     CriaMenus();
     glutMainLoop();
 
