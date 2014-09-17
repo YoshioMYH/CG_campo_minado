@@ -234,7 +234,7 @@
 	<stdlib.h>
 	<stdio.h>
 
-1410973362 source:c:\users\alexoshiro\documents\github\cg_campo_minado\main.cpp
+1410974040 source:c:\users\alexoshiro\documents\github\cg_campo_minado\main.cpp
 	<gl/glut.h>
 	<stdlib.h>
 	<stdio.h>
@@ -242,4 +242,8 @@
 	<iostream>
 	<sstream>
 	<vector>
+	<conio.h>
+
+1341010370 c:\program files (x86)\codeblocks\mingw\include\conio.h
+	<_mingw.h>
 

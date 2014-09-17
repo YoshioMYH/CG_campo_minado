@@ -287,18 +287,28 @@ static void teclado(unsigned char tecla, int x, int y){
 }
 
 void mouse(int botao, int estado, int x, int y){
-    switch ( botao ) {
-        case GLUT_LEFT_BUTTON:
+    if(botao == GLUT_LEFT_BUTTON){
+        if(estado == GLUT_DOWN){
+            printf("\n[DEBUG]: Apertou botao esquerdo mouse");
             acrescentaMarcacao("teste", x, y);
             printf("\n X: %d,  Y:  %d\n", x, y);
             G_pos_x = x;
             G_pos_y = y;
             glutPostRedisplay();
-            break;
-        case GLUT_RIGHT_BUTTON:
-
-            printf("\n Botao para colocar bandeira\n");
-            break;
+        }
+        if(estado == GLUT_UP){
+            printf("[DEBUG]: Soltou botao esquerdo mouse");
+        }
+    }else if(botao == GLUT_RIGHT_BUTTON){
+        if(estado == GLUT_DOWN){
+            printf("\n[DEBUG]: Apertou Botao direito mouse");
+            printf("\n[DEBUG]: Botao para colocar bandeira\n");
+        }
+        if(estado == GLUT_UP){
+            printf("\n[DEBUG]: Soltou botao direito mouse");
+        }
+    }else{
+        printf("Nao entendo o que vc quer clicar");
     }
 }
 
