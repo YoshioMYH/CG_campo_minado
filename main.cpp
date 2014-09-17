@@ -40,7 +40,7 @@ void renderText(const char *text, int length, int x, int y){ // Função para rend
     double *matrix = new double[16];
     glGetDoublev(GL_PROJECTION_MATRIX, matrix);
     glLoadIdentity();
-    glOrtho(0, 800, 0, 600, -5, 5);
+    glOrtho(0, 100, 0, 100, -5, 5);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glPushMatrix();
@@ -60,23 +60,23 @@ void mostraTempo(int value){ //Função para mostrar o tempo decorrido
     timer = glutGet(GLUT_ELAPSED_TIME);
     text = to_string(timer/1000); //Converte o timer para uma string
     glColor3f(0.0, 0.0, 0.0); //Seta a cor do texto como preto
-    renderText("Tempo Decorrido", 15, 15, 30);
-    renderText(text.data(), text.size(), 70, 15);
+    renderText("Tempo Decorrido", 15, 25, 6);
+    renderText(text.data(), text.size(), 32, 2);
     //glutPostRedisplay();
     //glutTimerFunc(1000,mostraTempo, 1);
 }
 
 void mostraBombas(int dificuldade){
     int i;
-    renderText("Minas", 5, 700, 30);
+    renderText("Minas", 5, 60, 6);
     if(dificuldade == 0){
-        renderText("5", 1, 720, 15);
+        renderText("5", 1, 63, 2);
     }else if(dificuldade == 1){
-        renderText("15", 2, 710, 15);
+        renderText("15", 2, 62, 2);
     }else if(dificuldade == 2){
-        renderText("30", 2, 710, 15);
+        renderText("30", 2, 62, 2);
     }else {
-        renderText("None Selected", 13, 670, 15);
+        renderText("None Selected", 13, 57, 2);
     }
 }
 void acrescentaMarcacao(const char *opcao, int x, int y){
@@ -137,11 +137,22 @@ static void Revelado()           // Com o atual ViewPort, gerará um quadrado com
 }
 
 static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y){
-    int linha, coluna, marcadorLinha;
-    marcadorLinha = (linhas - 2) * -1;
-    for(linha = marcadorLinha; linha < linhas+marcadorLinha; linha++)
+    int linha, coluna, marcadorLinha, marcadorColuna;
+    if(linhas == 5){
+        marcadorLinha = (linhas - 2) * -1;
+        marcadorColuna = (colunas -2) * -1;
+    }else if(linhas == 10){
+        marcadorLinha = (linhas - 5) * -1;
+        marcadorColuna = (colunas -5) * -1;
+    }else{
+        marcadorLinha = (linhas - 10) * -1;
+        marcadorColuna = (colunas -10) * -1;
+    }
+
+
+    for(linha = marcadorLinha; linha < linhas+ marcadorLinha; linha++)
     {
-        for(coluna = -3; coluna < colunas-3; coluna++)
+        for(coluna = marcadorColuna; coluna < colunas+ marcadorColuna; coluna++)
         {
             //printf("x = %d, y = %d\n",linha ,coluna); //Printa no console as posições desenhadas
             //printf("\nPos_x: %d Pos_y: %d\n", pos_x, pos_y);
@@ -201,7 +212,7 @@ void Atualiza_tamanho(int largura, int altura)
     glViewport(0, 0, 820, 820);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-    gluOrtho2D (-5.0f, 5.0f, -6.0f, 6.0f);
+    gluOrtho2D (-10.0f, 10.0f, -12.0f, 12.0f);
     //gluOrtho2D (0.0f, 10.0f, 12.0f, 0.0f);
 
 
@@ -210,8 +221,8 @@ void Atualiza_tamanho(int largura, int altura)
 
 static void Atualiza_desenho(void)
 {
-    int linha = 5;     // Inicia variaveis para linhas correspondentes ao tabuleiro
-    int coluna = 5;    // Inicia variaveis para colunas correspondentes ao tabuleiro
+    int linha = 20;     // Inicia variaveis para linhas correspondentes ao tabuleiro
+    int coluna = 20;    // Inicia variaveis para colunas correspondentes ao tabuleiro
     int campo[100];     // Era para ser um vetor utilizado como cada quadrado da tabela
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
@@ -222,16 +233,16 @@ static void Atualiza_desenho(void)
     glPopMatrix();
 
     glPushMatrix();//Quadrado para tempo
-        glTranslatef(0.0, 11.0, 0);
-        glScalef(2.0, 1.0, 0);
+        glTranslatef(-6.0, -12.0, 0);
+        glScalef(5.0, 1.8, 0);
         glColor3f(1.0f, 0.0f, 0.0f);
         Quadrado();
     glPopMatrix();
 
     glPushMatrix();//Quadrado para bombas
-        glTranslatef(8.0, 11.0, 0);
-        glScalef(2.0, 1.0, 0);
-        glColor3f(0.0f, 0.0f, 1.0f);
+        glTranslatef(0.0, -12.0, 0);
+        glScalef(5.0, 1.8, 0);
+        glColor3f(0.0f, 1.0f, 0.0f);
         Quadrado();
     glPopMatrix();
 
