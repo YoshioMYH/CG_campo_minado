@@ -229,7 +229,7 @@
 	<_mingw.h>
 	<stddef.h>
 
-1410983786 source:g:\github\cg_campo_minado\main.cpp
+1410985418 source:g:\github\cg_campo_minado\main.cpp
 	<gl/glut.h>
 	<stdlib.h>
 	<stdio.h>

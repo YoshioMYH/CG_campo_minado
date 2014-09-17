@@ -59,8 +59,8 @@ void MenuTemporario(){
     }
     else if(G_dificuldade == 2)
     {
-        G_linha = 16;
-        G_coluna = 16;
+        G_linha = 15;
+        G_coluna = 15;
     }
     else
     {
@@ -158,8 +158,8 @@ static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y){
             marcadorColuna = (colunas -5) * -1;
             break;
         case 2:
-            marcadorLinha = (linhas - 10) * -1;
-            marcadorColuna = (colunas -10) * -1;
+            marcadorLinha = (linhas - 8) * -1;
+            marcadorColuna = (colunas -8) * -1;
             break;
         default:
             marcadorLinha = (linhas - 2) * -1;
