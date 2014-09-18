@@ -249,3 +249,21 @@
 	<sstream>
 	<vector>
 
+1411062074 source:c:\users\alexoshiro\documents\github\cg_campo_minado\main.cpp
+	<gl/glut.h>
+	<stdlib.h>
+	<stdio.h>
+	<string>
+	<iostream>
+	<sstream>
+	<vector>
+	<conio.h>
+	<time.h>
+
+1341010370 c:\program files (x86)\codeblocks\mingw\include\conio.h
+	<_mingw.h>
+
+1341010376 c:\program files (x86)\codeblocks\mingw\include\time.h
+	<_mingw.h>
+	<stddef.h>
+
