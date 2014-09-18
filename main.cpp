@@ -237,7 +237,7 @@ static void Revelar_Campo(int indice, int linha, int coluna){
                 glColor3f(1.0f, 0.0f, 0.0f);
                 Revelado();
             glPopMatrix();
-            campo_minado[indice].revelado = true;
+            //campo_minado[indice].revelado = true;
             // Game Over
         }
         else
@@ -313,8 +313,7 @@ static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y){
             cont++;
         }
     }
-
-    int valor = 0;
+    cont = 0;
 }
 
 static void Atualiza_tamanho(int largura, int altura){
