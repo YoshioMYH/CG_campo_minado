@@ -218,7 +218,6 @@ static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y){
     int valor = 0;
 }
 
-
 void Atualiza_tamanho(int largura, int altura){
     glViewport(0, 0, largura, altura);
 	glMatrixMode(GL_PROJECTION);
