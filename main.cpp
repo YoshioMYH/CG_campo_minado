@@ -93,7 +93,7 @@ static void  AcrescentaMina(){
             campo_minado[i].campo_mina = true;
             cont++;
         }
-        //printf("\n[DEBUG]:i: %d  Campo: %d  Mina? : %d", i, i, campo_minado[i].campo_mina);
+        printf("\n[DEBUG]:i: %d  Campo: %d  Mina? : %d", i, i, campo_minado[i].campo_mina);
     }
 }
 
@@ -184,13 +184,26 @@ static void acrescentaMarcacao(const char *opcao, int x, int y){
 
 }
 
-static void Quadrado(){     // Campo em branco, o tamanho atual do campo é de X = 5% do windowsSize_x | Y = 5% do windowsSize_y
+static void Menus(){
     glBegin(GL_LINE_LOOP);
         glVertex2f(0, 0);
         glVertex2f(0, 1);
         glVertex2f(1, 1);
         glVertex2f(1, 0);
     glEnd();
+}
+
+static void Quadrado(int linha, int coluna){     // Campo em branco, o tamanho atual do campo é de X = 5% do windowsSize_x | Y = 5% do windowsSize_y
+    glPushMatrix();
+        glTranslated(linha, coluna, 0);
+        glColor3f(0.0f, 0.0f, 1.0f);
+        glBegin(GL_LINE_LOOP);
+            glVertex2f(0, 0);
+            glVertex2f(0, 1);
+            glVertex2f(1, 1);
+            glVertex2f(1, 0);
+        glEnd();
+    glPopMatrix();
 }
 
 static void Revelado(){     // Campo revelado, o tamanho atual do campo é de X = 5% do windowsSize_x | Y = 5% do windowsSize_y
@@ -202,11 +215,52 @@ static void Revelado(){     // Campo revelado, o tamanho atual do campo é de X =
     glEnd();
 }
 
+static void Revelar_Campo(int indice, int linha, int coluna){
+    if(campo_minado[indice].revelado)                                       // Campo ja revelado ?
+    {
+        printf("\nRevelar Quadrado X: %d, Y: %d\n", linha, coluna);         //Campo livre
+        glPushMatrix();
+            glTranslated(linha, coluna, 0);
+            glColor3f(0.0f, 0.0f, 1.0f);
+            Revelado();
+            // Mostrar minas adjacentes
+        glPopMatrix();
+        printf("\n  Indice ja revelado: %d, %d\n", indice, campo_minado[indice].revelado);
+    }
+    else
+    {
+        if(campo_minado[indice].campo_mina)
+        {
+            printf("\nRevelar Bomba X: %d, Y: %d\n", linha, coluna);        // Desenhar campo com Mina
+            glPushMatrix();
+                glTranslated(linha, coluna, 0);
+                glColor3f(1.0f, 0.0f, 0.0f);
+                Revelado();
+            glPopMatrix();
+            campo_minado[indice].revelado = true;
+            // Game Over
+        }
+        else
+        {
+            printf("\nRevelar Quadrado X: %d, Y: %d\n", linha, coluna);         //Campo livre
+            glPushMatrix();
+                glTranslated(linha, coluna, 0);
+                glColor3f(0.0f, 0.0f, 1.0f);
+                Revelado();
+                // Mostrar minas adjacentes
+            glPopMatrix();
+            campo_minado[indice].revelado = true;
+            printf("\n  Indice: %d, %d\n", indice, campo_minado[indice].revelado);
+        }
+    }
+}
+
 static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y){
     int linha;          // iterar nas linhas
     int coluna;         // iterar nas colunas
     int marcadorLinha;  // posicao x de onde comecar a desenhar
     int marcadorColuna; // posicao y de onde comecar a desenhar
+    int cont = 0;       // contador para indicar o indice do campo
 
     switch(G_dificuldade) // verifica a G_dificuldade e atribui os marcadores de linha e coluna
     {
@@ -240,39 +294,23 @@ static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y){
                     if((pos_y > coluna * (windowsSize_y * 0.05)) &&                         // Verificao do clique no eixo Y
                        (pos_y < coluna * (windowsSize_y * 0.05) + (windowsSize_y * 0.05)))  // 0.05: relembrar que o quadrado tera 5% do tamanho da tela
                     {
-                        printf("\nRevelar Quadrado X: %d, Y: %d\n", linha, coluna);
-                        glPushMatrix();
-                           glTranslated(linha, coluna, 0);
-                            glColor3f(1.0f, 0.0f, 0.0f);
-                            Revelado();
-                        glPopMatrix();
+                        Revelar_Campo(cont, linha, coluna);                                 // Revelar se o campo clicado contem uma bomba ou é um campo livre ou ja revelado
                     }
                     else
                     {
-                        glPushMatrix();
-                        glTranslated(linha, coluna, 0);
-                        glColor3f(0.0f, 0.0f, 1.0f);
-                        Quadrado();
-                        glPopMatrix();
+                        Quadrado(linha, coluna);
                     }
                 }
                 else
                 {
-                    glPushMatrix();
-                    glTranslated(linha, coluna, 0);
-                    glColor3f(0.0f, 0.0f, 1.0f);
-                    Quadrado();
-                    glPopMatrix();
+                    Quadrado(linha, coluna);
                 }
             }
             else                                                                            // else temporario
             {
-                glPushMatrix();
-                glTranslated(linha, coluna, 0);
-                glColor3f(0.0f, 0.0f, 1.0f);
-                Quadrado();
-                glPopMatrix();
+                Quadrado(linha, coluna);
             }
+            cont++;
         }
     }
 
@@ -301,18 +339,18 @@ static void Atualiza_desenho(void){
         Tabuleiro(G_linha, G_coluna, G_pos_x, G_pos_y);
     glPopMatrix();
 
-    glPushMatrix();     //Quadrado para tempo
+    glPushMatrix();     //Menu para tempo
         glTranslatef(-6.0, -10.0, 0);
         glScalef(5.0, 1.8, 0);
         glColor3f(1.0f, 0.0f, 0.0f);
-        Quadrado();
+        Menus();
     glPopMatrix();
 
-    glPushMatrix();     //Quadrado para bombas
+    glPushMatrix();     //Menu para bombas
         glTranslatef(0.0, -10.0, 0);
         glScalef(5.0, 1.8, 0);
         glColor3f(0.0f, 1.0f, 0.0f);
-        Quadrado();
+        Menus();
     glPopMatrix();
 
     mostraTempo(1000);
