@@ -11,7 +11,7 @@
 struct Campo{
     bool campo_mina;            // Campo contém uma mina ?
     bool revelado;              // Campo revalado ?
-    bool campo_protegido;       // Campo com Bandeira
+    bool protegido;             // Campo com Bandeira
     int minas_adja;             // Quantidade de Minas Adjacentes
     int pos_x;                  // Posição X do Campo
     int pos_y;                  // Posição Y do Campo
@@ -25,6 +25,7 @@ int G_colunas = 0;
 int G_linha = 0;
 int G_coluna = 0;
 int G_minas = 0;
+int G_minasatuais;
 int G_pos_x = 0;
 int G_pos_y = 0;
 
@@ -32,7 +33,7 @@ int G_timer = 0;
 int G_dificuldade = 0;
 
 std::vector<Campo> campo_minado;                                            // Similar a um ArrayList [Java] para representar o Campo Minado
-
+Campo matrizCampo[][];
 // FUNÇÕES
 template <typename T>
 std::string to_string(T value){     //função to_string criada na mão
@@ -48,7 +49,6 @@ static void MenuTemporario();                                          //
 static void renderText(const char *text, int length, int x, int y);    // Funcionando
 static void mostraTempo(int value);                                    // Funcionando
 static void mostraMinas();                                             // Funcionando
-static void acrescentaMarcacao(const char *opcao, int x, int y);       // não funcionando, estou procurando arrumar - By Alex
 static void Quadrado();                                                // Funcionando
 static void Revelado();                                                // Funcionando
 static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y);  // Funcionando [Incrementar]
@@ -66,7 +66,7 @@ static void iniciaCampos(){
             campo_minado.push_back(Campo());
             campo_minado[cont].campo_mina = false;
             campo_minado[cont].revelado = false;
-            campo_minado[cont].campo_protegido = false;
+            campo_minado[cont].protegido = false;
             campo_minado[cont].minas_adja = 0;
             campo_minado[cont].pos_x = i;                   //Arrumar para marcar corretamente
             campo_minado[cont].pos_y = j;                   //Arrumar para marcar corretamente
@@ -103,10 +103,20 @@ static void  AcrescentaMina(){
     }
 }
 
-static void CampoMinasAdjacentes(){
-
+void CampoMinasAdjacentes(){
+    int i,j;
+    for(i=0; i<G_linha; i++){
+        for(j=0; j<G_coluna; j++){
+            if(campo_minado[posicaoVector].campo_mina == false){
+                calc_minas_adja(posicaoVector);
+            }
+        }
+    }
 }
 
+void calc_minas_adja(int posicaoVector){
+    //Eita essa terá que ser ninja pra fazer
+}
 void MenuTemporario(){
     printf("Iniciando Menu Temporario \nEscolha a dificuldade(0-Noob, 1-Menos Noob, 2-SabeUmPouco): \n");
     scanf("%d", &G_dificuldade);
@@ -115,21 +125,25 @@ void MenuTemporario(){
             G_linha = 5;
             G_coluna = 5;
             G_minas = 5;
+            G_minasatuais = 5;
             break;
         case 1:
             G_linha = 10;
             G_coluna = 10;
             G_minas = 15;
+            G_minasatuais = 15;
             break;
         case 2:
             G_linha = 15;
             G_coluna = 15;
             G_minas = 30;
+            G_minasatuais = 30;
             break;
         default:
             G_linha = 5;
             G_coluna = 5;
             G_minas = 5;
+            G_minasatuais = 30;
             break;
     }
 }
@@ -167,7 +181,7 @@ static void mostraTempo(int value){ //Função para mostrar o tempo decorrido
 
 static void mostraMinas(){ // Função para mostra a quantidade de bombas iniciais em campo.
     std::string text;
-    text = to_string(G_minas);
+    text = to_string(G_minasatuais);
     renderText("Minas", 5, 60, 6);
     renderText(text.data(), text.size(), 63, 2);
 }
@@ -229,12 +243,14 @@ static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y){
                     if((pos_y > coluna * (windowsSize_y * 0.05)) &&                         // Verificao do clique no eixo Y
                        (pos_y < coluna * (windowsSize_y * 0.05) + (windowsSize_y * 0.05)))  // 0.05: relembrar que o quadrado tera 5% do tamanho da tela
                     {
-                        printf("\nRevelar Quadrado X: %d, Y: %d\n", linha, coluna);
-                        glPushMatrix();
-                           glTranslated(linha, coluna, 0);
-                            glColor3f(1.0f, 0.0f, 0.0f);
-                            Revelado();
-                        glPopMatrix();
+                        if(campo_minado[posicaoVector].protegido == false){//Precisa pegara posicao do vector
+                            printf("\nRevelar Quadrado X: %d, Y: %d\n", linha, coluna);
+                            glPushMatrix();
+                               glTranslated(linha, coluna, 0);
+                                glColor3f(1.0f, 0.0f, 0.0f);
+                                Revelado();
+                            glPopMatrix();
+                        }
                     }
                     else
                     {
@@ -338,21 +354,29 @@ static void mouse(int botao, int estado, int x, int y){
 
             glutPostRedisplay();
         }
-        if(estado == GLUT_UP){
+        /*if(estado == GLUT_UP){
             printf("\n[DEBUG]: Soltou botao esquerdo mouse");
-        }
+        }*/
     }else if(botao == GLUT_RIGHT_BUTTON){
         if(estado == GLUT_DOWN){
-            if(G_minas > 0){
-                G_minas--;
+            campo_minado.push_back(Campo());
+            if(campo_minado[posicaoVector].protegido == false && G_minasatuais > 0){
+                campo_minado[posicaoVector].protegido == true;
+                G_minasatuais--;
                 mostraMinas();
+            }else if(campo_minado[posicaoVector].protegido == true){
+                campo_minado[posicaoVector].protegido == false;
+                G_minasatuais++;
+                mostraMinas();
+            }else{
+                printf("[DEBUG]: Entrou No ultimo Else do botao direito");
             }
-            printf("\n[DEBUG]: Apertou Botao direito mouse");
+            //printf("\n[DEBUG]: Apertou Botao direito mouse");
             glutPostRedisplay();
         }
-        if(estado == GLUT_UP){
+        /*if(estado == GLUT_UP){
             printf("\n[DEBUG]: Soltou botao direito mouse");
-        }
+        }*/
     }else{
         printf("\n[DEBUG]: Nao entendo o que vc quer clicar, pare de apertar esse botao por favor");
     }
