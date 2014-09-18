@@ -21,6 +21,7 @@ struct Campo{
 // VARIAVEIS GLOBAIS, colocar um 'G_'
 GLint windowsSize_x = 600;
 GLint windowsSize_y = 600;
+int G_operacao_tabuleiro = 0;
 int G_linhas = 0;
 int G_colunas = 0;
 int G_linha = 0;
@@ -75,7 +76,6 @@ static void iniciaCampos(){
             cont++;
         }
     }
-
 }
 
 static void  AcrescentaMina(){
