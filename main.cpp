@@ -68,8 +68,8 @@ static void iniciaCampos(){
             campo_minado[cont].revelado = false;
             campo_minado[cont].protegido = false;
             campo_minado[cont].minas_adja = 0;
-            campo_minado[cont].pos_x = i;                   //Arrumar para marcar corretamente
-            campo_minado[cont].pos_y = j;                   //Arrumar para marcar corretamente
+            campo_minado[cont].pos_x = i;                   //Arrumar para marcar corretamente. Se possivel fazer todos ficarem positivos
+            campo_minado[cont].pos_y = j;                   //Arrumar para marcar corretamente. Se possivel fazer todos ficarem positivos
             //printf("\nCampo: %d  Valor: %d  Posx: %d  Posy: %d", cont, campo_minado[cont].minas_adja, campo_minado[cont].pos_x, campo_minado[cont].pos_y);
             cont++;
         }
@@ -105,18 +105,56 @@ static void  AcrescentaMina(){
 
 void CampoMinasAdjacentes(){
     int i,j;
-    for(i=0; i<G_linha; i++){
-        for(j=0; j<G_coluna; j++){
-            if(campo_minado[posicaoVector].campo_mina == false){
-                calc_minas_adja(posicaoVector);
-            }
+    for(i=0; i<G_linha*G_coluna; i++){
+        if(campo_minado[i].campo_mina == false){
+            calc_minas_adja(i, campo_minado[i].pos_x, campo_minado[i].pos_y);
         }
     }
 }
 
-void calc_minas_adja(int posicaoVector){
-        if(campo_minado[Vixi ta dificil].campo_mina == true &&){
-        campo_minado[i].minas_adja += 1;
+void calc_minas_adja(int posicaoVector, int posVatualx, int posVatualy){ //falta realizar tratamento caso seja um quadrado nas laterais
+    int i;
+    for(i=0; i<G_linha*G_coluna; i++){
+        if(campo_minado[i].pos_x == posVatualx-1 &&
+           campo_minado[i].pos_y == posVatualy+1 &&
+           campo_minado[i].campo_mina == true){
+               campo_minado[posicaoVector].minas_adja += 1;
+        }
+        if(campo_minado[i].pos_x == posVatualx &&
+           campo_minado[i].pos_y == posVatualy+1 &&
+           campo_minado[i].campo_mina == true){
+               campo_minado[posicaoVector].minas_adja += 1;
+        }
+        if(campo_minado[i].pos_x == posVatualx-2 &&
+           campo_minado[i].pos_y == posVatualy+1 &&
+           campo_minado[i].campo_mina == true){
+               campo_minado[posicaoVector].minas_adja += 1;
+        }
+        if(campo_minado[i].pos_x == posVatualx-1 &&
+           campo_minado[i].pos_y == posVatualy &&
+           campo_minado[i].campo_mina == true){
+               campo_minado[posicaoVector].minas_adja += 1;
+        }
+        if(campo_minado[i].pos_x == posVatualx+1 &&
+           campo_minado[i].pos_y == posVatualy &&
+           campo_minado[i].campo_mina == true){
+               campo_minado[posicaoVector].minas_adja += 1;
+        }
+        if(campo_minado[i].pos_x == posVatualx-1 &&
+           campo_minado[i].pos_y == posVatualy-1 &&
+           campo_minado[i].campo_mina == true){
+               campo_minado[posicaoVector].minas_adja += 1;
+        }
+        if(campo_minado[i].pos_x == posVatualx &&
+           campo_minado[i].pos_y == posVatualy-1 &&
+           campo_minado[i].campo_mina == true){
+               campo_minado[posicaoVector].minas_adja += 1;
+        }
+        if(campo_minado[i].pos_x == posVatualx+1 &&
+           campo_minado[i].pos_y == posVatualy-1 &&
+           campo_minado[i].campo_mina == true){
+               campo_minado[posicaoVector].minas_adja += 1;
+        }
     }
     //Eita essa terá que ser ninja pra fazer
 }
