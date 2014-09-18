@@ -115,6 +115,9 @@ void CampoMinasAdjacentes(){
 }
 
 void calc_minas_adja(int posicaoVector){
+        if(campo_minado[Vixi ta dificil].campo_mina == true &&){
+        campo_minado[i].minas_adja += 1;
+    }
     //Eita essa terá que ser ninja pra fazer
 }
 void MenuTemporario(){
