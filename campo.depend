@@ -229,7 +229,7 @@
 	<_mingw.h>
 	<stddef.h>
 
-1411064928 source:g:\github\cg_campo_minado\main.cpp
+1411091241 source:g:\github\cg_campo_minado\main.cpp
 	<gl/glut.h>
 	<stdlib.h>
 	<stdio.h>
@@ -237,7 +237,6 @@
 	<iostream>
 	<sstream>
 	<vector>
-	<conio.h>
 	<time.h>
 
 1410873451 source:c:\users\marcelo\documents\github\cg_campo_minado\main.cpp
