@@ -142,7 +142,7 @@ static void MenuTemporario()
             G_linhas = 5;
             G_colunas = 5;
             G_minas = 5;
-            G_minasatuais = 30;
+            G_minasatuais = 5;
             break;
     }
 }
@@ -166,7 +166,6 @@ static void renderText(const char *text, int length, int x, int y)
     glMatrixMode(GL_PROJECTION);
     glLoadMatrixd(matrix);
     glMatrixMode(GL_MODELVIEW);
-    glFlush();
 }
 
 static void mostraTempo(int value)
@@ -174,14 +173,14 @@ static void mostraTempo(int value)
     std::string text;
     G_timer = glutGet(GLUT_ELAPSED_TIME);
     text = to_string(G_timer/1000); //Converte o G_timer para uma string
-    glPushMatrix();
+    /*glPushMatrix();
     glColor3f(1.0f, 1.0f, 1.0f);
     glTranslatef(-4, -9.8, 0);
     glScalef(2, 1, 0);
     Limpa();
-    glPopMatrix();
+    glPopMatrix();*/
     glColor3f(0.0, 0.0, 0.0); //Seta a cor do texto como preto
-    renderText("Tempo Decorrido", 15, 25, 6);
+    renderText("Tempo Decorrido", 15, 21, 6);
     renderText(text.data(), text.size(), 32, 2);
     glutTimerFunc(1000,mostraTempo, 1);
     //glutPostRedisplay();
@@ -194,12 +193,11 @@ static void mostraMinas()
     glPushMatrix();
     glColor3f(1.0f, 1.0f, 1.0f);
     glTranslatef(2, -9.8, 0);
-    glScalef(2, 1, 0);
     Limpa();
     glPopMatrix();
     glColor3f(0.0, 0.0, 0.0);
-    renderText("Minas", 5, 60, 6);
-    renderText(text.data(), text.size(), 63, 2);
+    renderText("Minas", 5, 59, 6);
+    renderText(text.data(), text.size(), 61, 2);
 }
 
 static void Menus()
