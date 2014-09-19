@@ -6,7 +6,7 @@
 #include <sstream>
 #include <vector>
 #include <time.h>
-#include <conio.h>
+
 // ESTRUTURAS, TIPOS CUSTOMIZADOS
 struct Campo{
     bool campo_mina;            // Campo contém uma mina ?
@@ -29,7 +29,7 @@ int G_bandeiras_atuais = 0;     // Quantidade de bandeiras colocados no tabuleir
 
 int G_linhas = 0;               // Quantidade de Linhas do tabuleiro
 int G_colunas = 0;              // Quantidade de Colunas do tabuleiro
-int G_Game_Over = 0;
+
 int G_click_pos_x = 0.0;        // Posicao X do clique do mouse
 int G_click_pos_y = 0.0;        // Posicao Y do clique do mouse
 int G_operacao_desenho = 0;     // Determina qual operacao o desenho deve fazer
@@ -40,7 +40,7 @@ int G_operacao_desenho = 0;     // Determina qual operacao o desenho deve fazer
 */
 int G_timer = 0;                 // Mantém o tempo decorrido de jogo
 int G_dificuldade = 0;           // Mantém a dificuldade selecionada do jogo
-
+int G_Game_Over = 0;
 std::vector<Campo> campo_minado; // Similar a um ArrayList [Java] para representar o Campo Minado
 
 // FUNÇÕES
@@ -95,7 +95,7 @@ static void iniciaCampos()
             campo_minado[cont].minas_adja = 0;
             campo_minado[cont].pos_x = i;
             campo_minado[cont].pos_y = j;
-            printf("\nCampo: %2d  Valor: %2d  PosX: %2d  PosY: %2d", cont, campo_minado[cont].minas_adja, campo_minado[cont].pos_x, campo_minado[cont].pos_y);
+            //printf("\nCampo: %2d  Valor: %2d  PosX: %2d  PosY: %2d", cont, campo_minado[cont].minas_adja, campo_minado[cont].pos_x, campo_minado[cont].pos_y);
             cont++;
         }
     }
@@ -120,6 +120,7 @@ static void  AcrescentaMina()
         }
         printf("\n[DEBUG]:i: %d  Campo: %d  Mina? : %d", i, i, campo_minado[i].campo_mina);
     }
+    G_bandeiras = G_minas;
 }
 
 void Calc_Minas_Adjacentes()
@@ -172,28 +173,6 @@ void Calc_Minas_Adjacentes()
     }*/
 }
 
-void DesenhaQntMina(){ // Questções de debug
-    int i, controlador;
-    std::string text;
-    switch(G_linhas){
-        case 5:
-            controlador = 39;
-            break;
-        case 10:
-            controlador = 27;
-            break;
-        case 15:
-            controlador = 14;
-    }
-
-    for(i=0; i<G_linhas*G_colunas; i++){
-        text = to_string(campo_minado[i].minas_adja);
-        glPushMatrix();
-        glColor3f(0.0, 0.0, 0.0);
-        renderText(text.data(), text.size(), campo_minado[i].pos_y*5+controlador, campo_minado[i].pos_x*5+controlador);
-        glPopMatrix();
-    }
-}
 static void MenuTemporario()
 {// Menu para selecionar o nível de dificuldade
     printf("Iniciando Menu Temporario \nEscolha a dificuldade(0-Noob, 1-Menos Noob, 2-SabeUmPouco): \n");
@@ -203,20 +182,17 @@ static void MenuTemporario()
             G_linhas = 10;
             G_colunas = 10;
             G_minas = 15;
-            G_minasatuais = 15;
             break;
         case 2: // Hard
             G_linhas = 15;
             G_colunas = 15;
             G_minas = 30;
-            G_minasatuais = 30;
             break;
         case 0: // Easy
         default:
             G_linhas = 5;
             G_colunas = 5;
             G_minas = 5;
-            G_minasatuais = 5;
             break;
     }
 }
@@ -245,30 +221,25 @@ static void renderText(const char *text, int length, int x, int y)
 static void mostraTempo(int value)
 {// Função para mostrar o tempo decorrido
     std::string text;
+    if(!G_Game_Over){
     G_timer = glutGet(GLUT_ELAPSED_TIME);
     text = to_string(G_timer/1000); //Converte o G_timer para uma string
-    /*glPushMatrix();
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glTranslatef(-4, -9.8, 0);
-    glScalef(2, 1, 0);
-    Limpa();
-    glPopMatrix();*/
     glColor3f(0.0, 0.0, 0.0); //Seta a cor do texto como preto
     renderText("Tempo Decorrido", 15, 21, 6);
     renderText(text.data(), text.size(), 32, 2);
-    glutTimerFunc(1000,mostraTempo, 1);
-    //glutPostRedisplay();
+    glutPostRedisplay();
+    }else{
+        text = to_string(G_timer/1000);
+        glColor3f(0.0, 0.0, 0.0); //Seta a cor do texto como preto
+        renderText("Tempo Decorrido", 15, 21, 6);
+        renderText(text.data(), text.size(), 32, 2);
+    }
 }
 
 static void mostraMinas()
 {// Função para mostra a quantidade de bombas iniciais em campo.
     std::string text;
-    text = to_string(G_minasatuais);
-    /*glPushMatrix();
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glTranslatef(2, -9.8, 0);
-    Limpa();
-    glPopMatrix();*/
+    text = to_string(G_bandeiras);
     glColor3f(0.0, 0.0, 0.0);
     renderText("Minas", 5, 59, 6);
     renderText(text.data(), text.size(), 61, 2);
@@ -318,6 +289,51 @@ static void Revelado()
             glVertex2f(1, 0);
         glEnd();
     glPopMatrix();
+}
+
+static void Minas_Adjacentes(int indice)
+{
+    std::string text;                                               // texto a ser desenhado, quantidade de minas adjacentes
+    text = to_string(campo_minado[indice].minas_adja);              // guarda o numero de minas adjacentes do campo, em formato de string
+    glPushMatrix();
+        glColor3f(0.0, 1.0, 0.0);                                   // Cor: preto
+        //glScalef(0.005, 0.005, 0.0);                              // Solucao 02
+        //glTranslatef(50, 50, 0.0);                                // Solucao 02
+        glRasterPos2f(0.3, 0.3);                                    // Solucao 01 ... desloca o local a ser renderizado o texto ...
+
+        void * font = GLUT_BITMAP_9_BY_15;                          // Solucao 01 ... Seleciona a fonte do texto -> http://openglut.sourceforge.net/group__bitmapfont.html
+        //void* font = GLUT_STROKE_ROMAN;                           // Solucao 02 ... Seleciona a fonte do texto -> http://openglut.sourceforge.net/group__fonts.html
+        for(std::string::iterator iterador_string = text.begin(); iterador_string != text.end(); ++iterador_string) // intera entre os caracteres do texto
+        {
+            char caractere = *iterador_string;                      // converte o iterador para caractere
+            glutBitmapCharacter(font, caractere);                   // Solucao 01 ... desenha o caractere
+            //glutStrokeCharacter(font, caractere);                 // Solucao 02 ... desenha o caractere
+        }
+    glPopMatrix();
+}
+
+void DesenhaQntMina(){ // Quando acabo o jogo revela todos os campos
+    int i, controlador;
+    std::string text;
+    switch(G_linhas){
+        case 5:
+            controlador = 39;
+            break;
+        case 10:
+            controlador = 27;
+            break;
+        case 15:
+            controlador = 14;
+    }
+
+    for(i=0; i<G_linhas*G_colunas; i++){
+        text = to_string(campo_minado[i].minas_adja);
+        glPushMatrix();
+        glColor3f(0.0, 0.0, 0.0);
+        if(!campo_minado[i].revelado)
+        renderText(text.data(), text.size(), campo_minado[i].pos_y*5+controlador, campo_minado[i].pos_x*5+controlador);
+        glPopMatrix();
+    }
 }
 
 static void Mina()
@@ -385,6 +401,7 @@ static void Calculo_Desenho(int linha, int coluna, int indice)
             if(campo_minado[indice].revelado)
             {
                 Revelado();
+                Minas_Adjacentes(indice);
             }
             else if(campo_minado[indice].protegido)
             {
@@ -401,9 +418,11 @@ static void Calculo_Desenho(int linha, int coluna, int indice)
             break;
         case 1:                                                         // Funcao para revelar um campo
             Revelar_Campo(indice);
+            G_operacao_desenho = 0;
             break;
         case 2:                                                         // Funcao para alternar a propriedade de Protegido
             Alternar_Protecao(indice);
+            G_operacao_desenho = 0;
             break;
     }
 }
@@ -433,35 +452,38 @@ static void Revelar_Campo(int indice)
     if(campo_minado[indice].revelado)                   // Campo ja revelado ?
     {
         Revelado();
-
+        Minas_Adjacentes(indice);
         // Mostrar Numeros Adjacentes
-        printf("\n     Campo ja revelado.");
+        //printf("\n     Campo ja revelado.");
     }
     else                                                // Campo nao revelado
     {
         if(campo_minado[indice].protegido)              // Campo com bandeira ?
         {
             Bandeira();
-            printf("\n     Campo protegido.");
+            //printf("\n     Campo protegido.");
         }
         else                                            // Campo sem bandeira
         {
             if(campo_minado[indice].campo_mina)         // Campo com mina ?
             {
                 Mina();
-                glutMouseFunc(NULL);
+
+                campo_minado[indice].revelado = true;
                 DesenhaQntMina();
                 renderGameOver();
                 //renderFimDeJogo();
                 //printf("\n     Campo com mina.");
                 //printf("\n\n     --- Game Over ---\n\n");
                 //exit(0);                                // desativar para fins de DEBUG
-                campo_minado[indice].revelado = true;
+
+                glutMouseFunc(NULL);
+                G_Game_Over = 1;
             }
             else                                        // Campo sem mina
             {
                 Revelado();
-                // Mostrar Numeros Adjacentes
+                Minas_Adjacentes(indice);
                 campo_minado[indice].revelado = true;
             }
         }
@@ -473,7 +495,7 @@ static void Alternar_Protecao(int indice)
     if(campo_minado[indice].protegido)                  // Campo protegido ?
     {
         Quadrado();
-        G_minasatuais++;
+        G_bandeiras++;
         // Incrementar o numero de Bandeiras disponiveis
         campo_minado[indice].protegido = false;
     }
@@ -482,15 +504,15 @@ static void Alternar_Protecao(int indice)
         if(campo_minado[indice].revelado)               // Campo revelado ?
         {
             Revelado();
-            // Mostrar Numeros Adjacentes
+            Minas_Adjacentes(indice);
             printf("\n     Campo ja revelado.");
         }
         else                                            // Campo nao revelado
         {
-            if(G_minasatuais > 0)
+            if(G_bandeiras > 0)
             {
                 Bandeira();
-                G_minasatuais--;
+                G_bandeiras--;
             // Decrementar o numero de Bandeiras disponiveis
             campo_minado[indice].protegido = true;
             }
@@ -784,7 +806,6 @@ int main(){
     glutMouseFunc(mouse);
 
     G_timer = glutGet(GLUT_ELAPSED_TIME);
-    //glutTimerFunc(1000, mostraTempo, 1);
 
     glClearColor(1,1,1,1);
     glutMainLoop();
