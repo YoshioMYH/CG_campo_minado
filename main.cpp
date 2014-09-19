@@ -18,22 +18,30 @@ struct Campo{
 };
 
 // VARIAVEIS GLOBAIS, colocar um 'G_'
-GLint windowsSize_x = 600;
-GLint windowsSize_y = 600;
-int G_linhas = 0;
-int G_colunas = 0;
-int G_linha = 0;
-int G_coluna = 0;
-int G_minas = 0;
-int G_minasatuais;
-int G_pos_x = 0;
-int G_pos_y = 0;
-int posicaoVector;
+GLint windowsSize_x = 600;      // Largura da janela
+GLint windowsSize_y = 600;      // Altura da janela
 
-int G_timer = 0;
-int G_dificuldade = 0;
+int G_minas = 0;                // Quantidade de minas no campo
+int G_minasatuais = 0;
 
-std::vector<Campo> campo_minado;                                            // Similar a um ArrayList [Java] para representar o Campo Minado
+int G_bandeiras = 0;            // Quantidade de bandeiras no jogo. No Bandeiras = No Minas
+int G_bandeiras_atuais = 0;     // Quantidade de bandeiras colocados no tabuleiro
+
+int G_linhas = 0;               // Quantidade de Linhas do tabuleiro
+int G_colunas = 0;              // Quantidade de Colunas do tabuleiro
+
+int G_click_pos_x = 0.0;        // Posicao X do clique do mouse
+int G_click_pos_y = 0.0;        // Posicao Y do clique do mouse
+int G_operacao_desenho = 0;     // Determina qual operacao o desenho deve fazer
+/*
+0 = nao modifica tabuleiro [nao possivel via E/S]
+1 = revelar um campo [Mouse LB]
+2 = posicionar bandeira [Mouse RB]
+*/
+int G_timer = 0;                 // Mantém o tempo decorrido de jogo
+int G_dificuldade = 0;           // Mantém a dificuldade selecionada do jogo
+
+std::vector<Campo> campo_minado; // Similar a um ArrayList [Java] para representar o Campo Minado
 
 // FUNÇÕES
 template <typename T>
@@ -43,52 +51,66 @@ std::string to_string(T value){     //função to_string criada na mão
     return os.str() ;
 }
 
-static void iniciaCampos();                                            //
-static void AcrescentaMina();                                          //
-static void CampoMinasAdjacentes();                                    //
-static void MenuTemporario();                                          //
-static void renderText(const char *text, int length, int x, int y);    // Funcionando
-static void mostraTempo(int value);                                    // Funcionando
-static void mostraMinas();                                            // Funcionando
-static void acrescentaMarcacao(const char *opcao, int x, int y);       // não funcionando, estou procurando arrumar - By Alex
-static void Quadrado();                                                // Funcionando
-static void Revelado();                                                // Funcionando
-static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y);  // Funcionando [Incrementar]
-static void Atualiza_tamanho(int largura, int altura);                 // Funcionando
-static void Atualiza_desenho(void);                                    // Funcionando [Incrementar]
-static void teclado(unsigned char tecla, int x, int y);                // Funcionando
-static void mouse(int botao, int estado, int x, int y);                // Funcionando [Incrementar]
-static void Limpa();
-static void iniciaCampos(){
+static void iniciaCampos();                                             // Funcionando
+static void AcrescentaMina();                                           // Funcionando
+static void Calc_Minas_Adjacentes();                                     //
+static void MenuTemporario();                                           // Funcionando [Melhorar]
+static void renderText(const char *text, int length, int x, int y);     // Funcionando
+static void mostraTempo(int value);                                     // Funcionando
+static void mostraMinas();                                              // Funcionando
+static void acrescentaMarcacao(const char *opcao, int x, int y);        // não funcionando, estou procurando arrumar - By Alex
+static void DesenhaQntMinasAdjacentes(int qnt, int x, int y);           //
+static void Quadrado();                                                 // Funcionando [Melhorar]
+static void Revelado();                                                 // Funcionando [Melhorar]
+static void Bandeira();                                                 // Funcionando [Melhorar]
+static void Tabuleiro();                                                // Funcionando
+
+static void Calculo_Desenho(int linha, int coluna, int indice);         // Funcionando
+static bool Calculo_Posicao(int linha, int coluna);                     // Funcionando
+static void Revelar_Campo(int indice);                                  // Funcionando [Melhorar]
+static void Alternar_Protecao(int indice);                              // Funcionando
+
+static void Atualiza_tamanho(int largura, int altura);                  // Funcionando
+static void Atualiza_desenho(void);                                     // Funcionando [Melhorar]
+
+static void teclado(unsigned char tecla, int x, int y);                 // Funcionando
+static void mouse(int botao, int estado, int x, int y);                 // Funcionando
+
+static void Limpa();                                                    // Funcionando, porém não sei será necessário ainda
+static void Teste();
+
+static void iniciaCampos()
+{// Funcao que inicializa todos os campos com valores nulos
     int i = 0;
     int j = 0;
     int cont = 0;
-    for(i = 0; i < G_linha; i++){                                 //Inicia todos os campos com nada
-        for(j = 0; j < G_coluna; j++){
+    for(i = 0; i < G_linhas; i++){
+        for(j = 0; j < G_colunas; j++){
             campo_minado.push_back(Campo());
             campo_minado[cont].campo_mina = false;
             campo_minado[cont].revelado = false;
             campo_minado[cont].protegido = false;
             campo_minado[cont].minas_adja = 0;
-            campo_minado[cont].pos_x = i;                   //Arrumar para marcar corretamente
-            campo_minado[cont].pos_y = j;                   //Arrumar para marcar corretamente
-            //printf("\nCampo: %d  Valor: %d  Posx: %d  Posy: %d", cont, campo_minado[cont].minas_adja, campo_minado[cont].pos_x, campo_minado[cont].pos_y);
+            campo_minado[cont].pos_x = i;
+            campo_minado[cont].pos_y = j;
+            printf("\nCampo: %2d  Valor: %2d  PosX: %2d  PosY: %2d", cont, campo_minado[cont].minas_adja, campo_minado[cont].pos_x, campo_minado[cont].pos_y);
             cont++;
         }
     }
 
 }
 
-static void  AcrescentaMina(){
+static void  AcrescentaMina()
+{// Funcao para gerar as posicoes das Minas no Tabuleiro
     srand(time(NULL));
     int i = 0;
     int minimo = 0;
     int maximo = 0;
     int cont = 0;
-    maximo = (G_linha * G_linha)-1;
+    maximo = (G_linhas * G_colunas) - 1;
     while(cont != G_minas){
         printf("\n\n[DEBUG]: Cont: %d  Minas: %d", cont, G_minas);
-        i = rand()%(maximo-minimo+1)+minimo;
+        i = rand() % (maximo - minimo + 1) + minimo;
         campo_minado.push_back(Campo());
         if(campo_minado[i].campo_mina == false){
             campo_minado[i].campo_mina = true;
@@ -98,38 +120,88 @@ static void  AcrescentaMina(){
     }
 }
 
-void MenuTemporario(){
+void Calc_Minas_Adjacentes()
+{
+    int i;
+    int j;
+    int tmpx, tmpy;
+    for(i=0; i<G_linhas*G_colunas; i++){
+        campo_minado.push_back(Campo());
+        if(campo_minado[i].campo_mina){
+            tmpx = campo_minado[i].pos_x;
+            tmpy = campo_minado[i].pos_y;
+            for(j=0; j<G_linhas*G_colunas; j++){
+                campo_minado.push_back(Campo());
+                if(campo_minado[j].pos_x == tmpx-1 && campo_minado[j].pos_y == tmpy-1){
+                    campo_minado[j].minas_adja += 1;
+                }
+                if(campo_minado[j].pos_x == tmpx && campo_minado[j].pos_y == tmpy-1){
+                    campo_minado[j].minas_adja += 1;
+                }
+                if(campo_minado[j].pos_x == tmpx+1 && campo_minado[j].pos_y == tmpy-1){
+                    campo_minado[j].minas_adja += 1;
+                }
+                if(campo_minado[j].pos_x == tmpx-1 && campo_minado[j].pos_y == tmpy){
+                    campo_minado[j].minas_adja += 1;
+                }
+                if(campo_minado[j].pos_x == tmpx+1 && campo_minado[j].pos_y == tmpy){
+                    campo_minado[j].minas_adja += 1;
+                }
+                if(campo_minado[j].pos_x == tmpx-1 && campo_minado[j].pos_y == tmpy+1){
+                    campo_minado[j].minas_adja += 1;
+                }
+                if(campo_minado[j].pos_x == tmpx && campo_minado[j].pos_y == tmpy+1){
+                    campo_minado[j].minas_adja += 1;
+                }
+                if(campo_minado[j].pos_x == tmpx+1 && campo_minado[j].pos_y == tmpy+1){
+                    campo_minado[j].minas_adja += 1;
+                }
+            }
+        }
+    }
+    //Utilizado apenas para questões de DEBUG
+    /*for(i=0; i<G_linhas*G_colunas; i++){
+        printf("\nCampo: %d Minas Adja: %d", i, campo_minado[i].minas_adja);
+
+    }*/
+}
+static void DesenhaQntMinasAdjacentes(int qnt, int x, int y){
+    std::string text;
+    text = to_string(qnt);
+    glColor3f(0.0, 0.0, 0.0);
+    //renderText("Minas", 5, 80, 50);
+    renderText(text.data(), text.size(), x, y);
+}
+
+static void MenuTemporario()
+{// Menu para selecionar o nível de dificuldade
     printf("Iniciando Menu Temporario \nEscolha a dificuldade(0-Noob, 1-Menos Noob, 2-SabeUmPouco): \n");
     scanf("%d", &G_dificuldade);
     switch(G_dificuldade){
-        case 0:
-            G_linha = 5;
-            G_coluna = 5;
-            G_minas = 5;
-            G_minasatuais = 5;
-            break;
-        case 1:
-            G_linha = 10;
-            G_coluna = 10;
+        case 1: // Normal
+            G_linhas = 10;
+            G_colunas = 10;
             G_minas = 15;
             G_minasatuais = 15;
             break;
-        case 2:
-            G_linha = 15;
-            G_coluna = 15;
+        case 2: // Hard
+            G_linhas = 15;
+            G_colunas = 15;
             G_minas = 30;
             G_minasatuais = 30;
             break;
+        case 0: // Easy
         default:
-            G_linha = 5;
-            G_coluna = 5;
+            G_linhas = 5;
+            G_colunas = 5;
             G_minas = 5;
-            G_minasatuais = 30;
+            G_minasatuais = 5;
             break;
     }
 }
 
-static void renderText(const char *text, int length, int x, int y){ // Função para renderizar o texto
+static void renderText(const char *text, int length, int x, int y)
+{// Função para renderizar o texto
     glMatrixMode(GL_PROJECTION);
     double *matrix = new double[16];
     glGetDoublev(GL_PROJECTION_MATRIX, matrix);
@@ -147,41 +219,42 @@ static void renderText(const char *text, int length, int x, int y){ // Função pa
     glMatrixMode(GL_PROJECTION);
     glLoadMatrixd(matrix);
     glMatrixMode(GL_MODELVIEW);
-    glFlush();
 }
 
-static void mostraTempo(int value){ //Função para mostrar o tempo decorrido
+static void mostraTempo(int value)
+{// Função para mostrar o tempo decorrido
     std::string text;
     G_timer = glutGet(GLUT_ELAPSED_TIME);
     text = to_string(G_timer/1000); //Converte o G_timer para uma string
-    glPushMatrix();
+    /*glPushMatrix();
     glColor3f(1.0f, 1.0f, 1.0f);
     glTranslatef(-4, -9.8, 0);
     glScalef(2, 1, 0);
     Limpa();
-    glPopMatrix();
+    glPopMatrix();*/
     glColor3f(0.0, 0.0, 0.0); //Seta a cor do texto como preto
-    renderText("Tempo Decorrido", 15, 25, 6);
+    renderText("Tempo Decorrido", 15, 21, 6);
     renderText(text.data(), text.size(), 32, 2);
     glutTimerFunc(1000,mostraTempo, 1);
     //glutPostRedisplay();
 }
 
-static void mostraMinas(){ // Função para mostra a quantidade de bombas iniciais em campo.
+static void mostraMinas()
+{// Função para mostra a quantidade de bombas iniciais em campo.
     std::string text;
     text = to_string(G_minasatuais);
-    glPushMatrix();
+    /*glPushMatrix();
     glColor3f(1.0f, 1.0f, 1.0f);
     glTranslatef(2, -9.8, 0);
-    glScalef(2, 1, 0);
     Limpa();
-    glPopMatrix();
+    glPopMatrix();*/
     glColor3f(0.0, 0.0, 0.0);
-    renderText("Minas", 5, 60, 6);
-    renderText(text.data(), text.size(), 63, 2);
+    renderText("Minas", 5, 59, 6);
+    renderText(text.data(), text.size(), 61, 2);
 }
 
-static void Menus(){
+static void Menus()
+{// Cria os campos dos Menus
     glBegin(GL_LINE_LOOP);
         glVertex2f(0, 0);
         glVertex2f(0, 1);
@@ -190,7 +263,8 @@ static void Menus(){
     glEnd();
 }
 
-static void Limpa(){
+static void Limpa()
+{//Cria quadrado de fundo para o tempo e minas, porém não sei se será necessário ainda
     glBegin(GL_QUADS);
         glVertex2f(0, 0);
         glVertex2f(0, 1);
@@ -198,10 +272,11 @@ static void Limpa(){
         glVertex2f(1, 0);
     glEnd();
 }
-static void Quadrado(int linha, int coluna){     // Campo em branco, o tamanho atual do campo é de X = 5% do windowsSize_x | Y = 5% do windowsSize_y
+
+static void Quadrado()
+{// Campo nao revelado, o tamanho atual do campo é de X = 5% do windowsSize_x | Y = 5% do windowsSize_y
     glPushMatrix();
-        glTranslated(linha, coluna, 0);
-        glColor3f(0.0f, 0.0f, 1.0f);
+        glColor3f(0.0, 0.0, 1.0);
         glBegin(GL_LINE_LOOP);
             glVertex2f(0, 0);
             glVertex2f(0, 1);
@@ -211,117 +286,191 @@ static void Quadrado(int linha, int coluna){     // Campo em branco, o tamanho a
     glPopMatrix();
 }
 
-static void Revelado(){     // Campo revelado, o tamanho atual do campo é de X = 5% do windowsSize_x | Y = 5% do windowsSize_y
-    glBegin(GL_QUADS);
-        glVertex2f(0, 0);
-        glVertex2f(0, 1);
-        glVertex2f(1, 1);
-        glVertex2f(1, 0);
-    glEnd();
+static void Revelado()
+{// Campo revelado sem mina, mostra o numero de minas adjacentes, o tamanho atual do campo é de X = 5% do windowsSize_x | Y = 5% do windowsSize_y
+    glPushMatrix();
+        glBegin(GL_QUADS);
+            glColor3f(0.0, 0.0, 1.0);
+            glVertex2f(0, 0);
+            glVertex2f(0, 1);
+            glVertex2f(1, 1);
+            glVertex2f(1, 0);
+        glEnd();
+    glPopMatrix();
 }
 
-static void Revelar_Campo(int indice, int linha, int coluna){
-    if(campo_minado[indice].revelado)                                       // Campo ja revelado ?
+static void Mina()
+{// Campo revelado com mina, Game Over
+    glPushMatrix();
+        glBegin(GL_QUADS);
+            glColor3f(1.0, 0.0, 0.0);
+            glVertex2f(0, 0);
+            glVertex2f(0, 1);
+            glVertex2f(1, 1);
+            glVertex2f(1, 0);
+        glEnd();
+    glPopMatrix();
+}
+
+static void Bandeira()
+{// Campo protegido, representa um possivel local com uma mina, o tamanho atual do campo é de X = 5% do windowsSize_x | Y = 5% do windowsSize_y
+    glPushMatrix();
+        glBegin(GL_QUADS);
+            glColor3f(0.0, 1.0, 0.0);
+            glVertex2f(0, 0);
+            glVertex2f(0, 1);
+            glVertex2f(1, 1);
+            glVertex2f(1, 0);
+        glEnd();
+    glPopMatrix();
+}
+
+static void Tabuleiro()
+{// Funcao que gera o Tabuleiro
+    float posStart_x = (float(G_colunas) / 2) * (-1);       // posicao x de onde comecar a desenhar
+    float posStart_y = (float(G_linhas) / 2) * (-1);        // posicao y de onde comecar a desenhar
+
+    int linha = 0;                                          // iterador das linhas
+    int coluna = 0;                                         // iterador das colunas
+
+    int cont = 0;                                           // contador para indicar o indice do campo
+
+    glTranslatef(posStart_x, posStart_y, 0.0);              // translada para as posicoes X e Y iniciais do Tabuleiro
+    glPushMatrix();
+    for(linha = 0; linha < G_linhas; linha++)               // iterar nas linhas
     {
-        printf("\nRevelar Quadrado X: %d, Y: %d\n", linha, coluna);         //Campo livre
         glPushMatrix();
-            glTranslated(linha, coluna, 0);
-            glColor3f(0.0f, 1.0f, 0.0f);
-            Revelado();
-            glColor3f(1.0f, 1.0f, 0.0f);
-            renderText("-1", 2, linha, coluna);
-            // Mostrar minas adjacentes
-        glPopMatrix();
-        printf("\n  Indice ja revelado: %d, %d\n", indice, campo_minado[indice].revelado);
-    }
-    else
-    {
-        if(campo_minado[indice].campo_mina)
+        for(coluna = 0; coluna < G_colunas; coluna++)       // iterar nas colunas
         {
-            printf("\nRevelar Bomba X: %d, Y: %d\n", linha, coluna);        // Desenhar campo com Mina
-            glPushMatrix();
-                glTranslated(linha, coluna, 0);
-                glColor3f(1.0f, 0.0f, 0.0f);
-                Revelado();
-            glPopMatrix();
-            campo_minado[indice].revelado = true;
-            // Game Over
+            Calculo_Desenho(linha, coluna, cont);           // determinar o que desenhar, campo nao revelado, campo revelado ou uma mina
+            cont++;                                         // incrementa o contador do indice;
+            glTranslatef(1.0, 0.0, 0.0);                    // translada em x para posicionar a proxima coluna
         }
-        else
-        {
-            printf("\nRevelar Quadrado X: %d, Y: %d\n", linha, coluna);         //Campo livre
-            glPushMatrix();
-                glTranslated(linha, coluna, 0);
-                glColor3f(0.0f, 0.0f, 1.0f);
+        glPopMatrix();                                      // retorna a posicao X inicial
+        glTranslatef(0.0, 1.0, 0.0);                        // translada em y para posicionar a proxima linha
+    }
+    glPopMatrix();                                          // retorna a posicao Y inicial
+}
+
+static void Calculo_Desenho(int linha, int coluna, int indice)
+{// Funcao para determinar o que desenhar, com base no clique do Mouse realizado
+    int operador = Calculo_Posicao(linha, coluna) ? G_operacao_desenho : 0;
+    // operador ternario,
+    //se o clique corresponder ao campo da interacao do atual do Tabuleiro, fazer operacoes do clqiue do mouse (revelar um campo, operador = 1, ou colocar/retirar a protecao(bandeira), operador = 2))
+    //senao apenas mostrar as proprieades dos campos (operador = 0)
+    switch(operador)
+    {
+        case 0:                                                         // apenas mostrar o campo conforme sua propriedade, Campo Revelado, Campo Protegido, Campo Mina ou Campo nao Revelado
+            if(campo_minado[indice].revelado)
+            {
                 Revelado();
-                // Mostrar minas adjacentes
-            glPopMatrix();
-            campo_minado[indice].revelado = true;
-            printf("\n  Indice: %d, Revelado? %d\n", indice, campo_minado[indice].revelado);
+            }
+            else if(campo_minado[indice].protegido)
+            {
+                Bandeira();
+            }
+            else if(campo_minado[indice].campo_mina)                    // Condicao para fins de DEBUG
+            {
+                Mina();
+            }
+            else
+            {
+                Quadrado();
+            }
+            break;
+        case 1:                                                         // Funcao para revelar um campo
+            Revelar_Campo(indice);
+            break;
+        case 2:                                                         // Funcao para alternar a propriedade de Protegido
+            Alternar_Protecao(indice);
+            break;
+    }
+}
+
+static bool Calculo_Posicao(int linha, int coluna)
+{// Calcula se o local clicado, corresponde ao campo da iteração na funcao Tabuleiro
+    float coluna_minimo = coluna * (windowsSize_x * 0.05);                          // representa o "pixel" minimo no eixo x
+    float coluna_maximo = coluna * (windowsSize_x * 0.05) + (windowsSize_y * 0.05); // representa o "pixel" maximo no eixo x, nada mais que o minimo + tamanho do campo (5% do tamanho da tela)
+    float linha_minimo = linha * (windowsSize_y * 0.05);                            // representa o "pixel" minimo do eixo y
+    float linha_maximo = linha * (windowsSize_y * 0.05) + (windowsSize_y * 0.05);   // representa o "pixel" maximo do eixo y, nada mais que o minimo + tamanho do campo (5% do tamanho da tela)
+    // 0.05: relembrar que o quadrado tera 5% do tamanho da tela
+    if(G_timer != 0)                                                                // if temporario para que nao revele logo no inicio algum campo
+    {
+        if((G_click_pos_x > coluna_minimo) && (G_click_pos_x < coluna_maximo))          // Verificao do clique no eixo X
+        {
+            if((G_click_pos_y > linha_minimo) && (G_click_pos_y < linha_maximo))        // Verificao do clique no eixo Y
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+static void Revelar_Campo(int indice)
+{// Funcao para revelar um campo
+    if(campo_minado[indice].revelado)                   // Campo ja revelado ?
+    {
+        Revelado();
+
+        // Mostrar Numeros Adjacentes
+        printf("\n     Campo ja revelado.");
+    }
+    else                                                // Campo nao revelado
+    {
+        if(campo_minado[indice].protegido)              // Campo com bandeira ?
+        {
+            Bandeira();
+            printf("\n     Campo protegido.");
+        }
+        else                                            // Campo sem bandeira
+        {
+            if(campo_minado[indice].campo_mina)         // Campo com mina ?
+            {
+                Mina();
+                printf("\n     Campo com mina.");
+                printf("\n\n     --- Game Over ---\n\n");
+                exit(0);                                // desativar para fins de DEBUG
+                campo_minado[indice].revelado = true;
+            }
+            else                                        // Campo sem mina
+            {
+                Revelado();
+                // Mostrar Numeros Adjacentes
+                campo_minado[indice].revelado = true;
+            }
         }
     }
 }
 
-static void Tabuleiro(int linhas, int colunas, int pos_x, int pos_y){
-    int linha;          // iterar nas linhas
-    int coluna;         // iterar nas colunas
-    int marcadorLinha;  // posicao x de onde comecar a desenhar
-    int marcadorColuna; // posicao y de onde comecar a desenhar
-    int cont = 0;       // contador para indicar o indice do campo
-
-    switch(G_dificuldade) // verifica a G_dificuldade e atribui os marcadores de linha e coluna
+static void Alternar_Protecao(int indice)
+{// Funcao para alternar a protecao
+    if(campo_minado[indice].protegido)                  // Campo protegido ?
     {
-        case 0:
-            marcadorLinha = (linhas - 2) * -1;
-            marcadorColuna = (colunas -2) * -1;
-            break;
-        case 1:
-            marcadorLinha = (linhas - 5) * -1;
-            marcadorColuna = (colunas -5) * -1;
-            break;
-        case 2:
-            marcadorLinha = (linhas - 8) * -1;
-            marcadorColuna = (colunas -8) * -1;
-            break;
-        default:
-            marcadorLinha = (linhas - 2) * -1;
-            marcadorColuna = (colunas -2) * -1;
-            break;
+        Quadrado();
+        G_minasatuais++;
+        // Incrementar o numero de Bandeiras disponiveis
+        campo_minado[indice].protegido = false;
     }
-
-    for(linha = marcadorLinha; linha < linhas + marcadorLinha; linha++)                     // itera nas linhas
+    else                                                // Campo nao protegido
     {
-        for(coluna = marcadorColuna; coluna < colunas + marcadorColuna; coluna++)           // itera nas colunas da linha
+        if(campo_minado[indice].revelado)               // Campo revelado ?
         {
-            if(G_timer != 0)                                                                // if temporario para que nao revele logo no inicio algum campo
+            Revelado();
+            // Mostrar Numeros Adjacentes
+            printf("\n     Campo ja revelado.");
+        }
+        else                                            // Campo nao revelado
+        {
+            if(G_minasatuais > 0)
             {
-                if((pos_x > linha * (windowsSize_x * 0.05)) &&                              // Verificao do clique no eixo X
-                   (pos_x < linha * (windowsSize_x * 0.05) + (windowsSize_x * 0.05)))       // 0.05: relembrar que o quadrado tera 5% do tamanho da tela
-                {
-                    if((pos_y > coluna * (windowsSize_y * 0.05)) &&                         // Verificao do clique no eixo Y
-                       (pos_y < coluna * (windowsSize_y * 0.05) + (windowsSize_y * 0.05)))  // 0.05: relembrar que o quadrado tera 5% do tamanho da tela
-                    {
-                        Revelar_Campo(cont, linha, coluna);                                 // Revelar se o campo clicado contem uma bomba ou é um campo livre ou ja revelado
-                    }
-                    else
-                    {
-                        Quadrado(linha, coluna);
-                    }
-                }
-                else
-                {
-                    Quadrado(linha, coluna);
-                }
+                Bandeira();
+                G_minasatuais--;
+            // Decrementar o numero de Bandeiras disponiveis
+            campo_minado[indice].protegido = true;
             }
-            else                                                                            // else temporario
-            {
-                Quadrado(linha, coluna);
-            }
-            cont++;
         }
     }
-
-    int valor = 0;
 }
 
 static void Atualiza_tamanho(int largura, int altura){
@@ -336,30 +485,37 @@ static void Atualiza_tamanho(int largura, int altura){
 }
 
 static void Atualiza_desenho(void){
-    //glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
     glPushMatrix();
-        Tabuleiro(G_linha, G_coluna, G_pos_x, G_pos_y);
-    glPopMatrix();
 
-    glPushMatrix();     //Menu para tempo
-        glTranslatef(-6.0, -10.0, 0);
-        glScalef(5.0, 1.8, 0);
-        glColor3f(1.0f, 0.0f, 0.0f);
-        Menus();
-    glPopMatrix();
+        // Desenhar Tabuleiro
+        glPushMatrix();
+            Tabuleiro();
+        glPopMatrix();
 
-    glPushMatrix();     //Menu para bombas
-        glTranslatef(0.0, -10.0, 0);
-        glScalef(5.0, 1.8, 0);
-        glColor3f(0.0f, 1.0f, 0.0f);
-        Menus();
-    glPopMatrix();
+        //Menu para tempo
+        glPushMatrix();
+            glTranslatef(-6.0, -10.0, 0);
+            glScalef(5.0, 1.8, 0);
+            glColor3f(1.0f, 0.0f, 0.0f);
+            Menus();
+        glPopMatrix();
 
-    mostraTempo(1000);
-    mostraMinas();
+        //Menu para bombas
+        glPushMatrix();
+            glTranslatef(0.0, -10.0, 0);
+            glScalef(5.0, 1.8, 0);
+            glColor3f(0.0f, 1.0f, 0.0f);
+            Menus();
+        glPopMatrix();
+
+        mostraTempo(1000);
+        mostraMinas();
+
+    glPopMatrix();
     glFlush();
 
     //printf("\n[DEBUG] : Evento Atualiza desenho\n");
@@ -387,42 +543,28 @@ static void mouse(int botao, int estado, int x, int y){
         if(estado == GLUT_DOWN){
             printf("\n[DEBUG]: Apertou botao esquerdo mouse");
 
-            G_pos_x = x - windowsSize_x / 2;                    // ajusta a posição do mouse para combinar com o viewport, posicao x real - janela X / 2
-            G_pos_y = windowsSize_y / 2 - y ;                   // ajusta a posição do mouse para combinar com o viewport, anela Y / 2 - posicao y real
-            printf("\n X: %d,  Y:  %d\n", G_pos_x, G_pos_y);
+            G_click_pos_x = x - (windowsSize_x / 2);                    // ajusta a posição do mouse para combinar com o viewport, posicao x real - janela X / 2
+            G_click_pos_x = G_click_pos_x + ((float(windowsSize_x) * 0.05) * (float(G_colunas) / 2));
+            G_click_pos_y = (windowsSize_y / 2) - y ;                   // ajusta a posição do mouse para combinar com o viewport, anela Y / 2 - posicao y real
+            G_click_pos_y = G_click_pos_y + ((float(windowsSize_y) * 0.05) * (float(G_linhas) / 2));
+            printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
 
+            G_operacao_desenho = 1;
             glutPostRedisplay();
         }
-        /*if(estado == GLUT_UP){
-            printf("\n[DEBUG]: Soltou botao esquerdo mouse");
-        }*/
     }else if(botao == GLUT_RIGHT_BUTTON){
         if(estado == GLUT_DOWN){
-            G_pos_x = x - windowsSize_x / 2;
-            G_pos_y = windowsSize_y / 2 - y ;
-            campo_minado.push_back(Campo());
-            for(i=0; i<G_linha*G_coluna; i++){
-                if(campo_minado[i].pos_x == G_pos_x && campo_minado[i].pos_y == G_pos_y){
-                    posicaoVector = i;
-                }
-            }
-            if(campo_minado[posicaoVector].protegido == false && G_minasatuais > 0){
-                campo_minado[posicaoVector].protegido == true;
-                G_minasatuais--;
-                mostraMinas();
-            }else if(campo_minado[posicaoVector].protegido == true){
-                campo_minado[posicaoVector].protegido == false;
-                G_minasatuais++;
-                mostraMinas();
-            }else{
-                printf("[DEBUG]: Entrou No ultimo Else do botao direito");
-            }
-            //printf("\n[DEBUG]: Apertou Botao direito mouse");
+            printf("\n[DEBUG]: Apertou Botao direito mouse");
+
+            G_click_pos_x = x - (windowsSize_x / 2);                    // ajusta a posição do mouse para combinar com o viewport, posicao x real - janela X / 2
+            G_click_pos_x = G_click_pos_x + ((float(windowsSize_x) * 0.05) * (float(G_colunas) / 2));
+            G_click_pos_y = (windowsSize_y / 2) - y ;                   // ajusta a posição do mouse para combinar com o viewport, anela Y / 2 - posicao y real
+            G_click_pos_y = G_click_pos_y + ((float(windowsSize_y) * 0.05) * (float(G_linhas) / 2));
+            printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
+
+            G_operacao_desenho = 2;
             glutPostRedisplay();
         }
-        /*if(estado == GLUT_UP){
-            printf("\n[DEBUG]: Soltou botao direito mouse");
-        }*/
     }else{
         printf("\n[DEBUG]: Nao entendo o que vc quer clicar, pare de apertar esse botao por favor");
     }
@@ -438,7 +580,7 @@ int main(){
 
     iniciaCampos();
     AcrescentaMina();
-
+    Calc_Minas_Adjacentes();
     glutDisplayFunc(Atualiza_desenho);
     glutReshapeFunc(Atualiza_tamanho);
 
@@ -446,10 +588,9 @@ int main(){
     glutMouseFunc(mouse);
 
     G_timer = glutGet(GLUT_ELAPSED_TIME);
-    glutTimerFunc(1000, mostraTempo, 1);
+    //glutTimerFunc(1000, mostraTempo, 1);
 
     glClearColor(1,1,1,1);
-    glClear(GL_COLOR_BUFFER_BIT);
     glutMainLoop();
 
     return 0;
