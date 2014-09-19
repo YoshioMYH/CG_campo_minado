@@ -58,12 +58,12 @@ static void MenuTemporario();                                           // Funci
 static void renderText(const char *text, int length, int x, int y);     // Funcionando
 static void mostraTempo(int value);                                     // Funcionando
 static void mostraMinas();                                              // Funcionando
-static void acrescentaMarcacao(const char *opcao, int x, int y);        // não funcionando, estou procurando arrumar - By Alex
-static void DesenhaQntMinasAdjacentes(int qnt, int x, int y);           //
+static void acrescentaMarcacao(const char *opcao, int x, int y);        // não funcionando, estou procurando arrumar - By Alex          //
 static void Quadrado();                                                 // Funcionando [Melhorar]
 static void Revelado();                                                 // Funcionando [Melhorar]
 static void Bandeira();                                                 // Funcionando [Melhorar]
 static void Tabuleiro();                                                // Funcionando
+
 
 static void Calculo_Desenho(int linha, int coluna, int indice);         // Funcionando
 static bool Calculo_Posicao(int linha, int coluna);                     // Funcionando
@@ -165,13 +165,7 @@ void Calc_Minas_Adjacentes()
 
     }*/
 }
-static void DesenhaQntMinasAdjacentes(int qnt, int x, int y){
-    std::string text;
-    text = to_string(qnt);
-    glColor3f(0.0, 0.0, 0.0);
-    //renderText("Minas", 5, 80, 50);
-    renderText(text.data(), text.size(), x, y);
-}
+
 
 static void MenuTemporario()
 {// Menu para selecionar o nível de dificuldade
