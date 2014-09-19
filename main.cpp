@@ -680,76 +680,90 @@ static void renderFimDeJogo(){
     glColor3f(0.0, 0.0, 1.0);
     //V
     for(i=95; i>=91; i--){
-        renderText("#", 1, 19, i);
+        renderText("#", 1, 12, i);
     }
-    renderText(" #", 2, 19, 90);
-    renderText("  #", 3, 19, 89);
-    renderText("   #", 4, 19, 90);
+    renderText(" #", 2, 12, 90);
+    renderText("  #", 3, 12, 89);
+    renderText("   #", 4, 12, 90);
     for(i=95; i>=91; i--){
-        renderText("    #", 5, 19, i);
+        renderText("    #", 5, 12, i);
     }
     //O
     for(i=94; i>=90; i--){
+        renderText("#", 1, 20, i);
+    }
+    renderText(" ##", 3, 20, 95);
+    for(i=94; i>=90; i--){
+        renderText("   #", 4, 20, i);
+    }
+    renderText(" ##", 3, 20, 89);
+    //C
+    renderText(" ###", 4, 27, 95);
+    for(i=94; i>=90; i--){
         renderText("#", 1, 27, i);
     }
-    renderText(" ##", 3, 27, 95);
-    for(i=94; i>=90; i--){
-        renderText("   #", 4, 27, i);
-    }
-    renderText(" ##", 3, 27, 89);
-    //C
-    renderText(" ###", 4, 34, 95);
-    for(i=94; i>=90; i--){
+    renderText(" ###", 4, 27, 89);
+    //E
+    for(i=95; i>=89; i--){
         renderText("#", 1, 34, i);
     }
-    renderText(" ###", 4, 34, 89);
-    //E
-    for(i=95; i>=89; i--){
-        renderText("#", 1, 41, i);
-    }
     for(i=95; i>=89; i-=3){
-    renderText(" ###", 4, 41, i);
+    renderText(" ###", 4, 34, i);
     }
     //^
-    renderText(" #", 2, 41, 97);
-    renderText("  #", 3, 41, 98);
-    renderText("   #", 4, 41, 97);
+    renderText(" #", 2, 34, 97);
+    renderText("  #", 3, 34, 98);
+    renderText("   #", 4, 34, 97);
     //V
     for(i=95; i>=91; i--){
-        renderText("#", 1, 50, i);
+        renderText("#", 1, 43, i);
     }
-    renderText(" #", 2, 50, 90);
-    renderText("  #", 3, 50, 89);
-    renderText("   #", 4, 50, 90);
+    renderText(" #", 2, 43, 90);
+    renderText("  #", 3, 43, 89);
+    renderText("   #", 4, 43, 90);
     for(i=95; i>=91; i--){
-        renderText("    #", 5, 50, i);
+        renderText("    #", 5, 43, i);
     }
     //E
     for(i=95; i>=89; i--){
-        renderText("#", 1, 58, i);
+        renderText("#", 1, 51, i);
     }
     for(i=95; i>=89; i-=3){
-    renderText(" ###", 4, 58, i);
+    renderText(" ###", 4, 51, i);
     }
     //N
     for(i=95; i>=89; i--){
-        renderText("#", 1, 64, i);
+        renderText("#", 1, 58, i);
     }
-    renderText(" #", 2, 64, 93);
-    renderText("  #", 3, 64, 92);
-    renderText("   #", 4, 64, 91);
+    renderText(" #", 2, 58, 93);
+    renderText("  #", 3, 58, 92);
+    renderText("   #", 4, 58, 91);
     for(i=95; i>=89; i--){
-        renderText("    #", 5, 64, i);
+        renderText("    #", 5, 58, i);
     }
     //C
-    renderText(" ###", 4, 71, 95);
+    renderText(" ###", 4, 66, 95);
     for(i=94; i>=90; i--){
-        renderText("#", 1, 71, i);
+        renderText("#", 1, 66, i);
     }
-    renderText(" ###", 4, 71, 89);
+    renderText(" ###", 4, 66, 89);
     //E
-
+    for(i=95; i>=89; i--){
+        renderText("#", 1, 73, i);
+    }
+    for(i=95; i>=89; i-=3){
+    renderText(" ###", 4, 73, i);
+    }
     //U
+    for(i=95; i>=89; i--){
+        renderText("#", 1, 80, i);
+    }
+    renderText(" #", 2, 80, 89);
+    renderText("  #", 3, 80, 89);
+    renderText("   #", 4, 80, 89);
+    for(i=95; i>=89; i--){
+        renderText("    #", 5, 80, i);
+    }
     glPopMatrix();
 }
 int main(){
