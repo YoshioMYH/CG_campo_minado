@@ -6,7 +6,7 @@
 #include <sstream>
 #include <vector>
 #include <time.h>
-
+#include <conio.h>
 // ESTRUTURAS, TIPOS CUSTOMIZADOS
 struct Campo{
     bool campo_mina;            // Campo contém uma mina ?
@@ -29,7 +29,7 @@ int G_bandeiras_atuais = 0;     // Quantidade de bandeiras colocados no tabuleir
 
 int G_linhas = 0;               // Quantidade de Linhas do tabuleiro
 int G_colunas = 0;              // Quantidade de Colunas do tabuleiro
-
+int G_Game_Over = 0;
 int G_click_pos_x = 0.0;        // Posicao X do clique do mouse
 int G_click_pos_y = 0.0;        // Posicao Y do clique do mouse
 int G_operacao_desenho = 0;     // Determina qual operacao o desenho deve fazer
@@ -78,6 +78,8 @@ static void mouse(int botao, int estado, int x, int y);                 // Funci
 
 static void Limpa();                                                    // Funcionando, porém não sei será necessário ainda
 static void Teste();
+static void renderGameOver();
+static void renderFimDeJogo();
 
 static void iniciaCampos()
 {// Funcao que inicializa todos os campos com valores nulos
@@ -111,7 +113,7 @@ static void  AcrescentaMina()
     while(cont != G_minas){
         printf("\n\n[DEBUG]: Cont: %d  Minas: %d", cont, G_minas);
         i = rand() % (maximo - minimo + 1) + minimo;
-        campo_minado.push_back(Campo());
+
         if(campo_minado[i].campo_mina == false){
             campo_minado[i].campo_mina = true;
             cont++;
@@ -126,12 +128,12 @@ void Calc_Minas_Adjacentes()
     int j;
     int tmpx, tmpy;
     for(i=0; i<G_linhas*G_colunas; i++){
-        campo_minado.push_back(Campo());
+
         if(campo_minado[i].campo_mina){
             tmpx = campo_minado[i].pos_x;
             tmpy = campo_minado[i].pos_y;
             for(j=0; j<G_linhas*G_colunas; j++){
-                campo_minado.push_back(Campo());
+
                 if(campo_minado[j].campo_mina){
                     campo_minado[j].minas_adja = -1;
                 }else{
@@ -183,11 +185,11 @@ void DesenhaQntMina(){ // Questções de debug
         case 15:
             controlador = 14;
     }
-    campo_minado.push_back(Campo());
+
     for(i=0; i<G_linhas*G_colunas; i++){
         text = to_string(campo_minado[i].minas_adja);
         glPushMatrix();
-        glColor3f(1.0, 0.0, 0.0);
+        glColor3f(0.0, 0.0, 0.0);
         renderText(text.data(), text.size(), campo_minado[i].pos_y*5+controlador, campo_minado[i].pos_x*5+controlador);
         glPopMatrix();
     }
@@ -447,13 +449,12 @@ static void Revelar_Campo(int indice)
             if(campo_minado[indice].campo_mina)         // Campo com mina ?
             {
                 Mina();
-                glPushMatrix();
-                glColor3f(0.0, 0.0, 1.0);
-                renderText("Game Over", 9, 50, 50);
-                glPopMatrix();
+                glutMouseFunc(NULL);
                 DesenhaQntMina();
-                printf("\n     Campo com mina.");
-                printf("\n\n     --- Game Over ---\n\n");
+                //renderGameOver();
+                renderFimDeJogo();
+                //printf("\n     Campo com mina.");
+                //printf("\n\n     --- Game Over ---\n\n");
                 //exit(0);                                // desativar para fins de DEBUG
                 campo_minado[indice].revelado = true;
             }
@@ -552,9 +553,6 @@ static void teclado(unsigned char tecla, int x, int y){
         case 'q':
             exit(0);
             break;
-        case 't': //atualizar tempo
-            glutPostRedisplay();
-            break;
         default:
             printf("\nNenhum evento atribuido a tecla\n");
             break;
@@ -593,7 +591,167 @@ static void mouse(int botao, int estado, int x, int y){
         printf("\n[DEBUG]: Nao entendo o que vc quer clicar, pare de apertar esse botao por favor");
     }
 }
+static void renderGameOver(){
+    int i;
+    glPushMatrix();
+    glColor3f(1.0, 0.0, 0.0);
+    renderText("===================================================================", 67, 0, 99);
+    //G
+    renderText("### ", 4, 19, 97);
+    renderText("   #", 4, 19, 96);
+    for(i=96; i>=92; i--){
+        renderText("#", 1, 18, i);
+    }
+    renderText("### ", 4, 19, 91); renderText("   #", 4, 19, 92); renderText("   #", 4, 19, 93);
+    //renderText("   #", 4, 19, 94);
+    renderText("  #", 3, 19, 93);
+    //renderText(" #", 2, 19, 93);
+    //A
+    renderText(" ###", 4, 26, 97);
+    for(i=96; i>=91; i--){
+        renderText("#", 1, 26, i);
+    }
+    for(i=96; i>=91; i--){
+        renderText("    #", 5, 26, i);
+    }
+    renderText(" ### ", 5, 26, 94);
+    //M
+    for(i=97; i>=91; i--){
+        renderText("#", 1, 34, i);
+    }
+    renderText(" #", 2, 34, 96);
+    renderText("  #", 3, 34, 95);
+    renderText("   #", 5, 34, 96);
+    for(i=97; i>=91; i--){
+        renderText("    #", 5, 34, i);
+    }
+    //E
+    for(i=97; i>=91; i--){
+        renderText("#", 1, 42, i);
+    }
+    for(i=97; i>=91; i-=3){
+    renderText(" ###", 4, 42, i);
+    }
+    //O
+    for(i=96; i>=92; i--){
+        renderText("#", 1, 54, i);
+    }
+    renderText(" ##", 3, 54, 97);
+    for(i=96; i>=92; i--){
+        renderText("   #", 4, 54, i);
+    }
+    renderText(" ##", 3, 54, 91);
+    //V
+    for(i=97; i>=93; i--){
+        renderText("#", 1, 60, i);
+    }
+    renderText(" #", 2, 60, 92);
+    renderText("  #", 3, 60, 91);
+    renderText("   #", 4, 60, 92);
+    for(i=97; i>=93; i--){
+        renderText("    #", 5, 60, i);
+    }
+    //E
+    for(i=97; i>=91; i--){
+        renderText("#", 1, 68, i);
+    }
+    for(i=97; i>=91; i-=3){
+    renderText(" ###", 4, 68, i);
+    }
+    //R
+    for(i=97; i>=91; i--){
+        renderText("#", 1, 75, i);
+    }
+    renderText(" ###", 4, 75, 97);
+    renderText(" ###", 4, 75, 94);
+    for(i=96; i>=91; i--){
+        if(i == 94)continue;
+        renderText("    #", 5, 75, i);
+    }
+    renderText("Pressione q para sair", 21, 30, 89);
+    renderText("===================================================================", 67, 0, 87);
+    glPopMatrix();
 
+}
+
+static void renderFimDeJogo(){
+    int i;
+    glPushMatrix();
+    glColor3f(0.0, 0.0, 1.0);
+    //V
+    for(i=95; i>=91; i--){
+        renderText("#", 1, 19, i);
+    }
+    renderText(" #", 2, 19, 90);
+    renderText("  #", 3, 19, 89);
+    renderText("   #", 4, 19, 90);
+    for(i=95; i>=91; i--){
+        renderText("    #", 5, 19, i);
+    }
+    //O
+    for(i=94; i>=90; i--){
+        renderText("#", 1, 27, i);
+    }
+    renderText(" ##", 3, 27, 95);
+    for(i=94; i>=90; i--){
+        renderText("   #", 4, 27, i);
+    }
+    renderText(" ##", 3, 27, 89);
+    //C
+    renderText(" ###", 4, 34, 95);
+    for(i=94; i>=90; i--){
+        renderText("#", 1, 34, i);
+    }
+    renderText(" ###", 4, 34, 89);
+    //E
+    for(i=95; i>=89; i--){
+        renderText("#", 1, 41, i);
+    }
+    for(i=95; i>=89; i-=3){
+    renderText(" ###", 4, 41, i);
+    }
+    //^
+    renderText(" #", 2, 41, 97);
+    renderText("  #", 3, 41, 98);
+    renderText("   #", 4, 41, 97);
+    //V
+    for(i=95; i>=91; i--){
+        renderText("#", 1, 50, i);
+    }
+    renderText(" #", 2, 50, 90);
+    renderText("  #", 3, 50, 89);
+    renderText("   #", 4, 50, 90);
+    for(i=95; i>=91; i--){
+        renderText("    #", 5, 50, i);
+    }
+    //E
+    for(i=95; i>=89; i--){
+        renderText("#", 1, 58, i);
+    }
+    for(i=95; i>=89; i-=3){
+    renderText(" ###", 4, 58, i);
+    }
+    //N
+    for(i=95; i>=89; i--){
+        renderText("#", 1, 64, i);
+    }
+    renderText(" #", 2, 64, 93);
+    renderText("  #", 3, 64, 92);
+    renderText("   #", 4, 64, 91);
+    for(i=95; i>=89; i--){
+        renderText("    #", 5, 64, i);
+    }
+    //C
+    renderText(" ###", 4, 71, 95);
+    for(i=94; i>=90; i--){
+        renderText("#", 1, 71, i);
+    }
+    renderText(" ###", 4, 71, 89);
+    //E
+
+    //U
+    glPopMatrix();
+}
 int main(){
     MenuTemporario();
     glutInitWindowSize(windowsSize_x, windowsSize_y);
