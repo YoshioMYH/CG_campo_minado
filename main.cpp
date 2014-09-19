@@ -451,8 +451,8 @@ static void Revelar_Campo(int indice)
                 Mina();
                 glutMouseFunc(NULL);
                 DesenhaQntMina();
-                //renderGameOver();
-                renderFimDeJogo();
+                renderGameOver();
+                //renderFimDeJogo();
                 //printf("\n     Campo com mina.");
                 //printf("\n\n     --- Game Over ---\n\n");
                 //exit(0);                                // desativar para fins de DEBUG
@@ -755,13 +755,13 @@ static void renderFimDeJogo(){
     renderText(" ###", 4, 73, i);
     }
     //U
-    for(i=95; i>=89; i--){
+    for(i=95; i>=90; i--){
         renderText("#", 1, 80, i);
     }
     renderText(" #", 2, 80, 89);
     renderText("  #", 3, 80, 89);
     renderText("   #", 4, 80, 89);
-    for(i=95; i>=89; i--){
+    for(i=95; i>=90; i--){
         renderText("    #", 5, 80, i);
     }
     glPopMatrix();
