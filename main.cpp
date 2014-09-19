@@ -63,7 +63,7 @@ static void Quadrado();                                                 // Funci
 static void Revelado();                                                 // Funcionando [Melhorar]
 static void Bandeira();                                                 // Funcionando [Melhorar]
 static void Tabuleiro();                                                // Funcionando
-
+static void DesenhaQntMina(); // Mostrar essa função quando acabar o jogo(se o jogador acetar uma mina)
 
 static void Calculo_Desenho(int linha, int coluna, int indice);         // Funcionando
 static bool Calculo_Posicao(int linha, int coluna);                     // Funcionando
@@ -132,29 +132,33 @@ void Calc_Minas_Adjacentes()
             tmpy = campo_minado[i].pos_y;
             for(j=0; j<G_linhas*G_colunas; j++){
                 campo_minado.push_back(Campo());
-                if(campo_minado[j].pos_x == tmpx-1 && campo_minado[j].pos_y == tmpy-1){
-                    campo_minado[j].minas_adja += 1;
-                }
-                if(campo_minado[j].pos_x == tmpx && campo_minado[j].pos_y == tmpy-1){
-                    campo_minado[j].minas_adja += 1;
-                }
-                if(campo_minado[j].pos_x == tmpx+1 && campo_minado[j].pos_y == tmpy-1){
-                    campo_minado[j].minas_adja += 1;
-                }
-                if(campo_minado[j].pos_x == tmpx-1 && campo_minado[j].pos_y == tmpy){
-                    campo_minado[j].minas_adja += 1;
-                }
-                if(campo_minado[j].pos_x == tmpx+1 && campo_minado[j].pos_y == tmpy){
-                    campo_minado[j].minas_adja += 1;
-                }
-                if(campo_minado[j].pos_x == tmpx-1 && campo_minado[j].pos_y == tmpy+1){
-                    campo_minado[j].minas_adja += 1;
-                }
-                if(campo_minado[j].pos_x == tmpx && campo_minado[j].pos_y == tmpy+1){
-                    campo_minado[j].minas_adja += 1;
-                }
-                if(campo_minado[j].pos_x == tmpx+1 && campo_minado[j].pos_y == tmpy+1){
-                    campo_minado[j].minas_adja += 1;
+                if(campo_minado[j].campo_mina){
+                    campo_minado[j].minas_adja = -1;
+                }else{
+                    if(campo_minado[j].pos_x == tmpx-1 && campo_minado[j].pos_y == tmpy-1){
+                        campo_minado[j].minas_adja += 1;
+                    }
+                    if(campo_minado[j].pos_x == tmpx && campo_minado[j].pos_y == tmpy-1){
+                        campo_minado[j].minas_adja += 1;
+                    }
+                    if(campo_minado[j].pos_x == tmpx+1 && campo_minado[j].pos_y == tmpy-1){
+                        campo_minado[j].minas_adja += 1;
+                    }
+                    if(campo_minado[j].pos_x == tmpx-1 && campo_minado[j].pos_y == tmpy){
+                        campo_minado[j].minas_adja += 1;
+                    }
+                    if(campo_minado[j].pos_x == tmpx+1 && campo_minado[j].pos_y == tmpy){
+                        campo_minado[j].minas_adja += 1;
+                    }
+                    if(campo_minado[j].pos_x == tmpx-1 && campo_minado[j].pos_y == tmpy+1){
+                        campo_minado[j].minas_adja += 1;
+                    }
+                    if(campo_minado[j].pos_x == tmpx && campo_minado[j].pos_y == tmpy+1){
+                        campo_minado[j].minas_adja += 1;
+                    }
+                    if(campo_minado[j].pos_x == tmpx+1 && campo_minado[j].pos_y == tmpy+1){
+                        campo_minado[j].minas_adja += 1;
+                    }
                 }
             }
         }
@@ -166,7 +170,28 @@ void Calc_Minas_Adjacentes()
     }*/
 }
 
-
+void DesenhaQntMina(){ // Questções de debug
+    int i, controlador;
+    std::string text;
+    switch(G_linhas){
+        case 5:
+            controlador = 39;
+            break;
+        case 10:
+            controlador = 27;
+            break;
+        case 15:
+            controlador = 14;
+    }
+    campo_minado.push_back(Campo());
+    for(i=0; i<G_linhas*G_colunas; i++){
+        text = to_string(campo_minado[i].minas_adja);
+        glPushMatrix();
+        glColor3f(1.0, 0.0, 0.0);
+        renderText(text.data(), text.size(), campo_minado[i].pos_y*5+controlador, campo_minado[i].pos_x*5+controlador);
+        glPopMatrix();
+    }
+}
 static void MenuTemporario()
 {// Menu para selecionar o nível de dificuldade
     printf("Iniciando Menu Temporario \nEscolha a dificuldade(0-Noob, 1-Menos Noob, 2-SabeUmPouco): \n");
@@ -270,7 +295,7 @@ static void Limpa()
 static void Quadrado()
 {// Campo nao revelado, o tamanho atual do campo é de X = 5% do windowsSize_x | Y = 5% do windowsSize_y
     glPushMatrix();
-        glColor3f(0.0, 0.0, 1.0);
+        glColor3f(0.0, 0.0, 0.0);
         glBegin(GL_LINE_LOOP);
             glVertex2f(0, 0);
             glVertex2f(0, 1);
@@ -422,9 +447,14 @@ static void Revelar_Campo(int indice)
             if(campo_minado[indice].campo_mina)         // Campo com mina ?
             {
                 Mina();
+                glPushMatrix();
+                glColor3f(0.0, 0.0, 1.0);
+                renderText("Game Over", 9, 50, 50);
+                glPopMatrix();
+                DesenhaQntMina();
                 printf("\n     Campo com mina.");
                 printf("\n\n     --- Game Over ---\n\n");
-                exit(0);                                // desativar para fins de DEBUG
+                //exit(0);                                // desativar para fins de DEBUG
                 campo_minado[indice].revelado = true;
             }
             else                                        // Campo sem mina
@@ -508,7 +538,7 @@ static void Atualiza_desenho(void){
 
         mostraTempo(1000);
         mostraMinas();
-
+        //DesenhaQntMina();
     glPopMatrix();
     glFlush();
 
