@@ -238,3 +238,14 @@
 	<sstream>
 	<vector>
 
+1411239295 source:g:\github\cg_campo_minado\main.cpp
+	<gl/glut.h>
+	<stdlib.h>
+	<stdio.h>
+	<string>
+	<iostream>
+	<sstream>
+	<vector>
+	<time.h>
+	<conio.h>
+
