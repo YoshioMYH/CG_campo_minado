@@ -60,7 +60,6 @@ static void renderText(const char *text, int length, int x, int y);     // Funci
 static void mostraMinas();                                              // Funcionando
 
 static void Menus();                                                    //
-static void Limpa();                                                    //
 static void Quadrado();                                                 // Funcionando [Melhorar]
 static void Revelado();                                                 // Funcionando [Melhorar]
 static void Minas_Adjacentes(int indice);                               //
@@ -81,9 +80,9 @@ static void Atualiza_desenho(void);                                     // Funci
 static void teclado(unsigned char tecla, int x, int y);                 // Funcionando
 static void mouse(int botao, int estado, int x, int y);                 // Funcionando
 
-static void renderGameOver();
-static void renderFimDeJogo();
-void AbreJogoGameOver();
+static void renderGameOver();                                           //Funcionando
+static void renderVenceu();                                          //Funcionando
+void AbreJogoGameOver();                                              //Funcionando
 
 
 static void iniciaCampos()
@@ -266,16 +265,6 @@ void AbreJogoGameOver(){ // Quando acabo o jogo revela todos os campos
 static void Menus()
 {// Cria os campos dos Menus
     glBegin(GL_LINE_LOOP);
-        glVertex2f(0, 0);
-        glVertex2f(0, 1);
-        glVertex2f(1, 1);
-        glVertex2f(1, 0);
-    glEnd();
-}
-
-static void Limpa()
-{//Cria quadrado de fundo para o tempo e minas, porém não sei se será necessário ainda
-    glBegin(GL_QUADS);
         glVertex2f(0, 0);
         glVertex2f(0, 1);
         glVertex2f(1, 1);
@@ -541,8 +530,7 @@ static void Revelar_Campo(int indice)
                 Desenha_Minas();
                 AbreJogoGameOver();
                 renderGameOver();
-                G_Game_Over = 1;
-                //renderFimDeJogo();
+                //renderVenceu();
                 //printf("\n     Campo com mina.");
                 //printf("\n\n     --- Game Over ---\n\n");
                 //exit(0);                                // desativar para fins de DEBUG
@@ -607,8 +595,10 @@ static void mostraTempo(int value)
     glColor3f(0.0, 0.0, 0.0); //Seta a cor do texto como preto
     renderText("Tempo Decorrido", 15, 21, 6);
     renderText(text.data(), text.size(), 32, 2);
+
     glutPostRedisplay();
     glutTimerFunc(1000,mostraTempo, 1);
+
 }
 
 static void Atualiza_tamanho(int largura, int altura)
@@ -652,8 +642,8 @@ static void Atualiza_desenho(void)
             Menus();
         glPopMatrix();
 
-        glutTimerFunc(1000, mostraTempo, 1);
-        //mostraTempo(1);
+        //glutTimerFunc(1000, mostraTempo, 1);
+        mostraTempo(1);
         mostraMinas();
         //DesenhaQntMina();
     glPopMatrix();
@@ -708,91 +698,91 @@ static void mouse(int botao, int estado, int x, int y)
     }
 }
 
-static void renderGameOver()
+static void renderGameOver()    //Realiza o desenho da escrita GAME OVER utilizando #'s
 {
-    int i;
+    int i; //Variável utilizada para os fors
     glPushMatrix();
-    glColor3f(1.0, 0.0, 0.0);
-    renderText("===================================================================", 67, 0, 99);
+    glColor3f(1.0, 0.0, 0.0); //Cor do texto a ser impresso
+    renderText("===================================================================", 67, 0, 99); //Desenha uma faixa no topo da janela
     //G
-    renderText("### ", 4, 19, 97);
-    renderText("   #", 4, 19, 96);
-    for(i=96; i>=92; i--){
+    renderText("### ", 4, 19, 97);  //Desenha o Topo do G
+    renderText("   #", 4, 19, 96);  //Desenha a ponta do topo do G
+    for(i=96; i>=92; i--){          //Desenha a coluna do G
         renderText("#", 1, 18, i);
     }
-    renderText("### ", 4, 19, 91); renderText("   #", 4, 19, 92); renderText("   #", 4, 19, 93);
-    //renderText("   #", 4, 19, 94);
-    renderText("  #", 3, 19, 93);
-    //renderText(" #", 2, 19, 93);
+    renderText("### ", 4, 19, 91);  //Desenha a base do G
+    renderText("   #", 4, 19, 92);  //Desenha a coluna da curva que leva ao interior do G
+    renderText("   #", 4, 19, 93);  //Desenha a coluna da curva que leva ao interior do G
+    renderText("  #", 3, 19, 93);   //Desenha a ponta do interior do G
     //A
-    renderText(" ###", 4, 26, 97);
-    for(i=96; i>=91; i--){
+    renderText(" ###", 4, 26, 97);  //Desenha o topo do A
+    for(i=96; i>=91; i--){          //Desenha a coluna da esquerda do A
         renderText("#", 1, 26, i);
     }
-    for(i=96; i>=91; i--){
+    for(i=96; i>=91; i--){           //Desenha a coluna da direita do A
         renderText("    #", 5, 26, i);
     }
-    renderText(" ### ", 5, 26, 94);
+    renderText(" ### ", 5, 26, 94);  //Desenha o traço do meio de A
     //M
-    for(i=97; i>=91; i--){
+    for(i=97; i>=91; i--){           //Desenha a coluna da esquerda de M
         renderText("#", 1, 34, i);
     }
-    renderText(" #", 2, 34, 96);
-    renderText("  #", 3, 34, 95);
-    renderText("   #", 5, 34, 96);
-    for(i=97; i>=91; i--){
+    renderText(" #", 2, 34, 96);    //Desenha o primeiro # do meio de M
+    renderText("  #", 3, 34, 95);   //Desenha o segundo # do meio de M
+    renderText("   #", 5, 34, 96);  //Desenha o terceiro # do meio de M
+    for(i=97; i>=91; i--){           //Desenha a coluna da direita de M
         renderText("    #", 5, 34, i);
     }
     //E
-    for(i=97; i>=91; i--){
+    for(i=97; i>=91; i--){          //Desenha a coluna do E
         renderText("#", 1, 42, i);
     }
-    for(i=97; i>=91; i-=3){
+    for(i=97; i>=91; i-=3){         //Desenha as 3 verticais de E
     renderText(" ###", 4, 42, i);
     }
     //O
-    for(i=96; i>=92; i--){
+    for(i=96; i>=92; i--){          //Desenha a coluna da esquerda de O
         renderText("#", 1, 54, i);
     }
-    renderText(" ##", 3, 54, 97);
-    for(i=96; i>=92; i--){
+    renderText(" ##", 3, 54, 97);  //Desenha o Topo de O
+    for(i=96; i>=92; i--){          //Desenha a coluna da direita de O
         renderText("   #", 4, 54, i);
     }
-    renderText(" ##", 3, 54, 91);
+    renderText(" ##", 3, 54, 91); //Desenha a Base de O
     //V
-    for(i=97; i>=93; i--){
+    for(i=97; i>=93; i--){        //Desenha a coluna da esquerda de V
         renderText("#", 1, 60, i);
     }
-    renderText(" #", 2, 60, 92);
-    renderText("  #", 3, 60, 91);
-    renderText("   #", 4, 60, 92);
-    for(i=97; i>=93; i--){
+    renderText(" #", 2, 60, 92);  //Desenha a curva inferior de V
+    renderText("  #", 3, 60, 91); //Desenha a curva inferior de V
+    renderText("   #", 4, 60, 92); //Desenha a curva inferior de V
+    for(i=97; i>=93; i--){        //Desenha a coluna da direita de V
         renderText("    #", 5, 60, i);
     }
     //E
-    for(i=97; i>=91; i--){
+    for(i=97; i>=91; i--){        //Desenha a coluna do E
         renderText("#", 1, 68, i);
     }
-    for(i=97; i>=91; i-=3){
+    for(i=97; i>=91; i-=3){       //Desenha as 3 verticais de E
     renderText(" ###", 4, 68, i);
     }
     //R
-    for(i=97; i>=91; i--){
+    for(i=97; i>=91; i--){         //Desenha a coluna do R
         renderText("#", 1, 75, i);
     }
-    renderText(" ###", 4, 75, 97);
-    renderText(" ###", 4, 75, 94);
-    for(i=96; i>=91; i--){
+    renderText(" ###", 4, 75, 97); //Desenha o topo de R
+    renderText(" ###", 4, 75, 94); //Desenha o meio vertical de R
+    for(i=96; i>=91; i--){         //desenha a coluna da direita de R
         if(i == 94)continue;
         renderText("    #", 5, 75, i);
     }
-    renderText("Pressione q para sair", 21, 30, 89);
-    renderText("===================================================================", 67, 0, 87);
+    renderText("Pressione q para sair", 21, 30, 89); //Escreve a frase abaixo do desenho
+    renderText("===================================================================", 67, 0, 87); //Desenha uma faixa logo acima do tabuleiro
     glPopMatrix();
 
 }
 
-static void renderFimDeJogo()
+static void renderVenceu()
 {
     int i;
     glPushMatrix();
