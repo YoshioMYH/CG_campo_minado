@@ -541,6 +541,7 @@ static void Revelar_Campo(int indice)
                 Desenha_Minas();
                 AbreJogoGameOver();
                 renderGameOver();
+                G_Game_Over = 1;
                 //renderFimDeJogo();
                 //printf("\n     Campo com mina.");
                 //printf("\n\n     --- Game Over ---\n\n");
@@ -606,8 +607,8 @@ static void mostraTempo(int value)
     glColor3f(0.0, 0.0, 0.0); //Seta a cor do texto como preto
     renderText("Tempo Decorrido", 15, 21, 6);
     renderText(text.data(), text.size(), 32, 2);
-    //glutTimerFunc(1000,mostraTempo, 1);
-    //glutPostRedisplay();
+    glutPostRedisplay();
+    glutTimerFunc(1000,mostraTempo, 1);
 }
 
 static void Atualiza_tamanho(int largura, int altura)
@@ -651,7 +652,8 @@ static void Atualiza_desenho(void)
             Menus();
         glPopMatrix();
 
-        mostraTempo(1000);
+        glutTimerFunc(1000, mostraTempo, 1);
+        //mostraTempo(1);
         mostraMinas();
         //DesenhaQntMina();
     glPopMatrix();
@@ -902,7 +904,7 @@ int main(){
     glutMouseFunc(mouse);
 
     //G_timer = glutGet(GLUT_ELAPSED_TIME);
-    //glutTimerFunc(1000, mostraTempo, 1);
+
 
     glClearColor(1,1,1,1);
     glutMainLoop();
