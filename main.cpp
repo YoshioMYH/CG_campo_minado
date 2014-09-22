@@ -768,7 +768,15 @@ static void mouse(int botao, int estado, int x, int y)
         //printf("\n[DEBUG]: Nao entendo o que vc quer clicar, pare de apertar esse botao por favor");
     //}
 }
-
+static void Quadro_regra(){
+    glPushMatrix();
+        glColor3f(1.0, 0.0, 0.0);
+        glTranslatef(-2.0, -6.0, 0.0);
+        Menus();
+    glPopMatrix();
+    renderText("Oi", 2, 50, 50);
+    //glutPostRedisplay();
+}
 static void MouseMenu(int botao, int estado, int x, int y){
     if(botao == GLUT_LEFT_BUTTON){
         if(estado == GLUT_DOWN){
@@ -785,6 +793,22 @@ static void MouseMenu(int botao, int estado, int x, int y){
                 G_dificuldade = 0;
                 MenuTemporario();
                 glutDisplayFunc(Atualiza_desenho);
+            }else if(G_click_pos_x > 30 && G_click_pos_x < 120 && G_click_pos_y > 150 && G_click_pos_y < 180){
+                glutMouseFunc(mouse);
+                G_dificuldade = 1;
+                MenuTemporario();
+                glutDisplayFunc(Atualiza_desenho);
+            }else if(G_click_pos_x > -45  && G_click_pos_x < 45 && G_click_pos_y > 106 && G_click_pos_y < 140){
+                glutMouseFunc(mouse);
+                G_dificuldade = 2;
+                MenuTemporario();
+                glutDisplayFunc(Atualiza_desenho);
+            }else if(G_click_pos_x > -180  && G_click_pos_x < -90 && G_click_pos_y > 46 && G_click_pos_y < 75){
+                printf("Entrou Aqui");
+                Quadro_regra();
+                glPushMatrix();
+                renderText("Oi", 2, 50, 50);
+                glPopMatrix();
             }
 
             //G_operacao_desenho = 1;
@@ -981,7 +1005,7 @@ static void renderVenceu()
     for(i=95; i>=90; i--){
         renderText("    #", 5, 80, i);
     }
-    renderText("Pressione q para sair", 21, 30, 89); //Escreve a frase abaixo do desenho
+    //renderText("Pressione q para sair", 21, 30, 89); //Escreve a frase abaixo do desenho
     renderText("===================================================================", 67, 0, 87); //Desenha uma faixa no topo da janela
     glPopMatrix();
 }
