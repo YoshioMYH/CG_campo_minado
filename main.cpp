@@ -25,6 +25,7 @@ struct Campo{
 GLint windowsSize_x = 600;      // Largura da janela
 GLint windowsSize_y = 600;      // Altura da janela
 
+bool G_inicio = true;
 bool G_Game_Over = 0;           // Condição para terminar o jogo
 
 int G_minas = 0;                // Quantidade de minas no campo
@@ -56,7 +57,7 @@ std::string to_string(T value){     //função to_string criada na mão
 }
 
 static void inicializaCampos();                                         // Funcionando
-static void AcrescentaMina();                                           // Funcionando
+static void AcrescentaMina(int indice);                                 // Funcionando
 
 static void MenuTemporario();                                           // Funcionando [Melhorar]
 static void renderText(const char *text, int length, int x, int y);     // Funcionando
@@ -109,10 +110,9 @@ static void inicializaCampos()
             cont++;
         }
     }
-
 }
 
-static void  AcrescentaMina()
+static void  AcrescentaMina(int indice)
 {// Funcao para gerar as posicoes das Minas no Tabuleiro
     srand(time(NULL));
     int i = 0;
@@ -121,16 +121,19 @@ static void  AcrescentaMina()
     int cont = 0;
     maximo = (G_linhas * G_colunas) - 1;
     while(cont != G_minas){
-        //printf("\n\n[DEBUG]: Cont: %d  Minas: %d", cont, G_minas);
+        printf("\n\n[DEBUG]: Cont: %d  Minas: %d", cont, G_minas);
         i = rand() % (maximo - minimo + 1) + minimo;
-        if(campo_minado[i].campo_mina == false)
+        if(i != indice)
         {
-            if(campo_minado[i].revelado != true){
-                campo_minado[i].campo_mina = true;
-                cont++;
+            if(campo_minado[i].campo_mina == false)
+            {
+                if(campo_minado[i].revelado != true){
+                    campo_minado[i].campo_mina = true;
+                    cont++;
+                }
             }
         }
-        //printf("\n[DEBUG]:i: %d  Campo: %d  Mina? : %d", i, i, campo_minado[i].campo_mina);
+        printf("\n[DEBUG]:i: %d  Campo: %d  Mina? : %d", i, i, campo_minado[i].campo_mina);
     }
     G_bandeiras = G_minas;
 }
@@ -504,6 +507,15 @@ static void Calculo_Desenho(int linha, int coluna, int indice)
             }
             break;
         case 1:                                                         // Funcao para revelar um campo
+            if(G_inicio)
+            {
+                glutTimerFunc(0, Timer, 0);
+
+                AcrescentaMina(indice);
+                Calc_Minas_Adjacentes();
+                G_nao_revelados = G_linhas * G_colunas - G_minas;
+                G_inicio = false;
+            }
             Revelar_Campo(indice);
             G_operacao_desenho = 0;                                     // Operacao concluida (campo revelado), retorna ao modo de operacao apenas de atualizacao do tabuleiro
             break;
@@ -773,9 +785,6 @@ static void MouseMenu(int botao, int estado, int x, int y){
                 G_dificuldade = 0;
                 MenuTemporario();
                 glutDisplayFunc(Atualiza_desenho);
-                AcrescentaMina();
-                Calc_Minas_Adjacentes();
-                G_nao_revelados = G_linhas*G_colunas - G_minas;
             }
 
             //G_operacao_desenho = 1;
