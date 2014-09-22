@@ -555,7 +555,9 @@ static void Atualiza_desenho(void)
         mostraMinas();
         //DesenhaQntMina();
     glPopMatrix();
-    glFlush();
+
+    //glFlush();
+    glutSwapBuffers();
 
     //printf("\n[DEBUG] : Evento Atualiza desenho\n");
 }
@@ -790,7 +792,8 @@ int main(){
     MenuTemporario();
     glutInitWindowSize(windowsSize_x, windowsSize_y);
     glutInitWindowPosition(300, 0);
-    glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE );
+    glutInitDisplayMode (GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
+    //glutInitDisplayMode (GLUT_RGB | GLUT_SINGLE);
 
     glutCreateWindow("Campo Minado");
 
