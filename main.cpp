@@ -8,6 +8,8 @@
 #include <time.h>
 #include <conio.h>
 
+/* INVETIGANDO PROBLEMAS NO DESEMPENHO */
+
 // ESTRUTURAS, TIPOS CUSTOMIZADOS
 struct Campo{
     bool campo_mina;            // Campo contém uma mina ?
