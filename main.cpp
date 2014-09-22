@@ -629,7 +629,9 @@ static void Menu_grafico(void){
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
     glPushMatrix();
+        glColor3f(0.0, 0.0, 0.0);
     glPushMatrix();
         glTranslatef(-6.0, 3.0, 0);
         glScalef(12.0, 5.0, 0.0);
@@ -661,8 +663,9 @@ static void Menu_grafico(void){
         Menus();
         renderText("Regras", 6, 23, 59);
     glPopMatrix();
+
     glPopMatrix();
-    glFlush();
+    glutSwapBuffers();
 
 }
 
