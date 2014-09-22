@@ -83,7 +83,7 @@ static void mouse(int botao, int estado, int x, int y);                 // Funci
 static void renderGameOver();                                           //Funcionando
 static void renderVenceu();                                          //Funcionando
 void AbreJogoGameOver();                                              //Funcionando
-
+static void ExpandeArea(int indice);                                    //Funcionando
 
 static void iniciaCampos()
 {// Funcao que inicializa todos os campos com valores nulos
@@ -99,7 +99,7 @@ static void iniciaCampos()
             campo_minado[cont].minas_adja = 0;
             campo_minado[cont].pos_x = i;
             campo_minado[cont].pos_y = j;
-            printf("\nCampo: %2d  Valor: %2d  PosX: %2d  PosY: %2d", cont, campo_minado[cont].minas_adja, campo_minado[cont].pos_x, campo_minado[cont].pos_y);
+            //printf("\nCampo: %2d  Valor: %2d  PosX: %2d  PosY: %2d", cont, campo_minado[cont].minas_adja, campo_minado[cont].pos_x, campo_minado[cont].pos_y);
             cont++;
         }
     }
@@ -223,11 +223,6 @@ static void mostraMinas()
 {// Função para mostra a quantidade de bombas iniciais em campo.
     std::string text;
     text = to_string(G_bandeiras);
-    /*glPushMatrix();
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glTranslatef(2, -9.8, 0);
-    Limpa();
-    glPopMatrix();*/
     glColor3f(0.0, 0.0, 0.0);
     renderText("Minas", 5, 59, 6);
     renderText(text.data(), text.size(), 61, 2);
@@ -331,55 +326,56 @@ static void ExpandeArea(int indice){
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
+                    if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                     //Revelar e Mostrar Adjacentes
                 }
                 if(campo_minado[j].pos_x == tmpx && campo_minado[j].pos_y == tmpy-1){
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
-                    //if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
+                    if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                     //Revelar e Mostrar Adjacentes
                 }
                 if(campo_minado[j].pos_x == tmpx+1 && campo_minado[j].pos_y == tmpy-1){
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
-                    //if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
+                    if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                     //Revelar e Mostrar Adjacentes
                 }
                 if(campo_minado[j].pos_x == tmpx-1 && campo_minado[j].pos_y == tmpy){
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
-                    //if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
+                    if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                     //Revelar e Mostrar Adjacentes
                 }
                 if(campo_minado[j].pos_x == tmpx+1 && campo_minado[j].pos_y == tmpy){
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
-                    //if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
+                    if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                     //Revelar e Mostrar Adjacentes
                 }
                 if(campo_minado[j].pos_x == tmpx-1 && campo_minado[j].pos_y == tmpy+1){
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
-                    //if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
+                    if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                     //Revelar e Mostrar Adjacentes
                 }
                 if(campo_minado[j].pos_x == tmpx && campo_minado[j].pos_y == tmpy+1){
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
-                    //if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
+                    if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                     //Revelar e Mostrar Adjacentes
                 }
                 if(campo_minado[j].pos_x == tmpx+1 && campo_minado[j].pos_y == tmpy+1){
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
-                    //if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
+                    if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                     //Revelar e Mostrar Adjacentes
                 }
             }
@@ -530,6 +526,7 @@ static void Revelar_Campo(int indice)
                 Desenha_Minas();
                 AbreJogoGameOver();
                 renderGameOver();
+                G_Game_Over = 1;
                 //renderVenceu();
                 //printf("\n     Campo com mina.");
                 //printf("\n\n     --- Game Over ---\n\n");
@@ -586,18 +583,13 @@ static void mostraTempo(int value)
     std::string text;
     G_timer = glutGet(GLUT_ELAPSED_TIME);
     text = to_string(G_timer/1000); //Converte o G_timer para uma string
-    /*glPushMatrix();
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glTranslatef(-4, -9.8, 0);
-    glScalef(2, 1, 0);
-    Limpa();
-    glPopMatrix();*/
+
     glColor3f(0.0, 0.0, 0.0); //Seta a cor do texto como preto
     renderText("Tempo Decorrido", 15, 21, 6);
     renderText(text.data(), text.size(), 32, 2);
 
-    glutPostRedisplay();
-    glutTimerFunc(1000,mostraTempo, 1);
+    //glutPostRedisplay();
+    //glutTimerFunc(1000,mostraTempo, value);
 
 }
 
@@ -645,7 +637,7 @@ static void Atualiza_desenho(void)
         //glutTimerFunc(1000, mostraTempo, 1);
         mostraTempo(1);
         mostraMinas();
-        //DesenhaQntMina();
+        //AbreJogoGameOver();
     glPopMatrix();
     glFlush();
 
