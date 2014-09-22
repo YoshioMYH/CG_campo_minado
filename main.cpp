@@ -81,7 +81,8 @@ static void Alternar_Protecao(int indice);                              // Funci
 static void Timer(int value);                                           // Funcionando
 static void Atualiza_tamanho(int largura, int altura);                  // Funcionando
 static void Atualiza_desenho(void);                                     // Funcionando [Melhorar]
-
+static void Menu_grafico();
+void MouseMenu();
 static void teclado(unsigned char tecla, int x, int y);                 // Funcionando
 static void mouse(int botao, int estado, int x, int y);                 // Funcionando
 
@@ -120,7 +121,7 @@ static void  AcrescentaMina()
     int cont = 0;
     maximo = (G_linhas * G_colunas) - 1;
     while(cont != G_minas){
-        printf("\n\n[DEBUG]: Cont: %d  Minas: %d", cont, G_minas);
+        //printf("\n\n[DEBUG]: Cont: %d  Minas: %d", cont, G_minas);
         i = rand() % (maximo - minimo + 1) + minimo;
         if(campo_minado[i].campo_mina == false)
         {
@@ -129,7 +130,7 @@ static void  AcrescentaMina()
                 cont++;
             }
         }
-        printf("\n[DEBUG]:i: %d  Campo: %d  Mina? : %d", i, i, campo_minado[i].campo_mina);
+        //printf("\n[DEBUG]:i: %d  Campo: %d  Mina? : %d", i, i, campo_minado[i].campo_mina);
     }
     G_bandeiras = G_minas;
 }
@@ -184,8 +185,8 @@ void Calc_Minas_Adjacentes()
 
 static void MenuTemporario()
 {// Menu para selecionar o nível de dificuldade
-    printf("Iniciando Menu Temporario \nEscolha a dificuldade(0-Noob, 1-Menos Noob, 2-SabeUmPouco): \n");
-    scanf("%d", &G_dificuldade);
+    //printf("Iniciando Menu Temporario \nEscolha a dificuldade(0-Noob, 1-Menos Noob, 2-SabeUmPouco): \n");
+    //scanf("%d", &G_dificuldade);
     switch(G_dificuldade){
         case 1: // Normal
             G_linhas = 10;
@@ -624,6 +625,46 @@ static void Atualiza_tamanho(int largura, int altura)
 
     //printf("\n[DEBUG] : Evento Atualiza tamanho\n");
 }
+static void Menu_grafico(void){
+    glClear(GL_COLOR_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glPushMatrix();
+    glPushMatrix();
+        glTranslatef(-6.0, 3.0, 0);
+        glScalef(12.0, 5.0, 0.0);
+        Menus();
+        renderText("Dificuldade", 11, 42, 87);
+        renderText("Escolha uma para iniciar o jogo", 31, 27, 85);
+    glPopMatrix();
+    glPushMatrix();
+        glTranslatef(-4.0, 5.0, 0);
+        glScalef(3.0, 1.0, 0.0);
+        Menus();
+        renderText("Novato", 6, 33, 77);
+    glPopMatrix();
+    glPushMatrix();
+        glTranslatef(1.0, 5.0, 0);
+        glScalef(3.0, 1.0, 0.0);
+        Menus();
+        renderText("Moderado", 8, 57, 77);
+    glPopMatrix();
+    glPushMatrix();
+        glTranslatef(-1.5, 3.5, 0);
+        glScalef(3.0, 1.0, 0.0);
+        Menus();
+        renderText("Normal", 6, 46, 69);
+    glPopMatrix();
+    glPushMatrix();
+        glTranslatef(-6.0, 1.5, 0);
+        glScalef(3.0, 1.0, 0.0);
+        Menus();
+        renderText("Regras", 6, 23, 59);
+    glPopMatrix();
+    glPopMatrix();
+    glFlush();
+
+}
 
 static void Atualiza_desenho(void)
 {
@@ -635,6 +676,7 @@ static void Atualiza_desenho(void)
 
         // Desenhar Tabuleiro
         glPushMatrix();
+            //Menu_grafico();
             Tabuleiro();
         glPopMatrix();
 
@@ -674,14 +716,13 @@ static void teclado(unsigned char tecla, int x, int y)
             exit(0);
             break;
         default:
-            printf("\nNenhum evento atribuido a tecla\n");
+            //printf("\nNenhum evento atribuido a tecla\n");
             break;
     }
 }
 
 static void mouse(int botao, int estado, int x, int y)
 {
-    int i;
     if(botao == GLUT_LEFT_BUTTON){
         if(estado == GLUT_DOWN){
             //printf("\n[DEBUG]: Apertou botao esquerdo mouse");
@@ -708,11 +749,50 @@ static void mouse(int botao, int estado, int x, int y)
             G_operacao_desenho = 2;
             glutPostRedisplay();
         }
-    }else{
-        printf("\n[DEBUG]: Nao entendo o que vc quer clicar, pare de apertar esse botao por favor");
-    }
+    }//else{
+        //printf("\n[DEBUG]: Nao entendo o que vc quer clicar, pare de apertar esse botao por favor");
+    //}
 }
 
+static void MouseMenu(int botao, int estado, int x, int y){
+    if(botao == GLUT_LEFT_BUTTON){
+        if(estado == GLUT_DOWN){
+            //printf("\n[DEBUG]: Apertou botao esquerdo mouse");
+
+            G_click_pos_x = x - (windowsSize_x / 2);                    // ajusta a posição do mouse para combinar com o viewport, posicao x real - janela X / 2
+            //G_click_pos_x = G_click_pos_x + ((float(windowsSize_x) * 0.05));
+            G_click_pos_y = (windowsSize_y / 2) - y ;                   // ajusta a posição do mouse para combinar com o viewport, anela Y / 2 - posicao y real
+            //G_click_pos_y = G_click_pos_y + ((float(windowsSize_y) * 0.05) * (float(G_linhas) / 2));
+            printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
+            if(G_click_pos_x>-120 && G_click_pos_x<-30 && G_click_pos_y >152 && G_click_pos_y < 180){
+                printf("Entrou aqui");
+                glutMouseFunc(mouse);
+                G_dificuldade = 0;
+                MenuTemporario();
+                glutDisplayFunc(Atualiza_desenho);
+                AcrescentaMina();
+                Calc_Minas_Adjacentes();
+                G_nao_revelados = G_linhas*G_colunas - G_minas;
+            }
+
+            //G_operacao_desenho = 1;
+            glutPostRedisplay();
+        }
+    }else if(botao == GLUT_RIGHT_BUTTON){
+        if(estado == GLUT_DOWN){
+            //printf("\n[DEBUG]: Apertou Botao direito mouse");
+
+            G_click_pos_x = x - (windowsSize_x / 2);                    // ajusta a posição do mouse para combinar com o viewport, posicao x real - janela X / 2
+            //G_click_pos_x = G_click_pos_x + ((float(windowsSize_x) * 0.05) * (float(G_colunas) / 2));
+            G_click_pos_y = (windowsSize_y / 2) - y ;                   // ajusta a posição do mouse para combinar com o viewport, anela Y / 2 - posicao y real
+            //G_click_pos_y = G_click_pos_y + ((float(windowsSize_y) * 0.05) * (float(G_linhas) / 2));
+            printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
+
+            //G_operacao_desenho = 2;
+            glutPostRedisplay();
+        }
+    }
+}
 static void renderGameOver()
 { //Realiza o desenho da escrita GAME OVER utilizando #'s
     int i; //Variável utilizada para os fors
@@ -889,6 +969,7 @@ static void renderVenceu()
     for(i=95; i>=90; i--){
         renderText("    #", 5, 80, i);
     }
+    renderText("Pressione q para sair", 21, 30, 89); //Escreve a frase abaixo do desenho
     renderText("===================================================================", 67, 0, 87); //Desenha uma faixa no topo da janela
     glPopMatrix();
 }
@@ -902,14 +983,12 @@ int main(){
     glutCreateWindow("Campo Minado"); //Set Windows Name
 
     inicializaCampos();  //Initialize board
-    AcrescentaMina();
-    Calc_Minas_Adjacentes();
-    G_nao_revelados = G_linhas*G_colunas - G_minas;
-    glutDisplayFunc(Atualiza_desenho);  //Atualizar tela
+
+    glutDisplayFunc(Menu_grafico);  //Atualizar tela
     glutReshapeFunc(Atualiza_tamanho);  //Atualiza tamanho
 
     glutKeyboardFunc(teclado); //Acrescenta função de tecla
-    glutMouseFunc(mouse);      //Acrescenta função de clique
+    glutMouseFunc(MouseMenu);      //Acrescenta função de clique
 
     glutTimerFunc(0, Timer, 0); //Função de timer
 
