@@ -28,7 +28,7 @@ GLint windowsSize_y = 600;      // Altura da janela
 bool G_Game_Over = 0;           // Condição para terminar o jogo
 
 int G_minas = 0;                // Quantidade de minas no campo
-
+int G_nao_revelados = 0;        //
 int G_bandeiras = 0;            // Quantidade de bandeiras no jogo. No Bandeiras = No Minas
 
 int G_linhas = 0;               // Quantidade de Linhas do tabuleiro
@@ -55,15 +55,15 @@ std::string to_string(T value){     //função to_string criada na mão
     return os.str() ;
 }
 
-static void iniciaCampos();                                             // Funcionando
+static void inicializaCampos();                                             // Funcionando
 static void AcrescentaMina();                                           // Funcionando
-static void Calc_Minas_Adjacentes();                                    //
+
 static void MenuTemporario();                                           // Funcionando [Melhorar]
 static void renderText(const char *text, int length, int x, int y);     // Funcionando
 static void mostraMinas();                                              // Funcionando
 static void mostraTempo(int value);                                     // Funcionando
 
-static void Menus();                                                    //
+static void Menus();                                                    // Funcionando
 static void Quadrado();                                                 // Funcionando [Melhorar]
 static void Revelado();                                                 // Funcionando [Melhorar]
 static void Minas_Adjacentes(int indice);                               // Funcionando
@@ -72,22 +72,25 @@ static void Mina();                                                     // Funci
 static void Bandeira();                                                 // Funcionando [Melhorar]
 static void Tabuleiro();                                                // Funcionando
 
+static void Calc_Minas_Adjacentes();                                    //
 static void Calculo_Desenho(int linha, int coluna, int indice);         // Funcionando
 static bool Calculo_Posicao(int linha, int coluna);                     // Funcionando
 static void Revelar_Campo(int indice);                                  // Funcionando [Melhorar]
 static void Alternar_Protecao(int indice);                              // Funcionando
 
-static void Timer(int value);
+static void Timer(int value);                                           // Funcionando
 static void Atualiza_tamanho(int largura, int altura);                  // Funcionando
 static void Atualiza_desenho(void);                                     // Funcionando [Melhorar]
 
 static void teclado(unsigned char tecla, int x, int y);                 // Funcionando
 static void mouse(int botao, int estado, int x, int y);                 // Funcionando
 
-static void renderGameOver();
-static void renderFimDeJogo();
+static void renderGameOver();                                           // Funcionando
+static void renderVenceu();                                             // Funcionando
+static void AbreJogoGameOver();                                         // Funcionando
+static void ExpandeArea(int indice);                                    // Funcionando
 
-static void iniciaCampos()
+static void inicializaCampos()
 {// Funcao que inicializa todos os campos com valores nulos
     int i = 0;
     int j = 0;
@@ -101,7 +104,7 @@ static void iniciaCampos()
             campo_minado[cont].minas_adja = 0;
             campo_minado[cont].pos_x = i;
             campo_minado[cont].pos_y = j;
-            printf("\nCampo: %2d  Valor: %2d  PosX: %2d  PosY: %2d", cont, campo_minado[cont].minas_adja, campo_minado[cont].pos_x, campo_minado[cont].pos_y);
+            //printf("\nCampo: %2d  Valor: %2d  PosX: %2d  PosY: %2d", cont, campo_minado[cont].minas_adja, campo_minado[cont].pos_x, campo_minado[cont].pos_y);
             cont++;
         }
     }
@@ -119,9 +122,12 @@ static void  AcrescentaMina()
     while(cont != G_minas){
         printf("\n\n[DEBUG]: Cont: %d  Minas: %d", cont, G_minas);
         i = rand() % (maximo - minimo + 1) + minimo;
-        if(campo_minado[i].campo_mina == false){
-            campo_minado[i].campo_mina = true;
-            cont++;
+        if(campo_minado[i].campo_mina == false)
+        {
+            if(campo_minado[i].revelado != true){
+                campo_minado[i].campo_mina = true;
+                cont++;
+            }
         }
         printf("\n[DEBUG]:i: %d  Campo: %d  Mina? : %d", i, i, campo_minado[i].campo_mina);
     }
@@ -240,6 +246,36 @@ static void mostraTempo()
     renderText(text.data(), text.size(), 32, 2);
 }
 
+static void AbreJogoGameOver(){ // Quando acabo o jogo revela todos os campos
+    int i;
+    int controlador;
+    std::string text;
+    switch(G_linhas){
+        case 5:
+            controlador = 39;
+            break;
+        case 10:
+            controlador = 27;
+            break;
+        case 15:
+            controlador = 14;
+    }
+
+    for(i=0; i<G_linhas*G_colunas; i++){
+        text = to_string(campo_minado[i].minas_adja);
+        glPushMatrix();
+        if(campo_minado[i].minas_adja != -1){
+            glColor3f(0.0, 0.0, 0.0);
+        }else{
+            glColor3f(1.0, 0.0, 0.0);
+        }
+        if(!campo_minado[i].revelado){
+            renderText(text.data(), text.size(), campo_minado[i].pos_y*5+controlador, campo_minado[i].pos_x*5+controlador);
+        }
+        glPopMatrix();
+    }
+}
+
 static void Menus()
 {// Cria os campos dos Menus
     glBegin(GL_LINE_LOOP);
@@ -267,7 +303,7 @@ static void Revelado()
 {// Campo revelado sem mina, mostra o numero de minas adjacentes, o tamanho atual do campo é de X = 5% do windowsSize_x | Y = 5% do windowsSize_y
     glPushMatrix();
         glBegin(GL_QUADS);
-            glColor3f(0.0, 0.0, 1.0);
+            glColor3f(0.4, 0.4, 0.4);
             glVertex2f(0, 0);
             glVertex2f(0, 1);
             glVertex2f(1, 1);
@@ -297,9 +333,87 @@ static void Minas_Adjacentes(int indice)
     glPopMatrix();
 }
 
+static void ExpandeArea(int indice){
+    int j;
+    int tmpx, tmpy;
+    if(campo_minado[indice].minas_adja == 0){
+        tmpx = campo_minado[indice].pos_x;
+        tmpy = campo_minado[indice].pos_y;
+        for(j=0; j<G_linhas*G_colunas; j++){
+            if(campo_minado[j].protegido == false && campo_minado[j].revelado == false){
+                if(campo_minado[j].pos_x == tmpx-1 && campo_minado[j].pos_y == tmpy-1){
+                    //Revelado();
+                    Minas_Adjacentes(j);
+                    campo_minado[j].revelado = true;
+                    G_nao_revelados--;
+                    if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
+                    //Revelar e Mostrar Adjacentes
+                }
+                if(campo_minado[j].pos_x == tmpx && campo_minado[j].pos_y == tmpy-1){
+                    //Revelado();
+                    Minas_Adjacentes(j);
+                    campo_minado[j].revelado = true;
+                    G_nao_revelados--;
+                    if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
+                    //Revelar e Mostrar Adjacentes
+                }
+                if(campo_minado[j].pos_x == tmpx+1 && campo_minado[j].pos_y == tmpy-1){
+                    //Revelado();
+                    Minas_Adjacentes(j);
+                    campo_minado[j].revelado = true;
+                    G_nao_revelados--;
+                    if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
+                    //Revelar e Mostrar Adjacentes
+                }
+                if(campo_minado[j].pos_x == tmpx-1 && campo_minado[j].pos_y == tmpy){
+                    //Revelado();
+                    Minas_Adjacentes(j);
+                    campo_minado[j].revelado = true;
+                    G_nao_revelados--;
+                    if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
+                    //Revelar e Mostrar Adjacentes
+                }
+                if(campo_minado[j].pos_x == tmpx+1 && campo_minado[j].pos_y == tmpy){
+                    //Revelado();
+                    Minas_Adjacentes(j);
+                    campo_minado[j].revelado = true;
+                    G_nao_revelados--;
+                    if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
+                    //Revelar e Mostrar Adjacentes
+                }
+                if(campo_minado[j].pos_x == tmpx-1 && campo_minado[j].pos_y == tmpy+1){
+                    //Revelado();
+                    Minas_Adjacentes(j);
+                    campo_minado[j].revelado = true;
+                    G_nao_revelados--;
+                    if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
+                    //Revelar e Mostrar Adjacentes
+                }
+                if(campo_minado[j].pos_x == tmpx && campo_minado[j].pos_y == tmpy+1){
+                    //Revelado();
+                    Minas_Adjacentes(j);
+                    campo_minado[j].revelado = true;
+                    G_nao_revelados--;
+                    if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
+                    //Revelar e Mostrar Adjacentes
+                }
+                if(campo_minado[j].pos_x == tmpx+1 && campo_minado[j].pos_y == tmpy+1){
+                    //Revelado();
+                    Minas_Adjacentes(j);
+                    campo_minado[j].revelado = true;
+                    G_nao_revelados--;
+                    if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
+                    //Revelar e Mostrar Adjacentes
+                }
+            }
+        }
+    }
+    glutPostRedisplay();
+}
+
 static void Desenha_Minas(){
     glPushMatrix();
-    glScalef(2.0, 1.0, 1.0);
+    glScalef(1.0, 1.0, 1.0);
         glColor3f(1.0, 0.0, 0.0);
         Mina();
     glPopMatrix();
@@ -378,7 +492,7 @@ static void Calculo_Desenho(int linha, int coluna, int indice)
             }
             else if(campo_minado[indice].campo_mina)                    // Condicao para fins de DEBUG
             {
-                Quadrado();
+                Mina();
             }
             else
             {
@@ -438,6 +552,7 @@ static void Revelar_Campo(int indice)
                 glutMouseFunc(NULL);
                 G_Game_Over = true;
                 Desenha_Minas();
+                AbreJogoGameOver();
                 renderGameOver();
                 //printf("\n     Campo com mina.");
                 //printf("\n\n     --- Game Over ---\n\n");
@@ -445,9 +560,19 @@ static void Revelar_Campo(int indice)
             }
             else                                        // Campo sem mina
             {
+                G_nao_revelados--;
+                printf("\n Nao Revelados %d", G_nao_revelados);
                 Revelado();
                 Minas_Adjacentes(indice);
                 campo_minado[indice].revelado = true;
+                if(G_nao_revelados == 0){
+                    glutMouseFunc(NULL);
+                    G_Game_Over = true;
+                    renderVenceu();
+                }
+                if(campo_minado[indice].minas_adja == 0){
+                    ExpandeArea(indice);
+                }
             }
         }
     }
@@ -534,13 +659,13 @@ static void Atualiza_desenho(void)
             Menus();
         glPopMatrix();
 
-        mostraTempo();
-        mostraMinas();
-        //DesenhaQntMina();
+        mostraTempo();                                  // Mostra o tempo percorrido
+        mostraMinas();                                  // Mostra o numero de minas/bandeiras disponiveis
+
     glPopMatrix();
 
-    //glFlush();
-    glutSwapBuffers();
+    //glFlush();                                        //
+    glutSwapBuffers();                                  // funcao semelhante ao glFlush()
 
     //printf("\n[DEBUG] : Evento Atualiza desenho\n");
 }
@@ -593,91 +718,91 @@ static void mouse(int botao, int estado, int x, int y)
     }
 }
 
-static void renderGameOver()
+static void renderGameOver()    //Realiza o desenho da escrita GAME OVER utilizando #'s
 {
-    int i;
+    int i; //Variável utilizada para os fors
     glPushMatrix();
-    glColor3f(1.0, 0.0, 0.0);
-    renderText("===================================================================", 67, 0, 99);
+    glColor3f(1.0, 0.0, 0.0); //Cor do texto a ser impresso
+    renderText("===================================================================", 67, 0, 99); //Desenha uma faixa no topo da janela
     //G
-    renderText("### ", 4, 19, 97);
-    renderText("   #", 4, 19, 96);
-    for(i=96; i>=92; i--){
+    renderText("### ", 4, 19, 97);  //Desenha o Topo do G
+    renderText("   #", 4, 19, 96);  //Desenha a ponta do topo do G
+    for(i=96; i>=92; i--){          //Desenha a coluna do G
         renderText("#", 1, 18, i);
     }
-    renderText("### ", 4, 19, 91); renderText("   #", 4, 19, 92); renderText("   #", 4, 19, 93);
-    //renderText("   #", 4, 19, 94);
-    renderText("  #", 3, 19, 93);
-    //renderText(" #", 2, 19, 93);
+    renderText("### ", 4, 19, 91);  //Desenha a base do G
+    renderText("   #", 4, 19, 92);  //Desenha a coluna da curva que leva ao interior do G
+    renderText("   #", 4, 19, 93);  //Desenha a coluna da curva que leva ao interior do G
+    renderText("  #", 3, 19, 93);   //Desenha a ponta do interior do G
     //A
-    renderText(" ###", 4, 26, 97);
-    for(i=96; i>=91; i--){
+    renderText(" ###", 4, 26, 97);  //Desenha o topo do A
+    for(i=96; i>=91; i--){          //Desenha a coluna da esquerda do A
         renderText("#", 1, 26, i);
     }
-    for(i=96; i>=91; i--){
+    for(i=96; i>=91; i--){           //Desenha a coluna da direita do A
         renderText("    #", 5, 26, i);
     }
-    renderText(" ### ", 5, 26, 94);
+    renderText(" ### ", 5, 26, 94);  //Desenha o traço do meio de A
     //M
-    for(i=97; i>=91; i--){
+    for(i=97; i>=91; i--){           //Desenha a coluna da esquerda de M
         renderText("#", 1, 34, i);
     }
-    renderText(" #", 2, 34, 96);
-    renderText("  #", 3, 34, 95);
-    renderText("   #", 5, 34, 96);
-    for(i=97; i>=91; i--){
+    renderText(" #", 2, 34, 96);    //Desenha o primeiro # do meio de M
+    renderText("  #", 3, 34, 95);   //Desenha o segundo # do meio de M
+    renderText("   #", 5, 34, 96);  //Desenha o terceiro # do meio de M
+    for(i=97; i>=91; i--){           //Desenha a coluna da direita de M
         renderText("    #", 5, 34, i);
     }
     //E
-    for(i=97; i>=91; i--){
+    for(i=97; i>=91; i--){          //Desenha a coluna do E
         renderText("#", 1, 42, i);
     }
-    for(i=97; i>=91; i-=3){
+    for(i=97; i>=91; i-=3){         //Desenha as 3 verticais de E
     renderText(" ###", 4, 42, i);
     }
     //O
-    for(i=96; i>=92; i--){
+    for(i=96; i>=92; i--){          //Desenha a coluna da esquerda de O
         renderText("#", 1, 54, i);
     }
-    renderText(" ##", 3, 54, 97);
-    for(i=96; i>=92; i--){
+    renderText(" ##", 3, 54, 97);  //Desenha o Topo de O
+    for(i=96; i>=92; i--){          //Desenha a coluna da direita de O
         renderText("   #", 4, 54, i);
     }
-    renderText(" ##", 3, 54, 91);
+    renderText(" ##", 3, 54, 91); //Desenha a Base de O
     //V
-    for(i=97; i>=93; i--){
+    for(i=97; i>=93; i--){        //Desenha a coluna da esquerda de V
         renderText("#", 1, 60, i);
     }
-    renderText(" #", 2, 60, 92);
-    renderText("  #", 3, 60, 91);
-    renderText("   #", 4, 60, 92);
-    for(i=97; i>=93; i--){
+    renderText(" #", 2, 60, 92);  //Desenha a curva inferior de V
+    renderText("  #", 3, 60, 91); //Desenha a curva inferior de V
+    renderText("   #", 4, 60, 92); //Desenha a curva inferior de V
+    for(i=97; i>=93; i--){        //Desenha a coluna da direita de V
         renderText("    #", 5, 60, i);
     }
     //E
-    for(i=97; i>=91; i--){
+    for(i=97; i>=91; i--){        //Desenha a coluna do E
         renderText("#", 1, 68, i);
     }
-    for(i=97; i>=91; i-=3){
+    for(i=97; i>=91; i-=3){       //Desenha as 3 verticais de E
     renderText(" ###", 4, 68, i);
     }
     //R
-    for(i=97; i>=91; i--){
+    for(i=97; i>=91; i--){         //Desenha a coluna do R
         renderText("#", 1, 75, i);
     }
-    renderText(" ###", 4, 75, 97);
-    renderText(" ###", 4, 75, 94);
-    for(i=96; i>=91; i--){
+    renderText(" ###", 4, 75, 97); //Desenha o topo de R
+    renderText(" ###", 4, 75, 94); //Desenha o meio vertical de R
+    for(i=96; i>=91; i--){         //desenha a coluna da direita de R
         if(i == 94)continue;
         renderText("    #", 5, 75, i);
     }
-    renderText("Pressione q para sair", 21, 30, 89);
-    renderText("===================================================================", 67, 0, 87);
+    renderText("Pressione q para sair", 21, 30, 89); //Escreve a frase abaixo do desenho
+    renderText("===================================================================", 67, 0, 87); //Desenha uma faixa logo acima do tabuleiro
     glPopMatrix();
 
 }
 
-static void renderFimDeJogo()
+static void renderVenceu()
 {
     int i;
     glPushMatrix();
@@ -780,7 +905,7 @@ int main(){
 
     glutCreateWindow("Campo Minado");
 
-    iniciaCampos();
+    inicializaCampos();
     AcrescentaMina();
     Calc_Minas_Adjacentes();
     glutDisplayFunc(Atualiza_desenho);
@@ -788,6 +913,8 @@ int main(){
 
     glutKeyboardFunc(teclado);
     glutMouseFunc(mouse);
+
+    G_nao_revelados = G_linhas * G_colunas - G_minas;
 
     glutTimerFunc(0, Timer, 0);
 
