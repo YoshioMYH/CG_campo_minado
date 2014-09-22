@@ -23,13 +23,14 @@ GLint windowsSize_x = 600;      // Largura da janela
 GLint windowsSize_y = 600;      // Altura da janela
 
 int G_minas = 0;                // Quantidade de minas no campo
-
+int G_nao_revelados = 0;
 int G_bandeiras = 0;            // Quantidade de bandeiras no jogo. No Bandeiras = No Minas
 
 int G_linhas = 0;               // Quantidade de Linhas do tabuleiro
 int G_colunas = 0;              // Quantidade de Colunas do tabuleiro
 
 int G_Game_Over = 0;            //
+
 
 int G_click_pos_x = 0.0;        // Posicao X do clique do mouse
 int G_click_pos_y = 0.0;        // Posicao Y do clique do mouse
@@ -326,6 +327,7 @@ static void ExpandeArea(int indice){
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
+                    G_nao_revelados--;
                     if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                     //Revelar e Mostrar Adjacentes
                 }
@@ -333,6 +335,7 @@ static void ExpandeArea(int indice){
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
+                    G_nao_revelados--;
                     if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                     //Revelar e Mostrar Adjacentes
                 }
@@ -340,6 +343,7 @@ static void ExpandeArea(int indice){
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
+                    G_nao_revelados--;
                     if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                     //Revelar e Mostrar Adjacentes
                 }
@@ -347,6 +351,7 @@ static void ExpandeArea(int indice){
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
+                    G_nao_revelados--;
                     if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                     //Revelar e Mostrar Adjacentes
                 }
@@ -354,6 +359,7 @@ static void ExpandeArea(int indice){
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
+                    G_nao_revelados--;
                     if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                     //Revelar e Mostrar Adjacentes
                 }
@@ -361,6 +367,7 @@ static void ExpandeArea(int indice){
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
+                    G_nao_revelados--;
                     if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                     //Revelar e Mostrar Adjacentes
                 }
@@ -368,6 +375,7 @@ static void ExpandeArea(int indice){
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
+                    G_nao_revelados--;
                     if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                     //Revelar e Mostrar Adjacentes
                 }
@@ -375,6 +383,7 @@ static void ExpandeArea(int indice){
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
+                    G_nao_revelados--;
                     if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                     //Revelar e Mostrar Adjacentes
                 }
@@ -471,7 +480,7 @@ static void Calculo_Desenho(int linha, int coluna, int indice)
                 Quadrado();
             }
             break;
-        case 1:                                                         // Funcao para revelar um campo
+        case 1:                                                        // Funcao para revelar um campo
             Revelar_Campo(indice);
             G_operacao_desenho = 0;                                     // Operacao concluida (campo revelado), retorna ao modo de operacao apenas de atualizacao do tabuleiro
             break;
@@ -535,9 +544,15 @@ static void Revelar_Campo(int indice)
             }
             else                                        // Campo sem mina
             {
+                G_nao_revelados--;
+                printf("\n Nao Revelados %d", G_nao_revelados);
                 Revelado();
                 Minas_Adjacentes(indice);
                 campo_minado[indice].revelado = true;
+                if(G_nao_revelados == 0){
+                    glutMouseFunc(NULL);
+                    renderVenceu();
+                }
                 if(campo_minado[indice].minas_adja == 0){
                     ExpandeArea(indice);
                 }
@@ -884,7 +899,7 @@ int main(){
 
     glutKeyboardFunc(teclado);
     glutMouseFunc(mouse);
-
+    G_nao_revelados = G_linhas*G_colunas - G_minas;
     //G_timer = glutGet(GLUT_ELAPSED_TIME);
 
 
