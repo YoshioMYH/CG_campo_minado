@@ -28,13 +28,13 @@ GLint windowsSize_y = 600;      // Altura da janela
 bool G_inicio = true;
 bool G_Game_Over = 0;           // Condição para terminar o jogo
 
-int G_minas = 0;                // Quantidade de minas no campo
+int G_minas = 5;                // Quantidade de minas no campo
 int G_nao_revelados = 0;        // Quantidade de campos não revelados e que não são Minas
 int G_bandeiras = 0;            // Quantidade de bandeiras no jogo. No Bandeiras = No Minas
 
-int G_linhas = 0;               // Quantidade de Linhas do tabuleiro
-int G_colunas = 0;              // Quantidade de Colunas do tabuleiro
-
+int G_linhas = 5;               // Quantidade de Linhas do tabuleiro
+int G_colunas = 5;              // Quantidade de Colunas do tabuleiro
+bool regras = false;
 int G_click_pos_x = 0.0;        // Posicao X do clique do mouse
 int G_click_pos_y = 0.0;        // Posicao Y do clique do mouse
 int G_operacao_desenho = 0;     // Determina qual operacao o desenho deve fazer
@@ -768,16 +768,37 @@ static void mouse(int botao, int estado, int x, int y)
         //printf("\n[DEBUG]: Nao entendo o que vc quer clicar, pare de apertar esse botao por favor");
     //}
 }
-static void Quadro_regra(){
+void Quadro_regra(void){
+    glClear(GL_COLOR_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
     glPushMatrix();
-        glColor3f(1.0, 0.0, 0.0);
-        glTranslatef(-2.0, -6.0, 0.0);
+        glColor3f(0.0, 0.0, 0.0);
+        glPushMatrix();
+            glTranslatef(-9.0, -8.0, 0.0);
+            glScalef(18, 17, 0);
+            Menus();
+        glPopMatrix();
+    glPopMatrix();
+    renderText("Regras do Jogo", 14, 40, 90);
+    renderText("1. Um quadrado e revelado ao ser clicado;", 41, 6, 85);
+    renderText("2. O primeiro quadrado aberto nao contem mina;", 46, 6, 80);
+    renderText("3. Ao ser revelado ira aparecer um numero indicando a", 53, 6, 75);
+    renderText("quantidade de minas adjacentes;", 31, 11, 73);
+    renderText("4. Ao clicar em um quadrado com mina o jogo termina;", 52, 6, 70);
+    renderText("5. O jogo acaba quando o jogador revelar todos os quadrados", 59, 6, 65);
+    renderText("que nao sao minas", 17, 11, 63);
+    glColor3f(0.0, 0.0, 1.0);
+    glPushMatrix();
+        glTranslatef(-8.0, -7.0, 0.0);
+        glScalef(7, 1, 0);
         Menus();
     glPopMatrix();
-    renderText("Oi", 2, 50, 50);
-    //glutPostRedisplay();
+    renderText("Voltar ao Menu Inicial", 22, 11, 16);
+    glutSwapBuffers();
 }
 static void MouseMenu(int botao, int estado, int x, int y){
+
     if(botao == GLUT_LEFT_BUTTON){
         if(estado == GLUT_DOWN){
             //printf("\n[DEBUG]: Apertou botao esquerdo mouse");
@@ -805,10 +826,17 @@ static void MouseMenu(int botao, int estado, int x, int y){
                 glutDisplayFunc(Atualiza_desenho);
             }else if(G_click_pos_x > -180  && G_click_pos_x < -90 && G_click_pos_y > 46 && G_click_pos_y < 75){
                 printf("Entrou Aqui");
-                Quadro_regra();
-                glPushMatrix();
-                renderText("Oi", 2, 50, 50);
-                glPopMatrix();
+                regras = true;
+               // Quadro_regra();
+                glutDisplayFunc(Quadro_regra);
+            }
+            if(regras == true){
+                printf("Entrou condicao if regras");
+                if(G_click_pos_x > -240 && G_click_pos_x < -30 && G_click_pos_y > -210 && G_click_pos_y < -180){
+                   printf("entrou regras");
+                   glutDisplayFunc(Menu_grafico);
+                   regras = false;
+                }
             }
 
             //G_operacao_desenho = 1;
@@ -1011,7 +1039,7 @@ static void renderVenceu()
 }
 
 int main(){
-    MenuTemporario();  //Inicia menu para escolha da dificuldade
+
     glutInitWindowSize(windowsSize_x, windowsSize_y);  //Set windows Size
     glutInitWindowPosition(300, 0);                    //Set Windows Position
     glutInitDisplayMode (GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
