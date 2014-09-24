@@ -643,7 +643,14 @@ static void Atualiza_tamanho(int largura, int altura)
 
     //printf("\n[DEBUG] : Evento Atualiza tamanho\n");
 }
+<<<<<<< HEAD
 static void Menu_grafico(void){
+=======
+
+static void Menu_grafico(void)
+{
+    /* MODIFICAR - TRANSLADOR O PONTO DE ORIGEM COM BASE NO TAMANHO DA JANELA*/
+>>>>>>> origin/master
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -809,8 +816,14 @@ void Quadro_regra(void){
     glutSwapBuffers();
 }
 
+<<<<<<< HEAD
 static void MouseMenu(int botao, int estado, int x, int y){
 
+=======
+static void MouseMenu(int botao, int estado, int x, int y)
+{
+    /* MODIFICAR - AJUSTAR O MENU GRAFICO*/
+>>>>>>> origin/master
     if(botao == GLUT_LEFT_BUTTON){
         if(estado == GLUT_DOWN){
             //printf("\n[DEBUG]: Apertou botao esquerdo mouse");
@@ -852,6 +865,7 @@ static void MouseMenu(int botao, int estado, int x, int y){
                             glutDisplayFunc(Atualiza_desenho);
                         }
                     }
+<<<<<<< HEAD
                     // Tratamento do clique para a dificuldade "Normal"
                     else if( (G_click_pos_x > (-1.5 * (windowsSize_x * 0.05))) &&
                              (G_click_pos_x < (-1.5 * (windowsSize_x * 0.05) + 3.0 * (windowsSize_x * 0.05))) )
@@ -868,6 +882,15 @@ static void MouseMenu(int botao, int estado, int x, int y){
                     }
                     else if( (G_click_pos_x > (-6.0 * (windowsSize_x * 0.05))) &&
                              (G_click_pos_x < (-6.0 * (windowsSize_x * 0.05) + 3.0 * (windowsSize_x * 0.05))) )
+=======
+                }
+                // Tratamento do clique para a dificuldade "Normal"
+                else if( (G_click_pos_x > (-35)) &&
+                         (G_click_pos_x < (-10)) )
+                {
+                    if( (G_click_pos_y > (3.5 * (windowsSize_y * 0.05))) &&
+                        (G_click_pos_y < (3.5 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)) )
+>>>>>>> origin/master
                     {
                         if( (G_click_pos_y > (1.5 * (windowsSize_y * 0.05))) &&
                            (G_click_pos_y < (1.5 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)))
