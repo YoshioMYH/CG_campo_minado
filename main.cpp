@@ -470,23 +470,31 @@ static void Tabuleiro()
     int coluna = 0;                                         // iterador das colunas
 
     int cont = 0;                                           // contador para indicar o indice do campo
-
-    glTranslatef(posStart_x, posStart_y, 0.0);              // translada para as posicoes X e Y iniciais do Tabuleiro
     glPushMatrix();
-    for(linha = 0; linha < G_linhas; linha++)               // iterar nas linhas
-    {
+        glTranslatef(posStart_x, posStart_y, 0.0);              // translada para as posicoes X e Y iniciais do Tabuleiro
         glPushMatrix();
-        for(coluna = 0; coluna < G_colunas; coluna++)       // iterar nas colunas
+        for(linha = 0; linha < G_linhas; linha++)               // iterar nas linhas
         {
-            Calculo_Desenho(linha, coluna, cont);           // determinar o que desenhar, campo nao revelado, campo revelado ou uma mina
-            cont++;                                         // incrementa o contador do indice;
-            glTranslatef(1.0, 0.0, 0.0);                    // translada em x para posicionar a proxima coluna
+            glPushMatrix();
+            for(coluna = 0; coluna < G_colunas; coluna++)       // iterar nas colunas
+            {
+                Calculo_Desenho(linha, coluna, cont);           // determinar o que desenhar, campo nao revelado, campo revelado ou uma mina
+                cont++;                                         // incrementa o contador do indice;
+                glTranslatef(1.0, 0.0, 0.0);                    // translada em x para posicionar a proxima coluna
+            }
+            glPopMatrix();                                      // retorna a posicao X inicial
+            glTranslatef(0.0, 1.0, 0.0);                        // translada em y para posicionar a proxima linha
         }
-        glPopMatrix();                                      // retorna a posicao X inicial
-        glTranslatef(0.0, 1.0, 0.0);                        // translada em y para posicionar a proxima linha
-    }
-    glPopMatrix();                                          // retorna a posicao Y inicial
-    renderText("Pressione r caso queira comecar um novo jogo", 44, 22, 10);
+        glPopMatrix();                                          // retorna a posicao Y inicial
+    glPopMatrix();
+    //renderText("Pressione r caso queira comecar um novo jogo", 44, 22, 10);
+    glPushMatrix();
+        glTranslatef(-10.0, -10.0, 0);
+        glScalef(3.5, 2.0, 0);
+        Menus();
+    glPopMatrix();
+    renderText("q: Sair", 7, 1, 8);
+    renderText("r: Novo Jogo", 12, 1, 5);
 }
 
 static void Calculo_Desenho(int linha, int coluna, int indice)
