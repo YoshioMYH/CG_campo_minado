@@ -6,7 +6,6 @@
 #include <sstream>
 #include <vector>
 #include <time.h>
-#include <conio.h>
 
 // CONSTANTES
 #define INTERVALO_TEMPO 1000
@@ -25,12 +24,13 @@ struct Campo{
 GLint windowsSize_x = 700;      // Largura da janela
 GLint windowsSize_y = 700;      // Altura da janela
 
-int G_minas = 0;                // Quantidade de minas no campo
+int G_minas = 5;                // Quantidade de minas no campo
 int G_nao_revelados = 0;        // Quantidade de campos não revelados e que não são Minas
 int G_bandeiras = 0;            // Quantidade de bandeiras no jogo. No Bandeiras = No Minas
 
-int G_linhas = 0;               // Quantidade de Linhas do tabuleiro
-int G_colunas = 0;              // Quantidade de Colunas do tabuleiro
+int G_linhas = 5;               // Quantidade de Linhas do tabuleiro
+int G_colunas = 5;              // Quantidade de Colunas do tabuleiro
+bool regras = false;
 
 int G_click_pos_x = 0.0;        // Posicao X do clique do mouse
 int G_click_pos_y = 0.0;        // Posicao Y do clique do mouse
@@ -643,9 +643,7 @@ static void Atualiza_tamanho(int largura, int altura)
 
     //printf("\n[DEBUG] : Evento Atualiza tamanho\n");
 }
-
-static void Menu_grafico(void)
-{
+static void Menu_grafico(void){
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -781,18 +779,38 @@ static void mouse(int botao, int estado, int x, int y)
     //}
 }
 
-static void Quadro_Regra()
-{
-    glColor3f(0.0, 0.0, 0.0);
+void Quadro_regra(void){
+    glClear(GL_COLOR_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
     glPushMatrix();
-        glTranslatef(-6.0, -10.0, 0);
+        glColor3f(0.0, 0.0, 0.0);
+        glPushMatrix();
+            glTranslatef(-9.0, -8.0, 0.0);
+            glScalef(18, 17, 0);
+            Menus();
+        glPopMatrix();
+    glPopMatrix();
+    renderText("Regras do Jogo", 14, 40, 90);
+    renderText("1. Um quadrado e revelado ao ser clicado;", 41, 6, 85);
+    renderText("2. O primeiro quadrado aberto nao contem mina;", 46, 6, 80);
+    renderText("3. Ao ser revelado ira aparecer um numero indicando a", 53, 6, 75);
+    renderText("quantidade de minas adjacentes;", 31, 11, 73);
+    renderText("4. Ao clicar em um quadrado com mina o jogo termina;", 52, 6, 70);
+    renderText("5. O jogo acaba quando o jogador revelar todos os quadrados", 59, 6, 65);
+    renderText("que nao sao minas", 17, 11, 63);
+    glColor3f(0.0, 0.0, 1.0);
+    glPushMatrix();
+        glTranslatef(-8.0, -7.0, 0.0);
+        glScalef(7, 1, 0);
         Menus();
     glPopMatrix();
-    renderText("Oi", 2, 50, 50);
+    renderText("Voltar ao Menu Inicial", 22, 11, 16);
     glutSwapBuffers();
 }
 
 static void MouseMenu(int botao, int estado, int x, int y){
+
     if(botao == GLUT_LEFT_BUTTON){
         if(estado == GLUT_DOWN){
             //printf("\n[DEBUG]: Apertou botao esquerdo mouse");
@@ -804,58 +822,79 @@ static void MouseMenu(int botao, int estado, int x, int y){
             printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
             if(G_estado_jogo == 0)
             {
-                // Tratamento do clique para a dificuldade "Novato"
-                if( (G_click_pos_x > (-4.0 * (windowsSize_x * 0.05))) &&
-                    (G_click_pos_x < (-4.0 * (windowsSize_x * 0.05)) + 3.0 * (windowsSize_x * 0.05)) )
-                {
-                    if( (G_click_pos_y > (5.0 * (windowsSize_y * 0.05))) &&
-                        (G_click_pos_y < (5.0 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)) )
+                if(regras == false){
+                    // Tratamento do clique para a dificuldade "Novato"
+                    if( (G_click_pos_x > (-4.0 * (windowsSize_x * 0.05))) &&
+                        (G_click_pos_x < (-4.0 * (windowsSize_x * 0.05)) + 3.0 * (windowsSize_x * 0.05)) )
                     {
-                        G_estado_jogo = 1;
-                        printf("Entrou aqui");
-                        glutMouseFunc(mouse);
-                        G_dificuldade = 0;
-                        MenuTemporario();
-                        glutDisplayFunc(Atualiza_desenho);
+                        if( (G_click_pos_y > (5.0 * (windowsSize_y * 0.05))) &&
+                            (G_click_pos_y < (5.0 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)) )
+                        {
+                            G_estado_jogo = 1;
+                            printf("Entrou aqui");
+                            glutMouseFunc(mouse);
+                            G_dificuldade = 0;
+                            MenuTemporario();
+                            glutDisplayFunc(Atualiza_desenho);
+                        }
+                    }
+                    // Tratamento do clique para a dificuldade "Moderado"
+                    else if( (G_click_pos_x > (1.0 * (windowsSize_x * 0.05))) &&
+                             (G_click_pos_x < (1.0 * (windowsSize_x * 0.05) + 3.0 * (windowsSize_x * 0.05))) )
+                    {
+                        if( (G_click_pos_y > (5.0 * (windowsSize_y * 0.05))) &&
+                            (G_click_pos_y < (5.0 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)) )
+                        {
+                            G_estado_jogo = 1;
+                            glutMouseFunc(mouse);
+                            G_dificuldade = 1;
+                            MenuTemporario();
+                            glutDisplayFunc(Atualiza_desenho);
+                        }
+                    }
+                    // Tratamento do clique para a dificuldade "Normal"
+                    else if( (G_click_pos_x > (-1.5 * (windowsSize_x * 0.05))) &&
+                             (G_click_pos_x < (-1.5 * (windowsSize_x * 0.05) + 3.0 * (windowsSize_x * 0.05))) )
+                    {
+                        if( (G_click_pos_y > (3.5 * (windowsSize_y * 0.05))) &&
+                            (G_click_pos_y < (3.5 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)) )
+                        {
+                            G_estado_jogo = 1;
+                            glutMouseFunc(mouse);
+                            G_dificuldade = 2;
+                            MenuTemporario();
+                            glutDisplayFunc(Atualiza_desenho);
+                        }
+                    }
+                    else if( (G_click_pos_x > (-6.0 * (windowsSize_x * 0.05))) &&
+                             (G_click_pos_x < (-6.0 * (windowsSize_x * 0.05) + 3.0 * (windowsSize_x * 0.05))) )
+                    {
+                        if( (G_click_pos_y > (1.5 * (windowsSize_y * 0.05))) &&
+                           (G_click_pos_y < (1.5 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)))
+                        {
+                            printf("Entrou Aqui");
+                            regras = true;
+                           // Quadro_regra();
+                            glutDisplayFunc(Quadro_regra);
+                        }
                     }
                 }
-                // Tratamento do clique para a dificuldade "Moderado"
-                else if( (G_click_pos_x > (1.0 * (windowsSize_x * 0.05))) &&
-                         (G_click_pos_x < (1.0 * (windowsSize_x * 0.05) + 3.0 * (windowsSize_x * 0.05))) )
-                {
-                    if( (G_click_pos_y > (5.0 * (windowsSize_y * 0.05))) &&
-                        (G_click_pos_y < (5.0 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)) )
+                if(regras == true){
+                    printf("Entrou condicao if regras");
+                    if( (G_click_pos_x > (-8.0 * (windowsSize_x * 0.05))) &&
+                             (G_click_pos_x < (-8.0 * (windowsSize_x * 0.05) + 7.0 * (windowsSize_x * 0.05))) )
                     {
-                        G_estado_jogo = 1;
-                        glutMouseFunc(mouse);
-                        G_dificuldade = 1;
-                        MenuTemporario();
-                        glutDisplayFunc(Atualiza_desenho);
+                        if( (G_click_pos_y > (-7.0 * (windowsSize_y * 0.05))) &&
+                           (G_click_pos_y < (-7.0 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)))
+                        {
+                           printf("entrou regras");
+                           glutDisplayFunc(Menu_grafico);
+                           regras = false;
+                        }
                     }
-                }
-                // Tratamento do clique para a dificuldade "Normal"
-                else if( (G_click_pos_x > (-1.5 * (windowsSize_x * 0.05))) &&
-                         (G_click_pos_x < (-1.5 * (windowsSize_x * 0.05) + 3.0 * (windowsSize_x * 0.05))) )
-                {
-                    if( (G_click_pos_y > (3.5 * (windowsSize_y * 0.05))) &&
-                        (G_click_pos_y < (3.5 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)) )
-                    {
-                        G_estado_jogo = 1;
-                        glutMouseFunc(mouse);
-                        G_dificuldade = 2;
-                        MenuTemporario();
-                        glutDisplayFunc(Atualiza_desenho);
-                    }
-                }
-                // Tratamento do clique para as regras
-                else if(G_click_pos_x > -180 && G_click_pos_x < -90 && G_click_pos_y > 46 && G_click_pos_y < 75)
-                {
-                    printf("Entrou aqui");
-                    Quadro_Regra();
                 }
             }
-            inicializaCampos();  //Initialize board
-
+            inicializaCampos();
             //G_operacao_desenho = 1;
             glutPostRedisplay();
         }
@@ -1050,14 +1089,13 @@ static void renderVenceu()
     for(i=95; i>=90; i--){
         renderText("    #", 5, 80, i);
     }
-    renderText("Pressione q para sair", 21, 30, 89); //Escreve a frase abaixo do desenho
+    //renderText("Pressione q para sair", 21, 30, 89); //Escreve a frase abaixo do desenho
     renderText("===================================================================", 67, 0, 87); //Desenha uma faixa no topo da janela
     glPopMatrix();
 }
 
-int main()
-{
-    MenuTemporario();  //Inicia menu para escolha da dificuldade
+int main(){
+
     glutInitWindowSize(windowsSize_x, windowsSize_y);  //Set windows Size
     glutInitWindowPosition(300, 0);                    //Set Windows Position
     glutInitDisplayMode (GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
@@ -1070,7 +1108,7 @@ int main()
     glutKeyboardFunc(teclado); //Acrescenta função de tecla
     glutMouseFunc(MouseMenu);      //Acrescenta função de clique
 
-    //glutTimerFunc(0, Timer, 0); //Função de timer
+    glutTimerFunc(0, Timer, 0); //Função de timer
 
     glClearColor(1,1,1,1);  //Cria tela de fundo Branca
     glutMainLoop();         //Loop infinito até finalizar a janela
