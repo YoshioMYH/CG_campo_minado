@@ -6,7 +6,6 @@
 #include <sstream>
 #include <vector>
 #include <time.h>
-#include <conio.h>
 
 // CONSTANTES
 #define INTERVALO_TEMPO 1000
@@ -22,11 +21,8 @@ struct Campo{
 };
 
 // VARIAVEIS GLOBAIS, colocar um 'G_'
-GLint windowsSize_x = 600;      // Largura da janela
-GLint windowsSize_y = 600;      // Altura da janela
-
-bool G_inicio = true;
-bool G_Game_Over = 0;           // Condição para terminar o jogo
+GLint windowsSize_x = 700;      // Largura da janela
+GLint windowsSize_y = 700;      // Altura da janela
 
 int G_minas = 5;                // Quantidade de minas no campo
 int G_nao_revelados = 0;        // Quantidade de campos não revelados e que não são Minas
@@ -35,6 +31,7 @@ int G_bandeiras = 0;            // Quantidade de bandeiras no jogo. No Bandeiras
 int G_linhas = 5;               // Quantidade de Linhas do tabuleiro
 int G_colunas = 5;              // Quantidade de Colunas do tabuleiro
 bool regras = false;
+
 int G_click_pos_x = 0.0;        // Posicao X do clique do mouse
 int G_click_pos_y = 0.0;        // Posicao Y do clique do mouse
 int G_operacao_desenho = 0;     // Determina qual operacao o desenho deve fazer
@@ -43,6 +40,15 @@ int G_operacao_desenho = 0;     // Determina qual operacao o desenho deve fazer
 1 = revelar um campo [Mouse LB]
 2 = posicionar bandeira [Mouse RB]
 */
+
+int G_estado_jogo = 0;          // Determina em qual estado o jogo se encontra
+/*
+0 = inicio do jogo, escolha do menu
+1 = jogo iniciado, esperando primeiro clique
+2 = jogo com cliques "normais"
+3 = fim do jogo
+*/
+
 int G_timer = 0;                 // Mantém o tempo decorrido de jogo
 int G_dificuldade = 0;           // Mantém a dificuldade selecionada do jogo
 
@@ -83,7 +89,7 @@ static void Timer(int value);                                           // Funci
 static void Atualiza_tamanho(int largura, int altura);                  // Funcionando
 static void Atualiza_desenho(void);                                     // Funcionando [Melhorar]
 static void Menu_grafico();
-void MouseMenu();
+static void MouseMenu();
 static void teclado(unsigned char tecla, int x, int y);                 // Funcionando
 static void mouse(int botao, int estado, int x, int y);                 // Funcionando
 
@@ -251,7 +257,7 @@ static void mostraTempo()
 
 static void Timer(int value)
 {// Função controlar o tempo de atualizacao
-    if(!G_Game_Over)                                // Enquanto o jogo nao acabar, realizar a atualizacao
+    if(G_estado_jogo != 3)                                // Enquanto o jogo nao acabar, realizar a atualizacao
     {
         glutPostRedisplay();
         glutTimerFunc(INTERVALO_TEMPO, Timer, 0);
@@ -507,14 +513,14 @@ static void Calculo_Desenho(int linha, int coluna, int indice)
             }
             break;
         case 1:                                                         // Funcao para revelar um campo
-            if(G_inicio)
+            if(G_estado_jogo == 1)
             {
                 glutTimerFunc(0, Timer, 0);
 
                 AcrescentaMina(indice);
                 Calc_Minas_Adjacentes();
                 G_nao_revelados = G_linhas * G_colunas - G_minas;
-                G_inicio = false;
+                G_estado_jogo = 2;
             }
             Revelar_Campo(indice);
             G_operacao_desenho = 0;                                     // Operacao concluida (campo revelado), retorna ao modo de operacao apenas de atualizacao do tabuleiro
@@ -533,8 +539,8 @@ static bool Calculo_Posicao(int linha, int coluna)
     float linha_minimo = linha * (windowsSize_y * 0.05);                            // representa o "pixel" minimo do eixo y
     float linha_maximo = linha * (windowsSize_y * 0.05) + (windowsSize_y * 0.05);   // representa o "pixel" maximo do eixo y, nada mais que o minimo + tamanho do campo (5% do tamanho da tela)
     // 0.05: relembrar que o quadrado tera 5% do tamanho da tela
-    if(G_timer != 0)                                                                // if temporario para que nao revele logo no inicio algum campo
-    {
+    //if(G_timer != 0)                                                                // if temporario para que nao revele logo no inicio algum campo
+    //{
         if((G_click_pos_x > coluna_minimo) && (G_click_pos_x < coluna_maximo))          // Verificao do clique no eixo X
         {
             if((G_click_pos_y > linha_minimo) && (G_click_pos_y < linha_maximo))        // Verificao do clique no eixo Y
@@ -542,7 +548,7 @@ static bool Calculo_Posicao(int linha, int coluna)
                 return true;
             }
         }
-    }
+    //}
     return false;
 }
 
@@ -565,8 +571,8 @@ static void Revelar_Campo(int indice)
         {
             if(campo_minado[indice].campo_mina)         // Campo com mina ?
             {
-                glutMouseFunc(NULL);
-                G_Game_Over = true;
+                //glutMouseFunc(NULL);
+                G_estado_jogo = 3;
                 Desenha_Minas();
                 AbreJogoGameOver();
                 renderGameOver();
@@ -582,8 +588,8 @@ static void Revelar_Campo(int indice)
                 Minas_Adjacentes(indice);                //Mostra a quantidade de minas que o quadrado revelado possui
                 campo_minado[indice].revelado = true;    //Marca o quadrado como revelado
                 if(G_nao_revelados == 0){                //Condição para fim de jogo, se todos os quadrados que não são minas foram revelados
-                    G_Game_Over = true;                  //Marca como fim de jogo
-                    glutMouseFunc(NULL);                 //Desabilita função de clique do Mouse
+                    G_estado_jogo = 3;                   //Marca como fim de jogo
+                    //glutMouseFunc(NULL);                 //Desabilita função de clique do Mouse
                     renderVenceu();                      //Mostra Mensagem de Vencedor
                 }
                 if(campo_minado[indice].minas_adja == 0){//Verifica se o quadrado aberto possui 0 minas adjacentes para chamar a função que expande e mostra uma ilha
@@ -741,33 +747,38 @@ static void mouse(int botao, int estado, int x, int y)
     if(botao == GLUT_LEFT_BUTTON){
         if(estado == GLUT_DOWN){
             //printf("\n[DEBUG]: Apertou botao esquerdo mouse");
+            if(G_estado_jogo > 0 && G_estado_jogo < 3)
+            {
+                G_click_pos_x = x - (windowsSize_x / 2);                    // ajusta a posição do mouse para combinar com o viewport, posicao x real - janela X / 2
+                G_click_pos_x = G_click_pos_x + ((float(windowsSize_x) * 0.05) * (float(G_colunas) / 2));
+                G_click_pos_y = (windowsSize_y / 2) - y ;                   // ajusta a posição do mouse para combinar com o viewport, anela Y / 2 - posicao y real
+                G_click_pos_y = G_click_pos_y + ((float(windowsSize_y) * 0.05) * (float(G_linhas) / 2));
+                printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
 
-            G_click_pos_x = x - (windowsSize_x / 2);                    // ajusta a posição do mouse para combinar com o viewport, posicao x real - janela X / 2
-            G_click_pos_x = G_click_pos_x + ((float(windowsSize_x) * 0.05) * (float(G_colunas) / 2));
-            G_click_pos_y = (windowsSize_y / 2) - y ;                   // ajusta a posição do mouse para combinar com o viewport, anela Y / 2 - posicao y real
-            G_click_pos_y = G_click_pos_y + ((float(windowsSize_y) * 0.05) * (float(G_linhas) / 2));
-            printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
-
-            G_operacao_desenho = 1;
-            glutPostRedisplay();
+                G_operacao_desenho = 1;
+                glutPostRedisplay();
+            }
         }
     }else if(botao == GLUT_RIGHT_BUTTON){
         if(estado == GLUT_DOWN){
             //printf("\n[DEBUG]: Apertou Botao direito mouse");
+            if(G_estado_jogo > 0 && G_estado_jogo < 3)
+            {
+                G_click_pos_x = x - (windowsSize_x / 2);                    // ajusta a posição do mouse para combinar com o viewport, posicao x real - janela X / 2
+                G_click_pos_x = G_click_pos_x + ((float(windowsSize_x) * 0.05) * (float(G_colunas) / 2));
+                G_click_pos_y = (windowsSize_y / 2) - y ;                   // ajusta a posição do mouse para combinar com o viewport, anela Y / 2 - posicao y real
+                G_click_pos_y = G_click_pos_y + ((float(windowsSize_y) * 0.05) * (float(G_linhas) / 2));
+                printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
 
-            G_click_pos_x = x - (windowsSize_x / 2);                    // ajusta a posição do mouse para combinar com o viewport, posicao x real - janela X / 2
-            G_click_pos_x = G_click_pos_x + ((float(windowsSize_x) * 0.05) * (float(G_colunas) / 2));
-            G_click_pos_y = (windowsSize_y / 2) - y ;                   // ajusta a posição do mouse para combinar com o viewport, anela Y / 2 - posicao y real
-            G_click_pos_y = G_click_pos_y + ((float(windowsSize_y) * 0.05) * (float(G_linhas) / 2));
-            printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
-
-            G_operacao_desenho = 2;
-            glutPostRedisplay();
+                G_operacao_desenho = 2;
+                glutPostRedisplay();
+            }
         }
     }//else{
         //printf("\n[DEBUG]: Nao entendo o que vc quer clicar, pare de apertar esse botao por favor");
     //}
 }
+
 void Quadro_regra(void){
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
@@ -797,6 +808,7 @@ void Quadro_regra(void){
     renderText("Voltar ao Menu Inicial", 22, 11, 16);
     glutSwapBuffers();
 }
+
 static void MouseMenu(int botao, int estado, int x, int y){
 
     if(botao == GLUT_LEFT_BUTTON){
@@ -808,37 +820,81 @@ static void MouseMenu(int botao, int estado, int x, int y){
             G_click_pos_y = (windowsSize_y / 2) - y ;                   // ajusta a posição do mouse para combinar com o viewport, anela Y / 2 - posicao y real
             //G_click_pos_y = G_click_pos_y + ((float(windowsSize_y) * 0.05) * (float(G_linhas) / 2));
             printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
-            if(G_click_pos_x>-120 && G_click_pos_x<-30 && G_click_pos_y >152 && G_click_pos_y < 180){
-                printf("Entrou aqui");
-                glutMouseFunc(mouse);
-                G_dificuldade = 0;
-                MenuTemporario();
-                glutDisplayFunc(Atualiza_desenho);
-            }else if(G_click_pos_x > 30 && G_click_pos_x < 120 && G_click_pos_y > 150 && G_click_pos_y < 180){
-                glutMouseFunc(mouse);
-                G_dificuldade = 1;
-                MenuTemporario();
-                glutDisplayFunc(Atualiza_desenho);
-            }else if(G_click_pos_x > -45  && G_click_pos_x < 45 && G_click_pos_y > 106 && G_click_pos_y < 140){
-                glutMouseFunc(mouse);
-                G_dificuldade = 2;
-                MenuTemporario();
-                glutDisplayFunc(Atualiza_desenho);
-            }else if(G_click_pos_x > -180  && G_click_pos_x < -90 && G_click_pos_y > 46 && G_click_pos_y < 75){
-                printf("Entrou Aqui");
-                regras = true;
-               // Quadro_regra();
-                glutDisplayFunc(Quadro_regra);
-            }
-            if(regras == true){
-                printf("Entrou condicao if regras");
-                if(G_click_pos_x > -240 && G_click_pos_x < -30 && G_click_pos_y > -210 && G_click_pos_y < -180){
-                   printf("entrou regras");
-                   glutDisplayFunc(Menu_grafico);
-                   regras = false;
+            if(G_estado_jogo == 0)
+            {
+                if(regras == false){
+                    // Tratamento do clique para a dificuldade "Novato"
+                    if( (G_click_pos_x > (-4.0 * (windowsSize_x * 0.05))) &&
+                        (G_click_pos_x < (-4.0 * (windowsSize_x * 0.05)) + 3.0 * (windowsSize_x * 0.05)) )
+                    {
+                        if( (G_click_pos_y > (5.0 * (windowsSize_y * 0.05))) &&
+                            (G_click_pos_y < (5.0 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)) )
+                        {
+                            G_estado_jogo = 1;
+                            printf("Entrou aqui");
+                            glutMouseFunc(mouse);
+                            G_dificuldade = 0;
+                            MenuTemporario();
+                            glutDisplayFunc(Atualiza_desenho);
+                        }
+                    }
+                    // Tratamento do clique para a dificuldade "Moderado"
+                    else if( (G_click_pos_x > (1.0 * (windowsSize_x * 0.05))) &&
+                             (G_click_pos_x < (1.0 * (windowsSize_x * 0.05) + 3.0 * (windowsSize_x * 0.05))) )
+                    {
+                        if( (G_click_pos_y > (5.0 * (windowsSize_y * 0.05))) &&
+                            (G_click_pos_y < (5.0 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)) )
+                        {
+                            G_estado_jogo = 1;
+                            glutMouseFunc(mouse);
+                            G_dificuldade = 1;
+                            MenuTemporario();
+                            glutDisplayFunc(Atualiza_desenho);
+                        }
+                    }
+                    // Tratamento do clique para a dificuldade "Normal"
+                    else if( (G_click_pos_x > (-1.5 * (windowsSize_x * 0.05))) &&
+                             (G_click_pos_x < (-1.5 * (windowsSize_x * 0.05) + 3.0 * (windowsSize_x * 0.05))) )
+                    {
+                        if( (G_click_pos_y > (3.5 * (windowsSize_y * 0.05))) &&
+                            (G_click_pos_y < (3.5 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)) )
+                        {
+                            G_estado_jogo = 1;
+                            glutMouseFunc(mouse);
+                            G_dificuldade = 2;
+                            MenuTemporario();
+                            glutDisplayFunc(Atualiza_desenho);
+                        }
+                    }
+                    else if( (G_click_pos_x > (-6.0 * (windowsSize_x * 0.05))) &&
+                             (G_click_pos_x < (-6.0 * (windowsSize_x * 0.05) + 3.0 * (windowsSize_x * 0.05))) )
+                    {
+                        if( (G_click_pos_y > (1.5 * (windowsSize_y * 0.05))) &&
+                           (G_click_pos_y < (1.5 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)))
+                        {
+                            printf("Entrou Aqui");
+                            regras = true;
+                           // Quadro_regra();
+                            glutDisplayFunc(Quadro_regra);
+                        }
+                    }
+                }
+                if(regras == true){
+                    printf("Entrou condicao if regras");
+                    if( (G_click_pos_x > (-8.0 * (windowsSize_x * 0.05))) &&
+                             (G_click_pos_x < (-8.0 * (windowsSize_x * 0.05) + 7.0 * (windowsSize_x * 0.05))) )
+                    {
+                        if( (G_click_pos_y > (-7.0 * (windowsSize_y * 0.05))) &&
+                           (G_click_pos_y < (-7.0 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)))
+                        {
+                           printf("entrou regras");
+                           glutDisplayFunc(Menu_grafico);
+                           regras = false;
+                        }
+                    }
                 }
             }
-
+            inicializaCampos();
             //G_operacao_desenho = 1;
             glutPostRedisplay();
         }
@@ -1045,8 +1101,6 @@ int main(){
     glutInitDisplayMode (GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
 
     glutCreateWindow("Campo Minado"); //Set Windows Name
-
-    inicializaCampos();  //Initialize board
 
     glutDisplayFunc(Menu_grafico);  //Atualizar tela
     glutReshapeFunc(Atualiza_tamanho);  //Atualiza tamanho
