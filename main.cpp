@@ -940,7 +940,6 @@ static void renderGameOver()
     int i; //Variável utilizada para os fors
     glPushMatrix();
     glColor3f(1.0, 0.0, 0.0); //Cor do texto a ser impresso
-    renderText("===================================================================", 67, 0, 99); //Desenha uma faixa no topo da janela
     //G
     renderText("### ", 4, 19, 97);  //Desenha o Topo do G
     renderText("   #", 4, 19, 96);  //Desenha a ponta do topo do G
@@ -1014,7 +1013,6 @@ static void renderGameOver()
         renderText("    #", 5, 75, i);
     }
     renderText("Pressione q para sair ou r para reiniciar", 41, 25, 89); //Escreve a frase abaixo do desenho
-    renderText("===================================================================", 67, 0, 87); //Desenha uma faixa logo acima do tabuleiro
     glPopMatrix();
 
 }
@@ -1023,8 +1021,8 @@ static void renderVenceu()
 {// Função para desenha mensagem Você Venceu quando o jogador vencer a partida
     int i;
     glPushMatrix();
+
     glColor3f(0.0, 0.0, 1.0);
-    renderText("===================================================================", 67, 0, 99); //Desenha uma faixa no topo da janela
     //V
     for(i=95; i>=91; i--){
         renderText("#", 1, 12, i);
@@ -1112,7 +1110,6 @@ static void renderVenceu()
         renderText("    #", 5, 80, i);
     }
     //renderText("Pressione q para sair", 21, 30, 89); //Escreve a frase abaixo do desenho
-    renderText("===================================================================", 67, 0, 87); //Desenha uma faixa no topo da janela
     glPopMatrix();
 }
 
