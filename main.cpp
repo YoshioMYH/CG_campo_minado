@@ -30,7 +30,7 @@ int G_bandeiras = 0;            // Quantidade de bandeiras no jogo. No Bandeiras
 
 int G_linhas = 5;               // Quantidade de Linhas do tabuleiro
 int G_colunas = 5;              // Quantidade de Colunas do tabuleiro
-bool regras = false;
+bool G_regras = false;
 
 int G_click_pos_x = 0.0;        // Posicao X do clique do mouse
 int G_click_pos_y = 0.0;        // Posicao Y do clique do mouse
@@ -89,7 +89,7 @@ static void Timer(int value);                                           // Funci
 static void Atualiza_tamanho(int largura, int altura);                  // Funcionando
 static void Atualiza_desenho(void);                                     // Funcionando [Melhorar]
 static void Menu_grafico();
-static void MouseMenu();
+static void MouseMenu(int botao, int estado, int x, int y);
 static void teclado(unsigned char tecla, int x, int y);                 // Funcionando
 static void mouse(int botao, int estado, int x, int y);                 // Funcionando
 
@@ -201,17 +201,20 @@ static void MenuTemporario()
             G_linhas = 10;
             G_colunas = 10;
             G_minas = 15;
+            G_bandeiras = 15;
             break;
         case 2: // Hard
             G_linhas = 15;
             G_colunas = 15;
             G_minas = 30;
+            G_bandeiras = 30;
             break;
         case 0: // Easy
         default:
             G_linhas = 5;
             G_colunas = 5;
             G_minas = 5;
+            G_bandeiras = 5;
             break;
     }
 }
@@ -483,6 +486,7 @@ static void Tabuleiro()
         glTranslatef(0.0, 1.0, 0.0);                        // translada em y para posicionar a proxima linha
     }
     glPopMatrix();                                          // retorna a posicao Y inicial
+    renderText("Pressione r caso queira comecar um novo jogo", 44, 22, 10);
 }
 
 static void Calculo_Desenho(int linha, int coluna, int indice)
@@ -736,6 +740,15 @@ static void teclado(unsigned char tecla, int x, int y)
         case 'q':
             exit(0);
             break;
+        case 'r':
+            G_regras = false;
+            G_estado_jogo = 0;
+            G_timer = 0;
+            glutDisplayFunc(Menu_grafico);
+            glutPostRedisplay();
+            glutMouseFunc(MouseMenu);
+
+            break;
         default:
             //printf("\nNenhum evento atribuido a tecla\n");
             break;
@@ -822,7 +835,7 @@ static void MouseMenu(int botao, int estado, int x, int y){
             printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
             if(G_estado_jogo == 0)
             {
-                if(regras == false){
+                if(G_regras == false){
                     // Tratamento do clique para a dificuldade "Novato"
                     if( (G_click_pos_x > (-4.0 * (windowsSize_x * 0.05))) &&
                         (G_click_pos_x < (-4.0 * (windowsSize_x * 0.05)) + 3.0 * (windowsSize_x * 0.05)) )
@@ -873,13 +886,13 @@ static void MouseMenu(int botao, int estado, int x, int y){
                            (G_click_pos_y < (1.5 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)))
                         {
                             printf("Entrou Aqui");
-                            regras = true;
+                            G_regras = true;
                            // Quadro_regra();
                             glutDisplayFunc(Quadro_regra);
                         }
                     }
                 }
-                if(regras == true){
+                if(G_regras == true){
                     printf("Entrou condicao if regras");
                     if( (G_click_pos_x > (-8.0 * (windowsSize_x * 0.05))) &&
                              (G_click_pos_x < (-8.0 * (windowsSize_x * 0.05) + 7.0 * (windowsSize_x * 0.05))) )
@@ -889,7 +902,7 @@ static void MouseMenu(int botao, int estado, int x, int y){
                         {
                            printf("entrou regras");
                            glutDisplayFunc(Menu_grafico);
-                           regras = false;
+                           G_regras = false;
                         }
                     }
                 }
@@ -913,6 +926,7 @@ static void MouseMenu(int botao, int estado, int x, int y){
         }
     }
 }
+
 static void renderGameOver()
 { //Realiza o desenho da escrita GAME OVER utilizando #'s
     int i; //Variável utilizada para os fors
@@ -991,7 +1005,7 @@ static void renderGameOver()
         if(i == 94)continue;
         renderText("    #", 5, 75, i);
     }
-    renderText("Pressione q para sair", 21, 30, 89); //Escreve a frase abaixo do desenho
+    renderText("Pressione q para sair ou r para reiniciar", 41, 25, 89); //Escreve a frase abaixo do desenho
     renderText("===================================================================", 67, 0, 87); //Desenha uma faixa logo acima do tabuleiro
     glPopMatrix();
 
