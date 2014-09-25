@@ -229,16 +229,12 @@
 	<_mingw.h>
 	<stddef.h>
 
-1410953935 source:c:\users\alexoshiro\documents\github\cg_campo_minado\main.cpp
+1410785404 source:g:\github\cg_campo_minado\main.cpp
 	<gl/glut.h>
 	<stdlib.h>
 	<stdio.h>
-	<string>
-	<iostream>
-	<sstream>
-	<vector>
 
-1411239295 source:g:\github\cg_campo_minado\main.cpp
+1411650618 source:c:\users\alexoshiro\documents\github\cg_campo_minado\main.cpp
 	<gl/glut.h>
 	<stdlib.h>
 	<stdio.h>
@@ -247,23 +243,47 @@
 	<sstream>
 	<vector>
 	<time.h>
-	<conio.h>
+	"primitivas.h"
+	"renders.h"
 
-1411571972 source:c:\users\marcelo\documents\github\cg_campo_minado\main.cpp
-	<gl/glut.h>
-	<stdlib.h>
-	<stdio.h>
-	<string>
-	<iostream>
-	<sstream>
-	<vector>
-	<time.h>
-	<conio.h>
+1341010370 c:\program files (x86)\codeblocks\mingw\include\conio.h
+	<_mingw.h>
 
 1341010376 c:\program files (x86)\codeblocks\mingw\include\time.h
 	<_mingw.h>
 	<stddef.h>
 
-1341010370 c:\program files (x86)\codeblocks\mingw\include\conio.h
-	<_mingw.h>
+1411268953 source:e:\usuários\alex\documentos\github\cg_campo_minado\main.cpp
+	<gl/glut.h>
+	<stdlib.h>
+	<stdio.h>
+	<string>
+	<iostream>
+	<sstream>
+	<vector>
+	<time.h>
+	<conio.h>
+
+1411417240 source:c:\users\marcelo\documents\github\cg_campo_minado\main.cpp
+	<gl/glut.h>
+	<stdlib.h>
+	<stdio.h>
+	<string>
+	<iostream>
+	<sstream>
+	<vector>
+	<time.h>
+	<conio.h>
+
+1411650377 source:c:\users\alexoshiro\documents\github\cg_campo_minado\primitivas.cpp
+	<gl/glut.h>
+	"primitivas.h"
+
+1411650283 c:\users\alexoshiro\documents\github\cg_campo_minado\primitivas.h
+
+1411650618 c:\users\alexoshiro\documents\github\cg_campo_minado\renders.h
+
+1411650637 source:c:\users\alexoshiro\documents\github\cg_campo_minado\renders.cpp
+	<gl/glut.h>
+	"renders.h"
 

@@ -6,7 +6,8 @@
 #include <sstream>
 #include <vector>
 #include <time.h>
-
+#include "primitivas.h"
+#include "renders.h"
 // CONSTANTES
 #define INTERVALO_TEMPO 1000
 
@@ -26,7 +27,7 @@ GLint windowsSize_y = 700;      // Altura da janela
 
 int G_minas = 5;                // Quantidade de minas no campo
 int G_nao_revelados = 0;        // Quantidade de campos não revelados e que não são Minas
-int G_bandeiras = 5;            // Quantidade de bandeiras no jogo. No Bandeiras = No Minas
+int G_bandeiras = 0;            // Quantidade de bandeiras no jogo. No Bandeiras = No Minas
 
 int G_linhas = 5;               // Quantidade de Linhas do tabuleiro
 int G_colunas = 5;              // Quantidade de Colunas do tabuleiro
@@ -67,16 +68,11 @@ static void inicializaCampos();                                         // Funci
 static void AcrescentaMina(int indice);                                 // Funcionando
 
 static void MenuTemporario();                                           // Funcionando [Melhorar]
-static void renderText(const char *text, int length, int x, int y);     // Funcionando
+
 static void mostraMinas();                                              // Funcionando
 static void mostraTempo(int value);                                     // Funcionando
 
-static void Menus();                                                    // Funcionando
-static void Quadrado();                                                 // Funcionando [Melhorar]
-static void Revelado();                                                 // Funcionando [Melhorar]
 static void Minas_Adjacentes(int indice);                               // Funcionando
-static void Mina();                                                     // Funcionando
-static void Bandeira();                                                 // Funcionando [Melhorar]
 static void Tabuleiro();                                                // Funcionando
 
 static void Calc_Minas_Adjacentes();                                    // Funcionando
@@ -89,14 +85,14 @@ static void Timer(int value);                                           // Funci
 static void Atualiza_tamanho(int largura, int altura);                  // Funcionando
 static void Atualiza_desenho(void);                                     // Funcionando [Melhorar]
 static void Menu_grafico();
-static void MouseMenu(int botao, int estado, int x, int y);             //
+static void MouseMenu(int botao, int estado, int x, int y);
 static void teclado(unsigned char tecla, int x, int y);                 // Funcionando
 static void mouse(int botao, int estado, int x, int y);                 // Funcionando
 
-static void renderGameOver();                                           // Funcionando
-static void renderVenceu();                                             // Funcionando
+
 static void AbreJogoGameOver();                                         // Funcionando
 static void ExpandeArea(int indice);                                    // Funcionando
+void Quadro_Regra();
 
 static void inicializaCampos()
 {// Funcao que inicializa todos os campos com valores nulos
@@ -219,25 +215,6 @@ static void MenuTemporario()
     }
 }
 
-static void renderText(const char *text, int length, int x, int y)
-{// Função para renderizar o texto
-    glMatrixMode(GL_PROJECTION);
-    double *matrix = new double[16];
-    glGetDoublev(GL_PROJECTION_MATRIX, matrix);
-    glLoadIdentity();
-    glOrtho(0, 100, 0, 100, -5, 5); //Cria um ortho apenas para a escrita contendo a suas próprias coordenadas para ficar com maior precisão
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glPushMatrix();
-    glRasterPos2i(x, y);
-    for(int i=0; i<length; i++){
-        glutBitmapCharacter(GLUT_BITMAP_9_BY_15, (int)text[i]);
-    }
-    glPopMatrix();
-    glMatrixMode(GL_PROJECTION);
-    glLoadMatrixd(matrix);
-    glMatrixMode(GL_MODELVIEW);
-}
 
 static void mostraMinas()
 {// Função para mostra a quantidade de bombas iniciais em campo.
@@ -298,41 +275,7 @@ static void AbreJogoGameOver()
     }
 }
 
-static void Menus()
-{// Cria os campos dos Menus
-    glBegin(GL_LINE_LOOP);
-        glVertex2f(0, 0);
-        glVertex2f(0, 1);
-        glVertex2f(1, 1);
-        glVertex2f(1, 0);
-    glEnd();
-}
 
-static void Quadrado()
-{// Campo nao revelado, o tamanho atual do campo é de X = 5% do windowsSize_x | Y = 5% do windowsSize_y
-    glPushMatrix();
-        glColor3f(0.0, 0.0, 0.0);
-        glBegin(GL_LINE_LOOP);
-            glVertex2f(0, 0);
-            glVertex2f(0, 1);
-            glVertex2f(1, 1);
-            glVertex2f(1, 0);
-        glEnd();
-    glPopMatrix();
-}
-
-static void Revelado()
-{// Campo revelado sem mina, mostra o numero de minas adjacentes, o tamanho atual do campo é de X = 5% do windowsSize_x | Y = 5% do windowsSize_y
-    glPushMatrix();
-        glBegin(GL_QUADS);
-            glColor3f(0.4, 0.4, 0.4);
-            glVertex2f(0, 0);
-            glVertex2f(0, 1);
-            glVertex2f(1, 1);
-            glVertex2f(1, 0);
-        glEnd();
-    glPopMatrix();
-}
 
 static void Minas_Adjacentes(int indice)
 {// Mostrar o numero de Minas adjacentes do campo
@@ -426,31 +369,8 @@ static void ExpandeArea(int indice)
     glutPostRedisplay();
 }
 
-static void Mina()
-{// Campo revelado com mina, Game Over
-    glPushMatrix();
-        glBegin(GL_QUADS);
-            glColor3f(1.0, 0.0, 0.0);
-            glVertex2f(0, 0);
-            glVertex2f(0, 1);
-            glVertex2f(1, 1);
-            glVertex2f(1, 0);
-        glEnd();
-    glPopMatrix();
-}
 
-static void Bandeira()
-{// Campo protegido, representa um possivel local com uma mina, o tamanho atual do campo é de X = 5% do windowsSize_x | Y = 5% do windowsSize_y
-    glPushMatrix();
-        glBegin(GL_QUADS);
-            glColor3f(0.0, 1.0, 0.0);
-            glVertex2f(0, 0);
-            glVertex2f(0, 1);
-            glVertex2f(1, 1);
-            glVertex2f(1, 0);
-        glEnd();
-    glPopMatrix();
-}
+
 
 static void Tabuleiro()
 {// Funcao que gera o Tabuleiro
@@ -647,46 +567,45 @@ static void Atualiza_tamanho(int largura, int altura)
 
     //printf("\n[DEBUG] : Evento Atualiza tamanho\n");
 }
-
-static void Menu_grafico(void)
-{
+static void Menu_grafico(void){
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
     glPushMatrix();
         glColor3f(0.0, 0.0, 0.0);
-        glPushMatrix();
-            glTranslatef(-6.0, 3.0, 0);
-            glScalef(12.0, 5.0, 0.0);
-            Menus();
-            renderText("Dificuldade", 11, 42, 87);
-            renderText("Escolha uma para iniciar o jogo", 31, 27, 85);
-        glPopMatrix();
-        glPushMatrix();
-            glTranslatef(-4.0, 5.0, 0);
-            glScalef(3.0, 1.0, 0.0);
-            Menus();
-            renderText("Novato", 6, 33, 77);
-        glPopMatrix();
-        glPushMatrix();
-            glTranslatef(1.0, 5.0, 0);
-            glScalef(3.0, 1.0, 0.0);
-            Menus();
-            renderText("Moderado", 8, 57, 77);
-        glPopMatrix();
-        glPushMatrix();
-            glTranslatef(-1.5, 3.5, 0);
-            glScalef(3.0, 1.0, 0.0);
-            Menus();
-            renderText("Normal", 6, 46, 69);
-        glPopMatrix();
-        glPushMatrix();
-            glTranslatef(-6.0, 1.5, 0);
-            glScalef(3.0, 1.0, 0.0);
-            Menus();
-            renderText("Regras", 6, 23, 59);
-        glPopMatrix();
+    glPushMatrix();
+        glTranslatef(-6.0, 3.0, 0);
+        glScalef(12.0, 5.0, 0.0);
+        Menus();
+        renderText("Dificuldade", 11, 42, 87);
+        renderText("Escolha uma para iniciar o jogo", 31, 27, 85);
+    glPopMatrix();
+    glPushMatrix();
+        glTranslatef(-4.0, 5.0, 0);
+        glScalef(3.0, 1.0, 0.0);
+        Menus();
+        renderText("Novato", 6, 33, 77);
+    glPopMatrix();
+    glPushMatrix();
+        glTranslatef(1.0, 5.0, 0);
+        glScalef(3.0, 1.0, 0.0);
+        Menus();
+        renderText("Moderado", 8, 57, 77);
+    glPopMatrix();
+    glPushMatrix();
+        glTranslatef(-1.5, 3.5, 0);
+        glScalef(3.0, 1.0, 0.0);
+        Menus();
+        renderText("Normal", 6, 46, 69);
+    glPopMatrix();
+    glPushMatrix();
+        glTranslatef(-6.0, 1.5, 0);
+        glScalef(3.0, 1.0, 0.0);
+        Menus();
+        renderText("Regras", 6, 23, 59);
+    glPopMatrix();
+
     glPopMatrix();
     glutSwapBuffers();
 
@@ -793,8 +712,7 @@ static void mouse(int botao, int estado, int x, int y)
     //}
 }
 
-static void Quadro_Regra()
-{
+void Quadro_Regra(void){
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -824,8 +742,8 @@ static void Quadro_Regra()
     glutSwapBuffers();
 }
 
-static void MouseMenu(int botao, int estado, int x, int y)
-{
+static void MouseMenu(int botao, int estado, int x, int y){
+
     if(botao == GLUT_LEFT_BUTTON){
         if(estado == GLUT_DOWN){
             //printf("\n[DEBUG]: Apertou botao esquerdo mouse");
@@ -837,65 +755,62 @@ static void MouseMenu(int botao, int estado, int x, int y)
             printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
             if(G_estado_jogo == 0)
             {
-                // Tratamento do clique para a dificuldade "Novato"
-                if( G_click_pos_x > ( ((windowsSize_x * 0.05) * (-4.0)) ) &&
-                    G_click_pos_x < ( ((windowsSize_x * 0.05) * (-4.0)) + ((windowsSize_x * 0.05) * (3.0)) ) )
-                {
-                    if( G_click_pos_y > ( ((windowsSize_y * 0.05) * (5.0)) ) &&
-                        G_click_pos_y < ( ((windowsSize_y * 0.05) * (5.0)) + ((windowsSize_y * 0.05) * (3.0)) ) )
+                if(G_regras == false){
+                    // Tratamento do clique para a dificuldade "Novato"
+                    if( G_click_pos_x > ( ((windowsSize_x * 0.05) * (-4.0)) ) &&
+                        G_click_pos_x < ( ((windowsSize_x * 0.05) * (-4.0)) + ((windowsSize_x * 0.05) * (3.0)) ) )
                     {
-                        G_estado_jogo = 1;
-                        glutMouseFunc(mouse);
-                        G_dificuldade = 0;
-                        MenuTemporario();
-                        glutDisplayFunc(Atualiza_desenho);
+                        if( G_click_pos_y > ( ((windowsSize_y * 0.05) * (5.0)) ) &&
+                            G_click_pos_y < ( ((windowsSize_y * 0.05) * (5.0)) + ((windowsSize_y * 0.05) * (3.0)) ) )
+                        {
+                            G_estado_jogo = 1;
+                            glutMouseFunc(mouse);
+                            G_dificuldade = 0;
+                            MenuTemporario();
+                            glutDisplayFunc(Atualiza_desenho);
+                        }
+                    }
+
+                    // Tratamento do clique para a dificuldade "Moderado"
+                    if( G_click_pos_x > ( ((windowsSize_x * 0.05) * (1.0)) ) &&
+                             G_click_pos_x < ( ((windowsSize_x * 0.05) * (1.0)) + ((windowsSize_x * 0.05) * (3.0)) ) )
+                    {
+                        if( G_click_pos_y > ( ((windowsSize_y * 0.05) * (5.0)) ) &&
+                            G_click_pos_y < ( ((windowsSize_y * 0.05) * (5.0)) + ((windowsSize_y * 0.05) * (1.0)) ) )
+                        {
+                            G_estado_jogo = 1;
+                            glutMouseFunc(mouse);
+                            G_dificuldade = 1;
+                            MenuTemporario();
+                            glutDisplayFunc(Atualiza_desenho);
+                        }
+                    }
+                    // Tratamento do clique para a dificuldade "Normal"
+                    if( G_click_pos_x > ( ((windowsSize_x * 0.05) * (-1.5)) ) &&
+                             G_click_pos_x < ( ((windowsSize_x * 0.05) * (-1.5)) + ((windowsSize_x * 0.05) * (3.0)) ) )
+                    {
+                        if( G_click_pos_y > ( ((windowsSize_y * 0.05) * (3.5)) ) &&
+                            G_click_pos_y < ( ((windowsSize_y * 0.05) * (3.5)) + ((windowsSize_y * 0.05) * (1.0)) ) )
+                        {
+                            G_estado_jogo = 1;
+                            glutMouseFunc(mouse);
+                            G_dificuldade = 2;
+                            MenuTemporario();
+                            glutDisplayFunc(Atualiza_desenho);
+                        }
+                    }
+                    if( G_click_pos_x > ( ((windowsSize_x * 0.05) * (-6.0)) ) &&
+                             G_click_pos_x < ( ((windowsSize_x * 0.05) * (-6.0)) + ((windowsSize_x * 0.05) * (3.0)) ) )
+                    {
+                        if( G_click_pos_y > ( ((windowsSize_y * 0.05) * (1.5)) ) &&
+                            G_click_pos_y < ( ((windowsSize_y * 0.05) * (1.5)) + ((windowsSize_y * 0.05) * (1.0)) ) )
+                        {
+                            printf("Entrou aqui");
+                            G_regras = true;
+                            Quadro_Regra();
+                        }
                     }
                 }
-
-                // Tratamento do clique para a dificuldade "Moderado"
-                if( G_click_pos_x > ( ((windowsSize_x * 0.05) * (1.0)) ) &&
-                         G_click_pos_x < ( ((windowsSize_x * 0.05) * (1.0)) + ((windowsSize_x * 0.05) * (3.0)) ) )
-                {
-                    if( G_click_pos_y > ( ((windowsSize_y * 0.05) * (5.0)) ) &&
-                        G_click_pos_y < ( ((windowsSize_y * 0.05) * (5.0)) + ((windowsSize_y * 0.05) * (1.0)) ) )
-                    {
-                        G_estado_jogo = 1;
-                        glutMouseFunc(mouse);
-                        G_dificuldade = 1;
-                        MenuTemporario();
-                        glutDisplayFunc(Atualiza_desenho);
-                    }
-                }
-
-                // Tratamento do clique para a dificuldade "Normal"
-                if( G_click_pos_x > ( ((windowsSize_x * 0.05) * (-1.5)) ) &&
-                         G_click_pos_x < ( ((windowsSize_x * 0.05) * (-1.5)) + ((windowsSize_x * 0.05) * (3.0)) ) )
-                {
-                    if( G_click_pos_y > ( ((windowsSize_y * 0.05) * (3.5)) ) &&
-                        G_click_pos_y < ( ((windowsSize_y * 0.05) * (3.5)) + ((windowsSize_y * 0.05) * (1.0)) ) )
-                    {
-                        G_estado_jogo = 1;
-                        glutMouseFunc(mouse);
-                        G_dificuldade = 2;
-                        MenuTemporario();
-                        glutDisplayFunc(Atualiza_desenho);
-                    }
-                }
-
-                // Tratamento do clique para as regras
-                if( G_click_pos_x > ( ((windowsSize_x * 0.05) * (-6.0)) ) &&
-                         G_click_pos_x < ( ((windowsSize_x * 0.05) * (-6.0)) + ((windowsSize_x * 0.05) * (3.0)) ) )
-                {
-                    if( G_click_pos_y > ( ((windowsSize_y * 0.05) * (1.5)) ) &&
-                        G_click_pos_y < ( ((windowsSize_y * 0.05) * (1.5)) + ((windowsSize_y * 0.05) * (1.0)) ) )
-                    {
-                        printf("Entrou aqui");
-                        G_regras = true;
-                        Quadro_Regra();
-                        //glutDisplayFunc(Quadro_regra);
-                    }
-                }
-
                 if(G_regras == true){
                     printf("Entrou condicao if regras");
                     if( (G_click_pos_x > (-8.0 * (windowsSize_x * 0.05))) &&
@@ -911,8 +826,7 @@ static void MouseMenu(int botao, int estado, int x, int y)
                     }
                 }
             }
-
-            inicializaCampos();  //Initialize board
+            inicializaCampos(); //Initialize board
             //G_operacao_desenho = 1;
             glutPostRedisplay();
         }
@@ -921,9 +835,7 @@ static void MouseMenu(int botao, int estado, int x, int y)
             //printf("\n[DEBUG]: Apertou Botao direito mouse");
 
             G_click_pos_x = x - (windowsSize_x / 2);                    // ajusta a posição do mouse para combinar com o viewport, posicao x real - janela X / 2
-            //G_click_pos_x = G_click_pos_x + ((float(windowsSize_x) * 0.05) * (float(G_colunas) / 2));
             G_click_pos_y = (windowsSize_y / 2) - y ;                   // ajusta a posição do mouse para combinar com o viewport, anela Y / 2 - posicao y real
-            //G_click_pos_y = G_click_pos_y + ((float(windowsSize_y) * 0.05) * (float(G_linhas) / 2));
             printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
 
             //G_operacao_desenho = 2;
@@ -932,189 +844,8 @@ static void MouseMenu(int botao, int estado, int x, int y)
     }
 }
 
-static void renderGameOver()
-{ //Realiza o desenho da escrita GAME OVER utilizando #'s
-    int i; //Variável utilizada para os fors
-    glPushMatrix();
-    glColor3f(1.0, 0.0, 0.0); //Cor do texto a ser impresso
-    renderText("===================================================================", 67, 0, 99); //Desenha uma faixa no topo da janela
-    //G
-    renderText("### ", 4, 19, 97);  //Desenha o Topo do G
-    renderText("   #", 4, 19, 96);  //Desenha a ponta do topo do G
-    for(i=96; i>=92; i--){          //Desenha a coluna do G
-        renderText("#", 1, 18, i);
-    }
-    renderText("### ", 4, 19, 91);  //Desenha a base do G
-    renderText("   #", 4, 19, 92);  //Desenha a coluna da curva que leva ao interior do G
-    renderText("   #", 4, 19, 93);  //Desenha a coluna da curva que leva ao interior do G
-    renderText("  #", 3, 19, 93);   //Desenha a ponta do interior do G
-    //A
-    renderText(" ###", 4, 26, 97);  //Desenha o topo do A
-    for(i=96; i>=91; i--){          //Desenha a coluna da esquerda do A
-        renderText("#", 1, 26, i);
-    }
-    for(i=96; i>=91; i--){           //Desenha a coluna da direita do A
-        renderText("    #", 5, 26, i);
-    }
-    renderText(" ### ", 5, 26, 94);  //Desenha o traço do meio de A
-    //M
-    for(i=97; i>=91; i--){           //Desenha a coluna da esquerda de M
-        renderText("#", 1, 34, i);
-    }
-    renderText(" #", 2, 34, 96);    //Desenha o primeiro # do meio de M
-    renderText("  #", 3, 34, 95);   //Desenha o segundo # do meio de M
-    renderText("   #", 5, 34, 96);  //Desenha o terceiro # do meio de M
-    for(i=97; i>=91; i--){           //Desenha a coluna da direita de M
-        renderText("    #", 5, 34, i);
-    }
-    //E
-    for(i=97; i>=91; i--){          //Desenha a coluna do E
-        renderText("#", 1, 42, i);
-    }
-    for(i=97; i>=91; i-=3){         //Desenha as 3 verticais de E
-    renderText(" ###", 4, 42, i);
-    }
-    //O
-    for(i=96; i>=92; i--){          //Desenha a coluna da esquerda de O
-        renderText("#", 1, 54, i);
-    }
-    renderText(" ##", 3, 54, 97);  //Desenha o Topo de O
-    for(i=96; i>=92; i--){          //Desenha a coluna da direita de O
-        renderText("   #", 4, 54, i);
-    }
-    renderText(" ##", 3, 54, 91); //Desenha a Base de O
-    //V
-    for(i=97; i>=93; i--){        //Desenha a coluna da esquerda de V
-        renderText("#", 1, 60, i);
-    }
-    renderText(" #", 2, 60, 92);  //Desenha a curva inferior de V
-    renderText("  #", 3, 60, 91); //Desenha a curva inferior de V
-    renderText("   #", 4, 60, 92); //Desenha a curva inferior de V
-    for(i=97; i>=93; i--){        //Desenha a coluna da direita de V
-        renderText("    #", 5, 60, i);
-    }
-    //E
-    for(i=97; i>=91; i--){        //Desenha a coluna do E
-        renderText("#", 1, 68, i);
-    }
-    for(i=97; i>=91; i-=3){       //Desenha as 3 verticais de E
-    renderText(" ###", 4, 68, i);
-    }
-    //R
-    for(i=97; i>=91; i--){         //Desenha a coluna do R
-        renderText("#", 1, 75, i);
-    }
-    renderText(" ###", 4, 75, 97); //Desenha o topo de R
-    renderText(" ###", 4, 75, 94); //Desenha o meio vertical de R
-    for(i=96; i>=91; i--){         //desenha a coluna da direita de R
-        if(i == 94)continue;
-        renderText("    #", 5, 75, i);
-    }
-    renderText("Pressione q para sair ou r para reiniciar", 41, 25, 89); //Escreve a frase abaixo do desenho
-    renderText("===================================================================", 67, 0, 87); //Desenha uma faixa logo acima do tabuleiro
-    glPopMatrix();
+int main(){
 
-}
-
-static void renderVenceu()
-{// Função para desenha mensagem Você Venceu quando o jogador vencer a partida
-    int i;
-    glPushMatrix();
-    glColor3f(0.0, 0.0, 1.0);
-    renderText("===================================================================", 67, 0, 99); //Desenha uma faixa no topo da janela
-    //V
-    for(i=95; i>=91; i--){
-        renderText("#", 1, 12, i);
-    }
-    renderText(" #", 2, 12, 90);
-    renderText("  #", 3, 12, 89);
-    renderText("   #", 4, 12, 90);
-    for(i=95; i>=91; i--){
-        renderText("    #", 5, 12, i);
-    }
-    //O
-    for(i=94; i>=90; i--){
-        renderText("#", 1, 20, i);
-    }
-    renderText(" ##", 3, 20, 95);
-    for(i=94; i>=90; i--){
-        renderText("   #", 4, 20, i);
-    }
-    renderText(" ##", 3, 20, 89);
-    //C
-    renderText(" ###", 4, 27, 95);
-    for(i=94; i>=90; i--){
-        renderText("#", 1, 27, i);
-    }
-    renderText(" ###", 4, 27, 89);
-    //E
-    for(i=95; i>=89; i--){
-        renderText("#", 1, 34, i);
-    }
-    for(i=95; i>=89; i-=3){
-    renderText(" ###", 4, 34, i);
-    }
-    //^
-    renderText(" #", 2, 34, 97);
-    renderText("  #", 3, 34, 98);
-    renderText("   #", 4, 34, 97);
-    //V
-    for(i=95; i>=91; i--){
-        renderText("#", 1, 43, i);
-    }
-    renderText(" #", 2, 43, 90);
-    renderText("  #", 3, 43, 89);
-    renderText("   #", 4, 43, 90);
-    for(i=95; i>=91; i--){
-        renderText("    #", 5, 43, i);
-    }
-    //E
-    for(i=95; i>=89; i--){
-        renderText("#", 1, 51, i);
-    }
-    for(i=95; i>=89; i-=3){
-    renderText(" ###", 4, 51, i);
-    }
-    //N
-    for(i=95; i>=89; i--){
-        renderText("#", 1, 58, i);
-    }
-    renderText(" #", 2, 58, 93);
-    renderText("  #", 3, 58, 92);
-    renderText("   #", 4, 58, 91);
-    for(i=95; i>=89; i--){
-        renderText("    #", 5, 58, i);
-    }
-    //C
-    renderText(" ###", 4, 66, 95);
-    for(i=94; i>=90; i--){
-        renderText("#", 1, 66, i);
-    }
-    renderText(" ###", 4, 66, 89);
-    //E
-    for(i=95; i>=89; i--){
-        renderText("#", 1, 73, i);
-    }
-    for(i=95; i>=89; i-=3){
-    renderText(" ###", 4, 73, i);
-    }
-    //U
-    for(i=95; i>=90; i--){
-        renderText("#", 1, 80, i);
-    }
-    renderText(" #", 2, 80, 89);
-    renderText("  #", 3, 80, 89);
-    renderText("   #", 4, 80, 89);
-    for(i=95; i>=90; i--){
-        renderText("    #", 5, 80, i);
-    }
-    //renderText("Pressione q para sair", 21, 30, 89); //Escreve a frase abaixo do desenho
-    renderText("===================================================================", 67, 0, 87); //Desenha uma faixa no topo da janela
-    glPopMatrix();
-}
-
-int main()
-{
     glutInitWindowSize(windowsSize_x, windowsSize_y);  //Set windows Size
     glutInitWindowPosition(300, 0);                    //Set Windows Position
     glutInitDisplayMode (GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
@@ -1126,6 +857,8 @@ int main()
 
     glutKeyboardFunc(teclado); //Acrescenta função de tecla
     glutMouseFunc(MouseMenu);      //Acrescenta função de clique
+
+    glutTimerFunc(0, Timer, 0); //Função de timer
 
     glClearColor(1,1,1,1);  //Cria tela de fundo Branca
     glutMainLoop();         //Loop infinito até finalizar a janela
