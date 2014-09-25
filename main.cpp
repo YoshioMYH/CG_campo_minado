@@ -30,7 +30,6 @@ int G_bandeiras = 0;            // Quantidade de bandeiras no jogo. No Bandeiras
 
 int G_linhas = 5;               // Quantidade de Linhas do tabuleiro
 int G_colunas = 5;              // Quantidade de Colunas do tabuleiro
-bool G_regras = false;
 
 int G_click_pos_x = 0.0;        // Posicao X do clique do mouse
 int G_click_pos_y = 0.0;        // Posicao Y do clique do mouse
@@ -51,6 +50,8 @@ int G_estado_jogo = 0;          // Determina em qual estado o jogo se encontra
 
 int G_timer = 0;                 // Mantém o tempo decorrido de jogo
 int G_dificuldade = 0;           // Mantém a dificuldade selecionada do jogo
+
+bool G_regras = false;
 
 std::vector<Campo> campo_minado; // Similar a um ArrayList [Java] para representar o Campo Minado
 
@@ -74,7 +75,6 @@ static void Menus();                                                    // Funci
 static void Quadrado();                                                 // Funcionando [Melhorar]
 static void Revelado();                                                 // Funcionando [Melhorar]
 static void Minas_Adjacentes(int indice);                               // Funcionando
-static void Desenha_Minas();                                            //
 static void Mina();                                                     // Funcionando
 static void Bandeira();                                                 // Funcionando [Melhorar]
 static void Tabuleiro();                                                // Funcionando
@@ -97,6 +97,7 @@ static void renderGameOver();                                           // Funci
 static void renderVenceu();                                             // Funcionando
 static void AbreJogoGameOver();                                         // Funcionando
 static void ExpandeArea(int indice);                                    // Funcionando
+void Quadro_Regra();
 
 static void inicializaCampos()
 {// Funcao que inicializa todos os campos com valores nulos
@@ -426,14 +427,6 @@ static void ExpandeArea(int indice)
     glutPostRedisplay();
 }
 
-static void Desenha_Minas()
-{
-    glPushMatrix();
-    glScalef(1.0, 1.0, 1.0);
-        glColor3f(1.0, 0.0, 0.0);
-        Mina();
-    glPopMatrix();
-}
 
 static void Mina()
 {// Campo revelado com mina, Game Over
@@ -470,6 +463,7 @@ static void Tabuleiro()
     int coluna = 0;                                         // iterador das colunas
 
     int cont = 0;                                           // contador para indicar o indice do campo
+
     glPushMatrix();
         glTranslatef(posStart_x, posStart_y, 0.0);              // translada para as posicoes X e Y iniciais do Tabuleiro
         glPushMatrix();
@@ -585,7 +579,7 @@ static void Revelar_Campo(int indice)
             {
                 //glutMouseFunc(NULL);
                 G_estado_jogo = 3;
-                Desenha_Minas();
+                Mina();
                 AbreJogoGameOver();
                 renderGameOver();
                 //printf("\n     Campo com mina.");
@@ -800,7 +794,7 @@ static void mouse(int botao, int estado, int x, int y)
     //}
 }
 
-void Quadro_regra(void){
+void Quadro_Regra(void){
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -845,26 +839,26 @@ static void MouseMenu(int botao, int estado, int x, int y){
             {
                 if(G_regras == false){
                     // Tratamento do clique para a dificuldade "Novato"
-                    if( (G_click_pos_x > (-4.0 * (windowsSize_x * 0.05))) &&
-                        (G_click_pos_x < (-4.0 * (windowsSize_x * 0.05)) + 3.0 * (windowsSize_x * 0.05)) )
+                    if( G_click_pos_x > ( ((windowsSize_x * 0.05) * (-4.0)) ) &&
+                        G_click_pos_x < ( ((windowsSize_x * 0.05) * (-4.0)) + ((windowsSize_x * 0.05) * (3.0)) ) )
                     {
-                        if( (G_click_pos_y > (5.0 * (windowsSize_y * 0.05))) &&
-                            (G_click_pos_y < (5.0 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)) )
+                        if( G_click_pos_y > ( ((windowsSize_y * 0.05) * (5.0)) ) &&
+                            G_click_pos_y < ( ((windowsSize_y * 0.05) * (5.0)) + ((windowsSize_y * 0.05) * (3.0)) ) )
                         {
                             G_estado_jogo = 1;
-                            printf("Entrou aqui");
                             glutMouseFunc(mouse);
                             G_dificuldade = 0;
                             MenuTemporario();
                             glutDisplayFunc(Atualiza_desenho);
                         }
                     }
+
                     // Tratamento do clique para a dificuldade "Moderado"
-                    else if( (G_click_pos_x > (1.0 * (windowsSize_x * 0.05))) &&
-                             (G_click_pos_x < (1.0 * (windowsSize_x * 0.05) + 3.0 * (windowsSize_x * 0.05))) )
+                    if( G_click_pos_x > ( ((windowsSize_x * 0.05) * (1.0)) ) &&
+                             G_click_pos_x < ( ((windowsSize_x * 0.05) * (1.0)) + ((windowsSize_x * 0.05) * (3.0)) ) )
                     {
-                        if( (G_click_pos_y > (5.0 * (windowsSize_y * 0.05))) &&
-                            (G_click_pos_y < (5.0 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)) )
+                        if( G_click_pos_y > ( ((windowsSize_y * 0.05) * (5.0)) ) &&
+                            G_click_pos_y < ( ((windowsSize_y * 0.05) * (5.0)) + ((windowsSize_y * 0.05) * (1.0)) ) )
                         {
                             G_estado_jogo = 1;
                             glutMouseFunc(mouse);
@@ -874,11 +868,11 @@ static void MouseMenu(int botao, int estado, int x, int y){
                         }
                     }
                     // Tratamento do clique para a dificuldade "Normal"
-                    else if( (G_click_pos_x > (-1.5 * (windowsSize_x * 0.05))) &&
-                             (G_click_pos_x < (-1.5 * (windowsSize_x * 0.05) + 3.0 * (windowsSize_x * 0.05))) )
+                    if( G_click_pos_x > ( ((windowsSize_x * 0.05) * (-1.5)) ) &&
+                             G_click_pos_x < ( ((windowsSize_x * 0.05) * (-1.5)) + ((windowsSize_x * 0.05) * (3.0)) ) )
                     {
-                        if( (G_click_pos_y > (3.5 * (windowsSize_y * 0.05))) &&
-                            (G_click_pos_y < (3.5 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)) )
+                        if( G_click_pos_y > ( ((windowsSize_y * 0.05) * (3.5)) ) &&
+                            G_click_pos_y < ( ((windowsSize_y * 0.05) * (3.5)) + ((windowsSize_y * 0.05) * (1.0)) ) )
                         {
                             G_estado_jogo = 1;
                             glutMouseFunc(mouse);
@@ -887,16 +881,15 @@ static void MouseMenu(int botao, int estado, int x, int y){
                             glutDisplayFunc(Atualiza_desenho);
                         }
                     }
-                    else if( (G_click_pos_x > (-6.0 * (windowsSize_x * 0.05))) &&
-                             (G_click_pos_x < (-6.0 * (windowsSize_x * 0.05) + 3.0 * (windowsSize_x * 0.05))) )
+                    if( G_click_pos_x > ( ((windowsSize_x * 0.05) * (-6.0)) ) &&
+                             G_click_pos_x < ( ((windowsSize_x * 0.05) * (-6.0)) + ((windowsSize_x * 0.05) * (3.0)) ) )
                     {
-                        if( (G_click_pos_y > (1.5 * (windowsSize_y * 0.05))) &&
-                           (G_click_pos_y < (1.5 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)))
+                        if( G_click_pos_y > ( ((windowsSize_y * 0.05) * (1.5)) ) &&
+                            G_click_pos_y < ( ((windowsSize_y * 0.05) * (1.5)) + ((windowsSize_y * 0.05) * (1.0)) ) )
                         {
-                            printf("Entrou Aqui");
+                            printf("Entrou aqui");
                             G_regras = true;
-                           // Quadro_regra();
-                            glutDisplayFunc(Quadro_regra);
+                            Quadro_Regra();
                         }
                     }
                 }
@@ -915,7 +908,7 @@ static void MouseMenu(int botao, int estado, int x, int y){
                     }
                 }
             }
-            inicializaCampos();
+            inicializaCampos(); //Initialize board
             //G_operacao_desenho = 1;
             glutPostRedisplay();
         }
@@ -924,9 +917,7 @@ static void MouseMenu(int botao, int estado, int x, int y){
             //printf("\n[DEBUG]: Apertou Botao direito mouse");
 
             G_click_pos_x = x - (windowsSize_x / 2);                    // ajusta a posição do mouse para combinar com o viewport, posicao x real - janela X / 2
-            //G_click_pos_x = G_click_pos_x + ((float(windowsSize_x) * 0.05) * (float(G_colunas) / 2));
             G_click_pos_y = (windowsSize_y / 2) - y ;                   // ajusta a posição do mouse para combinar com o viewport, anela Y / 2 - posicao y real
-            //G_click_pos_y = G_click_pos_y + ((float(windowsSize_y) * 0.05) * (float(G_linhas) / 2));
             printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
 
             //G_operacao_desenho = 2;
