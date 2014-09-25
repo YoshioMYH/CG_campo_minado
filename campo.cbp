@@ -43,6 +43,10 @@
 			<Add directory="C:/Program Files (x86)/CodeBlocks/MinGW/lib" />
 		</Linker>
 		<Unit filename="main.cpp" />
+		<Unit filename="primitivas.cpp" />
+		<Unit filename="primitivas.h" />
+		<Unit filename="renders.cpp" />
+		<Unit filename="renders.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

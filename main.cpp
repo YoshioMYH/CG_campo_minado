@@ -123,7 +123,7 @@ static void  AcrescentaMina(int indice)
     int cont = 0;
     maximo = (G_linhas * G_colunas) - 1;
     while(cont != G_minas){
-        printf("\n\n[DEBUG]: Cont: %d  Minas: %d", cont, G_minas);
+        //printf("\n\n[DEBUG]: Cont: %d  Minas: %d", cont, G_minas);
         i = rand() % (maximo - minimo + 1) + minimo;
         if(i != indice)
         {
@@ -135,7 +135,7 @@ static void  AcrescentaMina(int indice)
                 }
             }
         }
-        printf("\n[DEBUG]:i: %d  Campo: %d  Mina? : %d", i, i, campo_minado[i].campo_mina);
+        //printf("\n[DEBUG]:i: %d  Campo: %d  Mina? : %d", i, i, campo_minado[i].campo_mina);
     }
     G_bandeiras = G_minas;
 }
@@ -805,21 +805,21 @@ static void MouseMenu(int botao, int estado, int x, int y){
                         if( G_click_pos_y > ( ((windowsSize_y * 0.05) * (1.5)) ) &&
                             G_click_pos_y < ( ((windowsSize_y * 0.05) * (1.5)) + ((windowsSize_y * 0.05) * (1.0)) ) )
                         {
-                            printf("Entrou aqui");
+                            printf("\nEntrou aqui");
                             G_regras = true;
                             Quadro_Regra();
                         }
                     }
                 }
                 if(G_regras == true){
-                    printf("Entrou condicao if regras");
+                    printf("\nEntrou condicao if regras");
                     if( (G_click_pos_x > (-8.0 * (windowsSize_x * 0.05))) &&
                              (G_click_pos_x < (-8.0 * (windowsSize_x * 0.05) + 7.0 * (windowsSize_x * 0.05))) )
                     {
                         if( (G_click_pos_y > (-7.0 * (windowsSize_y * 0.05))) &&
                            (G_click_pos_y < (-7.0 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)))
                         {
-                           printf("entrou regras");
+                           printf("\nentrou regras");
                            glutDisplayFunc(Menu_grafico);
                            G_regras = false;
                         }

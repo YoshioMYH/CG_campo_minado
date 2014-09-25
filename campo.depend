@@ -234,7 +234,7 @@
 	<stdlib.h>
 	<stdio.h>
 
-1411650618 source:c:\users\alexoshiro\documents\github\cg_campo_minado\main.cpp
+1411651902 source:c:\users\alexoshiro\documents\github\cg_campo_minado\main.cpp
 	<gl/glut.h>
 	<stdlib.h>
 	<stdio.h>
@@ -275,15 +275,15 @@
 	<time.h>
 	<conio.h>
 
-1411650377 source:c:\users\alexoshiro\documents\github\cg_campo_minado\primitivas.cpp
+1411651112 source:c:\users\alexoshiro\documents\github\cg_campo_minado\primitivas.cpp
 	<gl/glut.h>
 	"primitivas.h"
 
-1411650283 c:\users\alexoshiro\documents\github\cg_campo_minado\primitivas.h
+1411651112 c:\users\alexoshiro\documents\github\cg_campo_minado\primitivas.h
 
-1411650618 c:\users\alexoshiro\documents\github\cg_campo_minado\renders.h
+1411651112 c:\users\alexoshiro\documents\github\cg_campo_minado\renders.h
 
-1411650637 source:c:\users\alexoshiro\documents\github\cg_campo_minado\renders.cpp
+1411651112 source:c:\users\alexoshiro\documents\github\cg_campo_minado\renders.cpp
 	<gl/glut.h>
 	"renders.h"
 
