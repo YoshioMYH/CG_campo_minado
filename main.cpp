@@ -807,7 +807,7 @@ static void MouseMenu(int botao, int estado, int x, int y){
                         {
                             printf("Entrou aqui");
                             G_regras = true;
-                            Quadro_Regra();
+                            glutDisplayFunc(Quadro_Regra);
                         }
                     }
                 }
