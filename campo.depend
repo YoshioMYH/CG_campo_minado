@@ -275,15 +275,15 @@
 	<time.h>
 	<conio.h>
 
-1411665732 source:c:\users\alexoshiro\documents\github\cg_campo_minado\primitivas.cpp
+1411731290 source:c:\users\alexoshiro\documents\github\cg_campo_minado\primitivas.cpp
 	<gl/glut.h>
 	"primitivas.h"
 
-1411665732 c:\users\alexoshiro\documents\github\cg_campo_minado\primitivas.h
+1411731290 c:\users\alexoshiro\documents\github\cg_campo_minado\primitivas.h
 
-1411665732 c:\users\alexoshiro\documents\github\cg_campo_minado\renders.h
+1411731291 c:\users\alexoshiro\documents\github\cg_campo_minado\renders.h
 
-1411665732 source:c:\users\alexoshiro\documents\github\cg_campo_minado\renders.cpp
+1411731291 source:c:\users\alexoshiro\documents\github\cg_campo_minado\renders.cpp
 	<gl/glut.h>
 	"renders.h"
 

@@ -129,19 +129,19 @@ static void  AcrescentaMina(int indice)
     int cont = 0;
     maximo = (G_linhas * G_colunas) - 1;
     while(cont != G_minas){
-        printf("\n\n[DEBUG]: Cont: %d  Minas: %d", cont, G_minas);
-        i = rand() % (maximo - minimo + 1) + minimo;
-        if(i != indice)
+        i = rand() % (maximo - minimo + 1) + minimo;  // Cria um i randomico de 0 ao número máximo
+        //printf("\n\n[DEBUG]: Cont: %d  Minas: %d", cont, G_minas);
+        if(i != indice) // Verifica se o i é diferente ao indice clicado pela primeira vez pelo jogador
         {
-            if(campo_minado[i].campo_mina == false)
+            if(campo_minado[i].campo_mina == false) // Verifica se o campo não contem mina
             {
-                if(campo_minado[i].revelado != true){
+               // if(campo_minado[i].revelado != true){ // Verifica se o campo não foi revelado
                     campo_minado[i].campo_mina = true;
                     cont++;
-                }
+               // }
             }
         }
-        printf("\n[DEBUG]:i: %d  Campo: %d  Mina? : %d", i, i, campo_minado[i].campo_mina);
+        //printf("\n[DEBUG]:i: %d  Campo: %d  Mina? : %d", i, i, campo_minado[i].campo_mina);
     }
     G_bandeiras = G_minas;
 }
@@ -294,7 +294,7 @@ static void Calculo_Desenho(int linha, int coluna, int indice)
         case 1:                                                         // Funcao para revelar um campo
             if(G_estado_jogo == 1)
             {
-                Reset_Timer();                                          //
+                Reset_Timer();                                          // No inicio do jogo, estar função que é utilizado para resetar o tempo decorrido
                 glutTimerFunc(0, Timer, 0);
 
                 AcrescentaMina(indice);
@@ -561,7 +561,7 @@ static void AbreJogoGameOver()
 }
 
 static void Atualiza_tamanho(int largura, int altura)
-{
+{ //Função para inciar a janela
     glViewport(0, 0, largura, altura);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -573,7 +573,7 @@ static void Atualiza_tamanho(int largura, int altura)
 }
 
 static void Atualiza_desenho(void)
-{
+{ // Função para renderizar o conteúdo da janela
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -614,7 +614,7 @@ static void Atualiza_desenho(void)
 }
 
 static void Menu_grafico(void)
-{
+{ // Função que dispará um menu gráfico para a escolha de dificuldade e visualização das regras
     glClear(GL_COLOR_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -664,7 +664,7 @@ static void Menu_grafico(void)
 }
 
 static void Quadro_Regra()
-{
+{// Função para mostrar as regras do jogo
     glPushMatrix();
         glColor3f(0.0, 0.0, 0.0);
         glPushMatrix();
@@ -698,7 +698,7 @@ static void teclado(unsigned char tecla, int x, int y)
         case 'q':
             exit(0);
             break;
-        case 'r':
+        case 'r':  // Tecla utilizada para reiniciar jogo
             G_regras = false;
             G_estado_jogo = 0;
             G_timer = 0;
@@ -841,22 +841,17 @@ static void mouse_menu(int botao, int estado, int x, int y)
                 }
             }
             inicializaCampos();  //Initialize board
-            //G_operacao_desenho = 1;
+
             glutPostRedisplay();
         }
     }
     else if(botao == GLUT_RIGHT_BUTTON)
     {
         if(estado == GLUT_DOWN){
-            //printf("\n[DEBUG]: Apertou Botao direito mouse");
-
             G_click_pos_x = x - (windowsSize_x / 2);                    // ajusta a posição do mouse para combinar com o viewport, posicao x real - janela X / 2
-            //G_click_pos_x = G_click_pos_x + ((float(windowsSize_x) * 0.05) * (float(G_colunas) / 2));
             G_click_pos_y = (windowsSize_y / 2) - y ;                   // ajusta a posição do mouse para combinar com o viewport, anela Y / 2 - posicao y real
-            //G_click_pos_y = G_click_pos_y + ((float(windowsSize_y) * 0.05) * (float(G_linhas) / 2));
             printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
 
-            //G_operacao_desenho = 2;
             glutPostRedisplay();
         }
     }
