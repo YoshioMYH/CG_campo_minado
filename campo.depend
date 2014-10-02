@@ -287,3 +287,27 @@
 	<gl/glut.h>
 	"renders.h"
 
+1412253881 source:f:\github\cg_campo_minado\primitivas.cpp
+	<gl/glut.h>
+	"primitivas.h"
+
+1412253881 f:\github\cg_campo_minado\primitivas.h
+
+1412253881 source:f:\github\cg_campo_minado\renders.cpp
+	<gl/glut.h>
+	"renders.h"
+
+1412253881 f:\github\cg_campo_minado\renders.h
+
+1412254867 source:f:\github\cg_campo_minado\main.cpp
+	<gl/glut.h>
+	<stdlib.h>
+	<stdio.h>
+	<string>
+	<iostream>
+	<sstream>
+	<vector>
+	<time.h>
+	"primitivas.h"
+	"renders.h"
+
