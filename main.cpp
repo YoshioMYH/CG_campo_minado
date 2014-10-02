@@ -62,46 +62,45 @@ std::vector<Campo> campo_minado;// Vetor para armazenar as informacoes dos campo
 
 
 template <typename T>
-std::string to_string(T value){ //função to_string criada na mão
+std::string to_string(T value){ // função to_string criada na mão
     std::ostringstream os ;
     os << value ;
     return os.str() ;
 }
 
 // PROTOTIPOS DAS FUNCOES
-static void inicializaCampos();                                         // Funcionando
-static void AcrescentaMina(int indice);                                 // Funcionando
-static void MenuTemporario();                                           // Funcionando [Melhorar]
+static void inicializaCampos();                                         // OK
+static void AcrescentaMina(int indice);                                 // OK
+static void MenuTemporario();                                           // OK []
 
-static void mostraMinas();                                              // Funcionando
-static void mostraTempo(int value);                                     // Funcionando
+static void mostraMinas();                                              // OK
+static void mostraTempo(int value);                                     // OK
 
-static void Minas_Adjacentes(int indice);                               // Funcionando
-static void Tabuleiro();                                                // Funcionando
+static void Minas_Adjacentes(int indice);                               // OK
+static void Tabuleiro();                                                // OK
 
-static void Calculo_Desenho(int linha, int coluna, int indice);         // Funcionando
-static bool Calculo_Posicao(int linha, int coluna);                     // Funcionando
+static void Calculo_Desenho(int linha, int coluna, int indice);         // OK
+static bool Calculo_Posicao(int linha, int coluna);                     // OK
 
-static void Revelar_Campo(int indice);                                  // Funcionando [Melhorar]
-static void Calc_Minas_Adjacentes();                                    // Funcionando
-static void ExpandeArea(int indice);                                    // Funcionando
-static void Alternar_Protecao(int indice);                              // Funcionando
+static void Revelar_Campo(int indice);                                  // OK []
+static void Calc_Minas_Adjacentes();                                    // OK
+static void ExpandeArea(int indice);                                    // OK
+static void Alternar_Protecao(int indice);                              // OK
 
-static void AbreJogoGameOver();                                         // Funcionando
+static void AbreJogoGameOver();                                         // OK
 
-static void Atualiza_tamanho(int largura, int altura);                  // Funcionando
-static void Atualiza_desenho(void);                                     // Funcionando [Melhorar]
+static void Atualiza_tamanho(int largura, int altura);                  // OK
+static void Atualiza_desenho(void);                                     // OK []
 static void Menu_grafico();
 static void Quadro_Regra();
 
-static void teclado(unsigned char tecla, int x, int y);                 // Funcionando
-static void mouse(int botao, int estado, int x, int y);                 // Funcionando
-static void mouse_menu(int botao, int estado, int x, int y);
-static void Timer(int value);                                           // Funcionando
-static void Reset_Timer();                                              // Funcionando
+static void teclado(unsigned char tecla, int x, int y);                 // OK
+static void mouse(int botao, int estado, int x, int y);                 // OK
+static void mouse_menu(int botao, int estado, int x, int y);            // OK
+static void Timer(int value);                                           // OK
+static void Reset_Timer();                                              // OK
 
 // FUNÇÕES
-
 static void inicializaCampos()
 {// Funcao que inicializa todos os campos com valores nulos
     int i = 0;  // iterador das linhas
@@ -131,11 +130,11 @@ static void  AcrescentaMina(int indice)
     int cont = 0;   // contador do numero de minas posicionadas
     maximo = (G_linhas * G_colunas) - 1;
     while(cont != G_minas){
-        i = rand() % (maximo - minimo + 1) + minimo;  // Cria um i randomico de 0 ao número máximo
+        i = rand() % (maximo - minimo + 1) + minimo;    // Cria um i randomico de 0 ao número máximo
         //printf("\n\n[DEBUG]: Cont: %d  Minas: %d", cont, G_minas);
-        if(i != indice) // Verifica se o i é diferente ao indice clicado pela primeira vez pelo jogador
+        if(i != indice)                                 // Verifica se o i é diferente ao indice clicado pela primeira vez pelo jogador
         {
-            if(campo_minado[i].campo_mina == false) // Verifica se o campo não contem mina
+            if(campo_minado[i].campo_mina == false)     // Verifica se o campo não contem mina
             {
                campo_minado[i].campo_mina = true;
                cont++;
@@ -143,7 +142,7 @@ static void  AcrescentaMina(int indice)
         }
         //printf("\n[DEBUG]:i: %d  Campo: %d  Mina? : %d", i, i, campo_minado[i].campo_mina);
     }
-    G_bandeiras = G_minas;  // quantidade de bandeiras = numero de minas posicionadas
+    // G_bandeiras = G_minas;  // quantidade de bandeiras = numero de minas posicionadas
 }
 
 static void MenuTemporario()
@@ -197,8 +196,8 @@ static void mostraTempo()
     }
     else
     {
-        text = to_string(G_timer/1000);                     //Converte o G_timer para uma string
-        glColor3f(0.0, 0.0, 0.0);                           //Seta a cor do texto como preto
+        text = to_string(G_timer/1000);                     // Converte o G_timer para uma string
+        glColor3f(0.0, 0.0, 0.0);                           // Seta a cor do texto como preto
         renderText("Tempo Decorrido", 15, 21, 6);
         renderText(text.data(), text.size(), 32, 2);
     }
@@ -223,13 +222,13 @@ static void Minas_Adjacentes(int indice)
 
 static void Tabuleiro()
 {// Funcao que gera o Tabuleiro
-    float posStart_x = (float(G_colunas) / 2) * (-1);       // posicao x de onde comecar a desenhar o tabuleiro
-    float posStart_y = (float(G_linhas) / 2) * (-1);        // posicao y de onde comecar a desenhar o tabuleiro
+    float posStart_x = (float(G_colunas) / 2) * (-1);           // posicao x de onde comecar a desenhar o tabuleiro
+    float posStart_y = (float(G_linhas) / 2) * (-1);            // posicao y de onde comecar a desenhar o tabuleiro
 
-    int linha = 0;                                          // iterador das linhas
-    int coluna = 0;                                         // iterador das colunas
+    int linha = 0;                                              // iterador das linhas
+    int coluna = 0;                                             // iterador das colunas
 
-    int cont = 0;                                           // contador para indicar o indice do campo
+    int cont = 0;                                               // contador para indicar o indice do campo
 
     glPushMatrix();
         glTranslatef(posStart_x, posStart_y, 0.0);              // translada para as posicoes X e Y iniciais do Tabuleiro
@@ -261,26 +260,30 @@ static void Calculo_Desenho(int linha, int coluna, int indice)
     switch(operador)
     {
         case 0:                                                         // apenas mostrar o campo conforme sua propriedade, Campo Revelado, Campo Protegido, Campo Mina ou Campo nao Revelado
-            if(campo_minado[indice].revelado)
+            if(campo_minado[indice].revelado)                           // condicao: campo revelado ?
             {
                 Revelado();
                 Minas_Adjacentes(indice);
             }
-            else if(campo_minado[indice].protegido)
+            else if(campo_minado[indice].protegido)                     // condicao: campo com protecao ?
             {
                 Bandeira();
             }
-            else if(campo_minado[indice].campo_mina)                    // Condicao para fins de DEBUG
+            // Condicao para fins de DEBUG
+            /*
+            else if(campo_minado[indice].campo_mina)                    // condicao: campo com mina?
             {
+                // Mina();
                 Quadrado();
             }
-            else
+            */
+            else                                                        // campo nao revelado
             {
                 Quadrado();
             }
             break;
         case 1:                                                         // Funcao para revelar um campo
-            if(G_estado_jogo == 1)
+            if(G_estado_jogo == 1)                                      // condicao: jogo esperando 1o clique
             {
                 Reset_Timer();                                          // No inicio do jogo, estar função que é utilizado para resetar o tempo decorrido
                 glutTimerFunc(0, Timer, 0);
@@ -320,7 +323,7 @@ static bool Calculo_Posicao(int linha, int coluna)
 
 static void Revelar_Campo(int indice)
 {// Funcao para revelar um campo
-    if(campo_minado[indice].revelado)                   // Campo ja revelado ?
+    if(campo_minado[indice].revelado)                   // condicao: Campo ja revelado ?
     {
         Revelado();
         Minas_Adjacentes(indice);
@@ -328,14 +331,14 @@ static void Revelar_Campo(int indice)
     }
     else                                                // Campo nao revelado
     {
-        if(campo_minado[indice].protegido)              // Campo com bandeira ?
+        if(campo_minado[indice].protegido)              // condicao: Campo com bandeira ?
         {
             Bandeira();
             //printf("\n     Campo protegido.");
         }
         else                                            // Campo sem bandeira
         {
-            if(campo_minado[indice].campo_mina)         // Campo com mina ?
+            if(campo_minado[indice].campo_mina)         // condicao: Campo com mina ?
             {
                 G_estado_jogo = 3;
                 Mina();
@@ -347,16 +350,16 @@ static void Revelar_Campo(int indice)
             }
             else                                         // Campo sem mina
             {
-                G_nao_revelados--;                       //Decrescenta a quantidade de quadrados ainda não revelados
+                G_nao_revelados--;                       // Decrescenta a quantidade de quadrados ainda não revelados
                 //printf("\n[DEBUG] Nao Revelados: %d", G_nao_revelados);
-                Revelado();                              //Cria um quadrado revelado de fundo cinza
-                Minas_Adjacentes(indice);                //Mostra a quantidade de minas que o quadrado revelado possui
-                campo_minado[indice].revelado = true;    //Marca o quadrado como revelado
-                if(G_nao_revelados == 0){                //Condição para fim de jogo, se todos os quadrados que não são minas foram revelados
-                    G_estado_jogo = 3;                   //Marca como fim de jogo
-                    renderVenceu();                      //Mostra Mensagem de Vencedor
+                Revelado();                              // Cria um quadrado revelado de fundo cinza
+                Minas_Adjacentes(indice);                // Mostra a quantidade de minas que o quadrado revelado possui
+                campo_minado[indice].revelado = true;    // Marca o quadrado como revelado
+                if(G_nao_revelados == 0){                // Condição para fim de jogo, se todos os quadrados que não são minas foram revelados
+                    G_estado_jogo = 3;                   // Marca como fim de jogo
+                    renderVenceu();                      // Mostra Mensagem de Vencedor
                 }
-                if(campo_minado[indice].minas_adja == 0){//Verifica se o quadrado aberto possui 0 minas adjacentes para chamar a função que expande e mostra uma ilha
+                if(campo_minado[indice].minas_adja == 0){// Verifica se o quadrado aberto possui 0 minas adjacentes para chamar a função que expande e mostra uma ilha
                     ExpandeArea(indice);
                 }
             }
@@ -423,40 +426,40 @@ static void ExpandeArea(int indice)
             if(campo_minado[j].protegido == false && campo_minado[j].revelado == false){ // Condição para não revelar caso o quadrado tenha sido protegido ou revelado
                 if(campo_minado[j].pos_x == tmpx-1 && campo_minado[j].pos_y == tmpy-1){  // Verifica se o quadrado atual da interação é o adjcente da esquerda inferior
                     //Revelado();
-                    Minas_Adjacentes(j);  //Chama função que revela a quantidade de minas adjacentes ao quadrado que será revelado
+                    Minas_Adjacentes(j);  // Chama função que revela a quantidade de minas adjacentes ao quadrado que será revelado
                     campo_minado[j].revelado = true; // Coloca o quadrado revelado
-                    G_nao_revelados--;              //Decrescenta a quantidade de quadrados não revelados
-                    if(campo_minado[j].minas_adja == 0) ExpandeArea(j); //Se o quadrado possui 0 minas adjacentes chama recursivamente a função
+                    G_nao_revelados--;              // Decrescenta a quantidade de quadrados não revelados
+                    if(campo_minado[j].minas_adja == 0) ExpandeArea(j); // Se o quadrado possui 0 minas adjacentes chama recursivamente a função
                 }
-                if(campo_minado[j].pos_x == tmpx && campo_minado[j].pos_y == tmpy-1){ // Verifica se o quadrado atual da interação é o adjcente inferior
+                if(campo_minado[j].pos_x == tmpx && campo_minado[j].pos_y == tmpy-1){ // Verifica se o quadrado atual da iteração é o adjcente inferior
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
                     G_nao_revelados--;
                     if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                 }
-                if(campo_minado[j].pos_x == tmpx+1 && campo_minado[j].pos_y == tmpy-1){ // Verifica se o quadrado atual da interação é o adjcente da direita inferior
+                if(campo_minado[j].pos_x == tmpx+1 && campo_minado[j].pos_y == tmpy-1){ // Verifica se o quadrado atual da iteração é o adjcente da direita inferior
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
                     G_nao_revelados--;
                     if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                 }
-                if(campo_minado[j].pos_x == tmpx-1 && campo_minado[j].pos_y == tmpy){ // Verifica se o quadrado atual da interação é o adjcente da esderda
+                if(campo_minado[j].pos_x == tmpx-1 && campo_minado[j].pos_y == tmpy){ // Verifica se o quadrado atual da iteração é o adjcente da esderda
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
                     G_nao_revelados--;
                     if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                 }
-                if(campo_minado[j].pos_x == tmpx+1 && campo_minado[j].pos_y == tmpy){ // Verifica se o quadrado atual da interação é o adjcente da direita
+                if(campo_minado[j].pos_x == tmpx+1 && campo_minado[j].pos_y == tmpy){ // Verifica se o quadrado atual da iteração é o adjcente da direita
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
                     G_nao_revelados--;
                     if(campo_minado[j].minas_adja == 0) ExpandeArea(j);
                 }
-                if(campo_minado[j].pos_x == tmpx-1 && campo_minado[j].pos_y == tmpy+1){ // Verifica se o quadrado atual da interação é o adjcente da esquerda superior
+                if(campo_minado[j].pos_x == tmpx-1 && campo_minado[j].pos_y == tmpy+1){ // Verifica se o quadrado atual da iteração é o adjcente da esquerda superior
                     //Revelado();
                     Minas_Adjacentes(j);
                     campo_minado[j].revelado = true;
@@ -485,7 +488,7 @@ static void ExpandeArea(int indice)
 
 static void Alternar_Protecao(int indice)
 {// Funcao para alternar a protecao
-    if(campo_minado[indice].protegido)                  // Campo protegido ?
+    if(campo_minado[indice].protegido)                  // condicao: Campo protegido ?
     {
         Quadrado();
         G_bandeiras++;                                  // Incrementa o numero de Bandeiras disponiveis
@@ -493,7 +496,7 @@ static void Alternar_Protecao(int indice)
     }
     else                                                // Campo nao protegido
     {
-        if(campo_minado[indice].revelado)               // Campo revelado ?
+        if(campo_minado[indice].revelado)               // condicao: Campo revelado ?
         {
             Revelado();
             Minas_Adjacentes(indice);
@@ -501,7 +504,7 @@ static void Alternar_Protecao(int indice)
         }
         else                                            // Campo nao revelado
         {
-            if(G_bandeiras > 0)                         // Bandeiras disponiveis ?
+            if(G_bandeiras > 0)                         // condicao: Bandeiras disponiveis ?
             {
                 Bandeira();
                 G_bandeiras--;                          // Decrementa o numero de Bandeiras disponiveis
@@ -520,7 +523,7 @@ static void AbreJogoGameOver()
     int i;
     int controlador;
     std::string text;
-    switch(G_linhas){  //Crontrolador de posicionamento dos números(Não Otimizado)
+    switch(G_linhas){  // Crontrolador de posicionamento dos números(Não Otimizado)
         case 5:
             controlador = 39;
             break;
@@ -531,15 +534,15 @@ static void AbreJogoGameOver()
             controlador = 14;
     }
 
-    for(i=0; i<G_linhas*G_colunas; i++){ //Interação para revelar todo o tabuleiro
+    for(i = 0; i < G_linhas * G_colunas; i++){  // Iteração para revelar todo o tabuleiro
         text = to_string(campo_minado[i].minas_adja);
         glPushMatrix();
-        if(campo_minado[i].minas_adja != -1){ // Condição para escolher a cor que o número receberá
-            glColor3f(0.0, 0.0, 0.0);         // Cor preto se for um quadrado sem mina
+        if(campo_minado[i].minas_adja != -1){   // Condição para escolher a cor que o número receberá
+            glColor3f(0.0, 0.0, 0.0);           // Cor preto se for um quadrado sem mina
         }else{
-            glColor3f(1.0, 0.0, 0.0);         // Cor vermelho se for um quadrado com mina
+            glColor3f(1.0, 0.0, 0.0);           // Cor vermelho se for um quadrado com mina
         }
-        if(!campo_minado[i].revelado){ //Se o campo ainda não foi revelado mostra o número
+        if(!campo_minado[i].revelado){          // Se o campo ainda não foi revelado mostra o número
             renderText(text.data(), text.size(), campo_minado[i].pos_y*5+controlador, campo_minado[i].pos_x*5+controlador);
         }
         glPopMatrix();
@@ -547,13 +550,13 @@ static void AbreJogoGameOver()
 }
 
 static void Atualiza_tamanho(int largura, int altura)
-{ //Função para inciar a janela
+{ //Função para ajustar o tamanho da janela
     glViewport(0, 0, largura, altura);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D (-10.0f, 10.0f, -10.0f, 10.0f);
-    glutReshapeWindow(windowsSize_x, windowsSize_y); //Função que não deixa o usuário alterar o tamanho da tela.
     //gluOrtho2D (0.0f, 10.0f, 12.0f, 0.0f);
+    glutReshapeWindow(windowsSize_x, windowsSize_y); //Função que não deixa o usuário alterar o tamanho da tela.
 
     //printf("\n[DEBUG] : Evento Atualiza tamanho\n");
 }
@@ -568,20 +571,20 @@ static void Atualiza_desenho(void)
 
         // Desenhar Tabuleiro
         glPushMatrix();
-            //Menu_grafico();
             Tabuleiro();
         glPopMatrix();
 
-        // Desenha o menu de comandos para reiniciar ou sair do jogo
+        // Desenhar o menu de comandos para reiniciar ou sair do jogo
         glPushMatrix();
-            glTranslatef(-10.0, -10.0, 0);
+            glTranslatef(-10.0, -10.0, 0.0);
             glScalef(3.5, 2.0, 0);
+            glColor3f(0.0, 0.0, 0.0);
             Menus();
         glPopMatrix();
         renderText("q: Sair", 7, 1, 8);
         renderText("r: Novo Jogo", 12, 1, 5);
 
-        //Menu para tempo
+        // Desenhar o menu para tempo
         glPushMatrix();
             glTranslatef(-6.0, -10.0, 0);
             glScalef(5.0, 1.8, 0);
@@ -589,7 +592,7 @@ static void Atualiza_desenho(void)
             Menus();
         glPopMatrix();
 
-        //Menu para bombas
+        // Desenhar o menu para bombas
         glPushMatrix();
             glTranslatef(0.0, -10.0, 0);
             glScalef(5.0, 1.8, 0);
@@ -599,11 +602,10 @@ static void Atualiza_desenho(void)
 
         mostraTempo();                                  // Mostra o tempo percorrido
         mostraMinas();                                  // Mostra o numero de minas/bandeiras disponiveis
-        //AbreJogoGameOver();
     glPopMatrix();
 
-    //glFlush();                                        //
-    glutSwapBuffers();                                  // funcao semelhante ao glFlush()
+    //glFlush();                                        // funcao para que os desenhos sejam renderizados
+    glutSwapBuffers();                                  // funcao semelhante ao glFlush(), para atualizar p buffer duplo
 
     //printf("\n[DEBUG] : Evento Atualiza desenho\n");
 }
@@ -689,18 +691,17 @@ static void teclado(unsigned char tecla, int x, int y)
 {
     switch (tecla)
     {
-        case 27 :
+        case 27 :   // Tecla utilizada para sair do jogo
         case 'q':
             exit(0);
             break;
-        case 'r':  // Tecla utilizada para reiniciar jogo
+        case 'r':   // Tecla utilizada para reiniciar o jogo
             G_regras = false;
             G_estado_jogo = 0;
             G_timer = 0;
             glutDisplayFunc(Menu_grafico);
             glutPostRedisplay();
             glutMouseFunc(mouse_menu);
-
             break;
         default:
             //printf("\nNenhum evento atribuido a tecla\n");
@@ -713,7 +714,7 @@ static void mouse(int botao, int estado, int x, int y)
     if(botao == GLUT_LEFT_BUTTON){
         if(estado == GLUT_DOWN){
             //printf("\n[DEBUG]: Apertou botao esquerdo mouse");
-            if(G_estado_jogo > 0 && G_estado_jogo < 3)
+            if(G_estado_jogo > 0 && G_estado_jogo < 3)                      // condicao: jogo ja iniciao (0), esperando 1o clique (1), esperando cliques normais (2), jogo nao terminado (3)
             {
                 G_click_pos_x = x - (windowsSize_x / 2);                    // ajusta a posição do mouse para combinar com o viewport, posicao x real - janela X / 2
                 G_click_pos_x = G_click_pos_x + ((float(windowsSize_x) * 0.05) * (float(G_colunas) / 2));
@@ -721,7 +722,7 @@ static void mouse(int botao, int estado, int x, int y)
                 G_click_pos_y = G_click_pos_y + ((float(windowsSize_y) * 0.05) * (float(G_linhas) / 2));
                 printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
 
-                G_operacao_desenho = 1;
+                G_operacao_desenho = 1;                                     // operacao de revelar um campo
                 glutPostRedisplay();
             }
         }
@@ -736,7 +737,7 @@ static void mouse(int botao, int estado, int x, int y)
                 G_click_pos_y = G_click_pos_y + ((float(windowsSize_y) * 0.05) * (float(G_linhas) / 2));
                 printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
 
-                G_operacao_desenho = 2;
+                G_operacao_desenho = 2;                                     // operacao de alternar a Protecao
                 glutPostRedisplay();
             }
         }
@@ -752,15 +753,13 @@ static void mouse_menu(int botao, int estado, int x, int y)
             //printf("\n[DEBUG]: Apertou botao esquerdo mouse");
 
             G_click_pos_x = x - (windowsSize_x / 2);                    // ajusta a posição do mouse para combinar com o viewport, posicao x real - janela X / 2
-            //G_click_pos_x = G_click_pos_x + ((float(windowsSize_x) * 0.05));
             G_click_pos_y = (windowsSize_y / 2) - y ;                   // ajusta a posição do mouse para combinar com o viewport, anela Y / 2 - posicao y real
-            //G_click_pos_y = G_click_pos_y + ((float(windowsSize_y) * 0.05) * (float(G_linhas) / 2));
-            printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
-            if(G_estado_jogo == 0)
+            //printf("\n[DEBUG]: X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
+            if(G_estado_jogo == 0)                                      // condicao: jogo nao iniciado ?
             {
-                if(G_regras == true)                                    // o Menu_Grafico esta mostrando as regras ?
+                if(G_regras == true)                                    // conbdicao: o Menu_Grafico esta mostrando as regras ?
                 {
-                    printf("Entrou no Quadro_Regras");
+                    //printf("[DEBUG]: Entrou no Quadro_Regras");
                     if( (G_click_pos_x > (-8.0 * (windowsSize_x * 0.05))) &&
                              (G_click_pos_x < (-8.0 * (windowsSize_x * 0.05) + 7.0 * (windowsSize_x * 0.05))) )
                     {
@@ -769,7 +768,7 @@ static void mouse_menu(int botao, int estado, int x, int y)
                         {
                            printf("Volta ao Menu");
                            glutDisplayFunc(Menu_grafico);
-                           G_regras = false;
+                           G_regras = false;                            // sair do menu das regras
                         }
                     }
                 }
@@ -827,26 +826,12 @@ static void mouse_menu(int botao, int estado, int x, int y)
                         if( G_click_pos_y > ( ((windowsSize_y * 0.05) * (1.5)) ) &&
                             G_click_pos_y < ( ((windowsSize_y * 0.05) * (1.5)) + ((windowsSize_y * 0.05) * (1.0)) ) )
                         {
-                            printf("Entrou aqui");
-                            G_regras = true;
-                            //Quadro_Regra();
-                            //glutDisplayFunc(Quadro_regra);
+                            G_regras = true;                            // entrar no menu de regras
                         }
                     }
                 }
             }
-            inicializaCampos();  //Initialize board
-
-            glutPostRedisplay();
-        }
-    }
-    else if(botao == GLUT_RIGHT_BUTTON)
-    {
-        if(estado == GLUT_DOWN){
-            G_click_pos_x = x - (windowsSize_x / 2);                    // ajusta a posição do mouse para combinar com o viewport, posicao x real - janela X / 2
-            G_click_pos_y = (windowsSize_y / 2) - y ;                   // ajusta a posição do mouse para combinar com o viewport, anela Y / 2 - posicao y real
-            printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
-
+            inicializaCampos();  // Inixializa os campos do tabuleiro
             glutPostRedisplay();
         }
     }
@@ -854,7 +839,7 @@ static void mouse_menu(int botao, int estado, int x, int y)
 
 static void Timer(int value)
 {// Função controlar o tempo de atualizacao
-    if(G_estado_jogo != 3)                                // Enquanto o jogo nao acabar, realizar a atualizacao
+    if(G_estado_jogo != 3)                                // condicao: Enquanto o jogo nao acabar, realizar a atualizacao
     {
         glutPostRedisplay();
         glutTimerFunc(INTERVALO_TEMPO, Timer, 0);
@@ -863,27 +848,33 @@ static void Timer(int value)
 
 static void Reset_Timer()
 {// Funcao que armazena o momento em que a funcao é chamada, no inicio de um jogo
-    G_timer_reset = glutGet(GLUT_ELAPSED_TIME);             // Ajusta a variavel do tempo de inicio de um jogo, com base no tempo decorrido do programa, a variavel é utilizada no calculo do tempo decorrido de um jogo
+    G_timer_reset = glutGet(GLUT_ELAPSED_TIME);             // Ajusta a variavel do tempo de inicio de um jogo, com base no tempo decorrido desde a criacao da janela, a variavel é utilizada no calculo do tempo decorrido de um jogo
     //printf("\n[DEBUG]: Reset Timer: %d", G_timer_reset);
     //printf("\n[DEBUG]: Timer Count: %d", G_timer_count);
 }
 
 int main(){
 
-    glutInitWindowSize(windowsSize_x, windowsSize_y);  //Set windows Size
-    glutInitWindowPosition(300, 0);                    //Set Windows Position
+    glutInitWindowSize(windowsSize_x, windowsSize_y);   // Define o tamanho da janela
+    glutInitWindowPosition(300, 0);                     // Define a posicao da janela
     glutInitDisplayMode (GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
+    /* GLUT_DOUBLE - modo de buffer duplo,
+    a renderizacao mostrada se encontra em um buffer "frontal",
+    enquanto a proxima renderizacao é preparada em um buffer "traseiro"
+    suaviza animações e proporcionar menor utilização de processamento e memoria [em nossos testes]
+    - trocar glFlush por glutSwapBuffers
+    */
 
-    glutCreateWindow("Campo Minado"); //Set Windows Name
+    glutCreateWindow("Campo Minado");                   // Define o nome da janela
 
-    glutDisplayFunc(Menu_grafico);  //Atualizar tela
-    glutReshapeFunc(Atualiza_tamanho);  //Atualiza tamanho
+    glutDisplayFunc(Menu_grafico);                      // Atualizar tela
+    glutReshapeFunc(Atualiza_tamanho);                  // Atualiza tamanho
 
-    glutKeyboardFunc(teclado); //Acrescenta função de tecla
-    glutMouseFunc(mouse_menu);      //Acrescenta função de clique
+    glutKeyboardFunc(teclado);                          // Acrescenta função de tecla
+    glutMouseFunc(mouse_menu);                          // Acrescenta função de clique
 
-    glClearColor(1,1,1,1);  //Cria tela de fundo Branca
-    glutMainLoop();         //Loop infinito até finalizar a janela
+    glClearColor(1,1,1,1);                              // Cria tela de fundo Branca
+    glutMainLoop();                                     // Loop infinito até finalizar a janela
 
     return 0;
 }
