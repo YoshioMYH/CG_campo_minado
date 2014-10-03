@@ -7,7 +7,7 @@ Autores: Alex Yudi Oshiro e Marcelo Yoshio Hasegawa
 
 Data: 02/10/2014
 
-Versão atual: 11.2
+Versão atual: 1.11.5
 
 */
 

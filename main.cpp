@@ -7,7 +7,7 @@ Autores: Alex Yudi Oshiro e Marcelo Yoshio Hasegawa
 
 Data: 02/10/2014
 
-Versão atual: 11.2
+Versão atual: 1.11.5
 
 */
 
@@ -515,7 +515,7 @@ static void Alternar_Protecao(int indice)
         {
             Revelado();
             Minas_Adjacentes(indice);
-            printf("\n     Campo ja revelado.");
+            //printf("\n     Campo ja revelado.");
         }
         else                                            // Campo nao revelado
         {
@@ -735,7 +735,7 @@ static void mouse(int botao, int estado, int x, int y)
                 G_click_pos_x = G_click_pos_x + ((float(windowsSize_x) * 0.05) * (float(G_colunas) / 2));
                 G_click_pos_y = (windowsSize_y / 2) - y ;                   // ajusta a posição do mouse para combinar com o viewport, anela Y / 2 - posicao y real
                 G_click_pos_y = G_click_pos_y + ((float(windowsSize_y) * 0.05) * (float(G_linhas) / 2));
-                printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
+                //printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
 
                 G_operacao_desenho = 1;                                     // operacao de revelar um campo
                 glutPostRedisplay();
@@ -750,7 +750,7 @@ static void mouse(int botao, int estado, int x, int y)
                 G_click_pos_x = G_click_pos_x + ((float(windowsSize_x) * 0.05) * (float(G_colunas) / 2));
                 G_click_pos_y = (windowsSize_y / 2) - y ;                   // ajusta a posição do mouse para combinar com o viewport, anela Y / 2 - posicao y real
                 G_click_pos_y = G_click_pos_y + ((float(windowsSize_y) * 0.05) * (float(G_linhas) / 2));
-                printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
+                //printf("\n X: %d,  Y:  %d\n", G_click_pos_x, G_click_pos_y);
 
                 G_operacao_desenho = 2;                                     // operacao de alternar a Protecao
                 glutPostRedisplay();
@@ -781,7 +781,7 @@ static void mouse_menu(int botao, int estado, int x, int y)
                         if( (G_click_pos_y > (-7.0 * (windowsSize_y * 0.05))) &&
                            (G_click_pos_y < (-7.0 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)))
                         {
-                           printf("\nVolta ao Menu");
+                           //printf("\nVolta ao Menu");
                            glutDisplayFunc(Menu_grafico);
                            G_regras = false;                            // sair do menu das regras
                         }
