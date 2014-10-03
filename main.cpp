@@ -1,3 +1,16 @@
+/*
+Programa desenvolvido com propósito de realizar o trabalho de Computação Gráfica
+Universidade Federal da Grande Dourados - UFGD
+2°Semestre 2014
+
+Autores: Alex Yudi Oshiro e Marcelo Yoshio Hasegawa
+
+Data: 02/10/2014
+
+Versão atual: 11.2
+
+*/
+
 #include <gl/glut.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -369,9 +382,10 @@ static void Revelar_Campo(int indice)
 
 static void Calc_Minas_Adjacentes()
 {//Realiza o calcula das minas existentes nos quadrado adjacentes ao atual
-    int i;
-    int j;
-    int tmpx, tmpy;
+    int i; // iterador utilizado para percorrer todo o tabuleiro
+    int j; // iterador utilizar para percorrer todo o tabuleiro em busca dos campos adjacentes a i.
+    int tmpx; // variável temporária que armazena a localização x do campo de indice i
+    int tmpy; // variável temporária que armazena a localização y do campo de indice i
     for(i = 0; i < G_linhas * G_colunas; i++){ //interage em todo o tabuleiro
         if(campo_minado[i].campo_mina){
             tmpx = campo_minado[i].pos_x;
@@ -417,8 +431,9 @@ static void Calc_Minas_Adjacentes()
 
 static void ExpandeArea(int indice)
 {// Função para revelar a ilha que possuir como 0 minas em suas adjacentes
-    int j;
-    int tmpx, tmpy;
+    int j; // iterador utilizado para percorrer todo o tabuleiro
+    int tmpx; // variável temporária que armazena a localização x do campo de indice i
+    int tmpy; // variável temporária que armazena a localização y do campo de indice i
     if(campo_minado[indice].minas_adja == 0){
         tmpx = campo_minado[indice].pos_x;
         tmpy = campo_minado[indice].pos_y;
@@ -520,8 +535,8 @@ static void Alternar_Protecao(int indice)
 
 static void AbreJogoGameOver()
 { // Se o jogo finalizar com o jogador clicando em uma mina, a função é chamada para revelar todo o jogo
-    int i;
-    int controlador;
+    int i; // iterador utilizado para percorrer todo o tabuleiro
+    int controlador; // utilizado para realizar o posicionamento da impressão dos números que aparecem ao final do jogo
     std::string text;
     switch(G_linhas){  // Crontrolador de posicionamento dos números(Não Otimizado)
         case 5:
@@ -635,19 +650,19 @@ static void Menu_grafico(void)
                 glTranslatef(-4.0, 5.0, 0);
                 glScalef(3.0, 1.0, 0.0);
                 Menus();
-                renderText("Novato", 6, 33, 77);
+                renderText("Facil", 5, 34, 77);
             glPopMatrix();
             glPushMatrix();
                 glTranslatef(1.0, 5.0, 0);
                 glScalef(3.0, 1.0, 0.0);
                 Menus();
-                renderText("Moderado", 8, 57, 77);
+                renderText("Normal", 6, 59, 77);
             glPopMatrix();
             glPushMatrix();
                 glTranslatef(-1.5, 3.5, 0);
                 glScalef(3.0, 1.0, 0.0);
                 Menus();
-                renderText("Normal", 6, 46, 69);
+                renderText("Dificil", 7, 46, 69);
             glPopMatrix();
             glPushMatrix();
                 glTranslatef(-6.0, 1.5, 0);
@@ -766,7 +781,7 @@ static void mouse_menu(int botao, int estado, int x, int y)
                         if( (G_click_pos_y > (-7.0 * (windowsSize_y * 0.05))) &&
                            (G_click_pos_y < (-7.0 * (windowsSize_y * 0.05)) + 1.0 * (windowsSize_y * 0.05)))
                         {
-                           printf("Volta ao Menu");
+                           printf("\nVolta ao Menu");
                            glutDisplayFunc(Menu_grafico);
                            G_regras = false;                            // sair do menu das regras
                         }

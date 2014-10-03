@@ -1,8 +1,21 @@
+/*
+Programa desenvolvido com propósito de realizar o trabalho de Computação Gráfica
+Universidade Federal da Grande Dourados - UFGD
+2°Semestre 2014
+
+Autores: Alex Yudi Oshiro e Marcelo Yoshio Hasegawa
+
+Data: 02/10/2014
+
+Versão atual: 11.2
+
+*/
+
 #include <gl/glut.h>
 #include "renders.h"
 
 void renderText(const char *text, int length, int x, int y)
-{// Função para renderizar o texto
+{// Função para renderizar um texto
     glMatrixMode(GL_PROJECTION);
     double *matrix = new double[16];
     glGetDoublev(GL_PROJECTION_MATRIX, matrix);

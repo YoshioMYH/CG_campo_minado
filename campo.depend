@@ -253,7 +253,7 @@
 	<_mingw.h>
 	<stddef.h>
 
-1411268953 source:e:\usuários\alex\documentos\github\cg_campo_minado\main.cpp
+1412303779 source:e:\usuários\alex\documentos\github\cg_campo_minado\main.cpp
 	<gl/glut.h>
 	<stdlib.h>
 	<stdio.h>
@@ -262,7 +262,8 @@
 	<sstream>
 	<vector>
 	<time.h>
-	<conio.h>
+	"primitivas.h"
+	"renders.h"
 
 1411417240 source:c:\users\marcelo\documents\github\cg_campo_minado\main.cpp
 	<gl/glut.h>
@@ -309,5 +310,17 @@
 	<vector>
 	<time.h>
 	"primitivas.h"
+	"renders.h"
+
+1412302183 e:\usuários\alex\documentos\github\cg_campo_minado\primitivas.h
+
+1412302183 e:\usuários\alex\documentos\github\cg_campo_minado\renders.h
+
+1412302183 source:e:\usuários\alex\documentos\github\cg_campo_minado\primitivas.cpp
+	<gl/glut.h>
+	"primitivas.h"
+
+1412302183 source:e:\usuários\alex\documentos\github\cg_campo_minado\renders.cpp
+	<gl/glut.h>
 	"renders.h"
 
